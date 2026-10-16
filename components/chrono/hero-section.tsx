@@ -76,22 +76,34 @@ export function HeroSection({
       <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 pt-28 pb-16 sm:py-32 lg:py-36">
         {/* Protocol Transition Pill */}
         <div
-          className={`mb-6 transition-all duration-700 ${
+          className={`mb-6 transition-all duration-700 flex flex-wrap items-center gap-3 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
+          <Link
+            href="/speed"
+            className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-4 py-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-mono text-[11px] sm:text-xs transition-all shadow-lg shadow-emerald-500/10 group cursor-pointer"
+          >
+            <span className="flex items-center gap-1.5 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              ⚡ SIMD-0525 LIVE: 200MS SLOTS ACTIVE
+            </span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-foreground font-medium group-hover:underline">
+              Enter the 200ms Speed Battle →
+            </span>
+          </Link>
+
           {isAlpenglow ? (
-            <div className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 font-mono text-[11px] sm:text-xs">
-              <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                ALPENGLOW ACTIVE
+            <div className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-full border border-foreground/15 bg-foreground/[0.02] text-muted-foreground font-mono text-[11px] sm:text-xs">
+              <span className="flex items-center gap-1.5 font-medium text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                ALPENGLOW VOTOR
               </span>
-              <span className="text-muted-foreground">•</span>
-              <span className="text-foreground/80">SOLANA CONSENSUS MIGRATION</span>
               {genesisSlot && (
                 <>
-                  <span className="text-muted-foreground hidden sm:inline">•</span>
-                  <span className="text-xs text-muted-foreground font-mono hidden sm:inline">GENESIS #{genesisSlot.toLocaleString()}</span>
+                  <span className="text-foreground/20 hidden sm:inline">•</span>
+                  <span className="text-[11px] text-muted-foreground font-mono hidden sm:inline">GENESIS #{genesisSlot.toLocaleString()}</span>
                 </>
               )}
             </div>
@@ -102,7 +114,7 @@ export function HeroSection({
                 LEGACY TOWERBFT (32 LOCKOUTS)
               </span>
               <span className="text-muted-foreground">•</span>
-              <span className="text-foreground/80">ALPENGLOW TRANSITION PENDING</span>
+              <span className="text-emerald-400 font-semibold">ALPENGLOW MAINNET: OCT 21 (~14:50 UTC)</span>
             </div>
           )}
         </div>
@@ -207,10 +219,20 @@ export function HeroSection({
               <Button
                 asChild
                 size="lg"
+                className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-6 sm:px-8 h-12 sm:h-14 text-sm sm:text-base rounded-full font-semibold shadow-lg shadow-emerald-500/20 group"
+              >
+                <Link href="/speed">
+                  200ms Shockwave ⚡
+                  <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
                 className="bg-foreground hover:bg-foreground/90 text-background px-6 sm:px-8 h-12 sm:h-14 text-sm sm:text-base rounded-full group"
               >
                 <a href="#live">
-                  Open Live Telemetry
+                  Live Telemetry
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </a>
               </Button>
@@ -274,10 +296,10 @@ export function HeroSection({
               {/* Real SlotClock Progress Bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-mono text-muted-foreground">
-                  <span>Slot Window ({slotProgress.targetSlotDurationMs ?? 250}ms target)</span>
+                  <span>Slot Window ({slotProgress.targetSlotDurationMs ?? 200}ms target)</span>
                   <span>
                     {slotProgress.isRealTime
-                      ? `${slotProgress.elapsedMs}ms / ${slotProgress.targetSlotDurationMs}ms`
+                      ? `${slotProgress.elapsedMs}ms / ${slotProgress.targetSlotDurationMs ?? 200}ms`
                       : 'TRACKING CLUSTER'}
                   </span>
                 </div>

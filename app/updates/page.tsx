@@ -28,6 +28,48 @@ interface UpdateMilestone {
 
 const MILESTONES: UpdateMilestone[] = [
   {
+    date: 'OCTOBER 21, 2026',
+    category: 'PROTOCOL TRANSITION',
+    title: 'Epoch 1064 Alpenglow Mainnet Cutover: Agave 4.3.0 & Off-Chain Votor Protocol (~14:50 UTC)',
+    summary:
+      'Solana Foundation and Anza locked the Mainnet-Beta Alpenglow cutover for Epoch 1064 (Wednesday, October 21, ~14:50 UTC), requiring Agave 4.3.0 validator clients.',
+    details: [
+      'Votor protocol moves validator voting off-chain into aggregated BLS12-381 certificates, slashing finality to ~150ms.',
+      'Public explorer TPS metric shift: on-chain vote transaction spam eliminated, leaving 100% of block capacity for real user transactions.',
+      'Increased Byzantine fault tolerance: operates securely with up to 40% offline or malicious stake via Fast Path (80%) and Fallback Path (60%).',
+      'CELOR Epoch 1064 Test Bench deployed live with interactive transaction flight simulator, fault-tolerance stress lab, and Agave 4.3.0 validator qualification checks.',
+    ],
+    status: 'LIVE',
+  },
+  {
+    date: 'OCTOBER 2026',
+    category: 'PROTOCOL TRANSITION',
+    title: 'SIMD-0525: 200ms Slot-Time Reduction Live Across Solana Clusters',
+    summary:
+      'Solana Mainnet-Beta, Devnet, and Testnet have activated SIMD-0525, cutting canonical slot durations from 400ms down to a 200ms target.',
+    details: [
+      'Nominal 4-slot leader tenure reduced to ~800ms (previously ~1,600ms).',
+      'Dynamic blockhash expiry aligned to 150 slots (~30s nominal target window; empirical verification required).',
+      'CELOR Dynamic Slot Clock, Sniper timing horizons, and QUIC prewarming thresholds fully updated for 200ms cadence.',
+      'TowerBFT root finality on Mainnet-Beta compressed to ~6.4s (32 slots × 200ms); Alpenglow BLS notarization remains decoupled.',
+    ],
+    status: 'LIVE',
+  },
+  {
+    date: 'OCTOBER 2026',
+    category: 'CELOR RELEASE',
+    title: 'Real-Time Abandoned Transaction Alerts & SIMD-0337 Forensic Watcher',
+    summary:
+      'Engineered sub-millisecond detection and instant dark-mode alert dispatch for transactions dropped by Alpenglow parent-switch candidate invalidation.',
+    details: [
+      'Zero-dependency alert engine monitors candidate bank lifecycles and UpdateParent markers.',
+      'Prevents phantom transactions by distinguishing observed uncommitted state from canonical roots.',
+      'Instant 1-click forensic autopsy deep-linking with full 9-stage consensus trace.',
+      'Integrated live presets on homepage and /transaction for immediate cluster verification.',
+    ],
+    status: 'LIVE',
+  },
+  {
     date: 'OCTOBER 2026',
     category: 'PROTOCOL TRANSITION',
     title: 'Solana Devnet Alpenglow Votor Activation Certified',
@@ -121,6 +163,85 @@ export default function UpdatesPage() {
             along with CELOR low-level infrastructure releases.
           </p>
         </div>
+
+        {/* Featured Latest Release Showcase */}
+        <section className="mb-12 sm:mb-16 rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/[0.05] via-amber-500/[0.02] to-transparent p-5 sm:p-8 lg:p-10 shadow-xl shadow-amber-950/20">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+              </span>
+              <span className="text-xs font-mono font-bold tracking-widest text-amber-500 uppercase">
+                FEATURED SHIP • OCTOBER 2026
+              </span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-mono px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 font-semibold">
+              LIVE IN PRODUCTION
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-6 space-y-4">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-medium tracking-tight text-foreground">
+                Real-Time Abandoned Transaction Alerts
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-sans">
+                Under Alpenglow, 1 slot can generate multiple candidate banks. When an incoming leader executes a
+                fast handover (SIMD-0337), uncommitted candidate banks are instantly invalidated. Celor now fires
+                real-time alerts the microsecond your transaction is dropped.
+              </p>
+
+              <div className="space-y-2.5 pt-2 font-mono text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-500 font-bold">⚡</span>
+                  <span><strong>Zero Silent Reorgs:</strong> Instant feedback instead of waiting on timeouts.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-500 font-bold">⚡</span>
+                  <span><strong>SIMD-0337 Telemetry:</strong> Shows dropped bank ID, canonical state, and event slot.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-500 font-bold">⚡</span>
+                  <span><strong>1-Click Autopsy:</strong> Deep-links directly to full 9-stage consensus trace.</span>
+                </div>
+              </div>
+
+              <div className="pt-4 flex flex-wrap items-center gap-3">
+                <Button asChild className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-sans font-medium text-xs sm:text-sm h-11 px-5 rounded-full">
+                  <Link href="/transaction?signature=simd0337-reorg-abandoned-tx-8xLz9Q">
+                    <span>⚡ Test Live Abandoned TX in Autopsy</span>
+                    <ArrowRight className="w-4 h-4 ml-1.5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="border-foreground/20 font-sans text-xs sm:text-sm h-11 px-5 rounded-full">
+                  <Link href="/transaction">
+                    Explore Forensics Page
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Right: User Showcase Image Preview */}
+            <div className="lg:col-span-6">
+              <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-black/80 shadow-2xl group">
+                <img
+                  src="/images/abandoned-tx-alert-preview.jpg"
+                  alt="Celor Abandoned Transaction Alert UI Preview"
+                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+                <div className="p-3 bg-zinc-950/90 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    Live Notification Toast UI
+                  </span>
+                  <span className="text-zinc-500">Preview Artifact</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Timeline Stream */}
         <div className="relative border-l border-foreground/10 pl-5 sm:pl-10 space-y-8 sm:space-y-12 mb-12 sm:mb-16 ml-2 sm:ml-4">

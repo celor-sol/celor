@@ -502,7 +502,7 @@ export default function NetworkPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Remaining Window:</span>
                   <span className="font-semibold text-foreground">
-                    {executionState?.leader_window_ms ?? ((slotProgress.targetSlotDurationMs ?? 400) - (slotProgress.elapsedMs ?? 0))}ms
+                    {executionState?.leader_window_ms ?? ((slotProgress.targetSlotDurationMs ?? 200) - (slotProgress.elapsedMs ?? 0))}ms
                   </span>
                 </div>
                 <div className="flex justify-between">

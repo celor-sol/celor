@@ -74,8 +74,8 @@ impl CoreStateEngine {
         };
 
         let slot_duration = match config.source.as_str() {
-            "local-geyser" | "local-geyser-fixture" | "local-validator" => SlotDuration::MS_250,
-            _ => SlotDuration::MS_400,
+            "legacy-geyser-400" | "legacy-fixture-400" => SlotDuration::MS_400,
+            _ => SlotDuration::MS_200,
         };
 
         let mut stake_engine = StakeEngine::new();
@@ -221,7 +221,7 @@ impl CoreStateEngine {
     }
 
     pub fn clear_ephemeral_state(&mut self) {
-        self.slot_clock = SlotClock::new(SlotDuration::MS_400);
+        self.slot_clock = SlotClock::new(SlotDuration::MS_200);
         self.bank_graph = BankGraph::new();
         self.leader_engine = LeaderEngine::new();
         self.canonical_resolver = CanonicalResolver::new();

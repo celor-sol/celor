@@ -120,10 +120,10 @@ export function LiveNetworkSection({
         ? `${finalityInfo.consensusFinalityMs || finalityInfo.finalityLatencyMs || 231}ms`
         : finalityInfo?.finalityLatencyMs
         ? `${(finalityInfo.finalityLatencyMs / 1000).toFixed(1)}s`
-        : '~12.8s',
+        : '~6.4s',
       detail: finalityInfo?.mode === 'ALPENGLOW_VOTOR'
         ? 'Live Observed Alpenglow Finality (Target ~150ms)'
-        : 'TowerBFT progressive lockout root (32 slots × 400ms)',
+        : 'TowerBFT progressive lockout root (32 slots × 200ms target)',
       provenance: finalityInfo?.provenance || 'DIRECT',
     },
     {
@@ -295,8 +295,8 @@ export function LiveNetworkSection({
 
           <div className="mt-3 flex justify-between items-center text-[10px] sm:text-xs font-mono text-muted-foreground">
             <span>0ms (Start)</span>
-            <span>125ms (Half)</span>
-            <span>{slotProgress.targetSlotDurationMs}ms (Target)</span>
+            <span>{Math.round((slotProgress.targetSlotDurationMs || 200) / 2)}ms (Half)</span>
+            <span>{slotProgress.targetSlotDurationMs || 200}ms (Target)</span>
           </div>
         </div>
 

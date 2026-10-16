@@ -1,0 +1,16 @@
+{
+  "id": "test-exp-40038",
+  "description": "Default Interleaved Control vs Chrono-Aware Benchmark",
+  "cluster": "testnet",
+  "source": "rpc",
+  "route": "rpc",
+  "transaction_type": "sol_transfer",
+  "sample_count": 10,
+  "max_tps": 1000.0,
+  "timeout_ms": 15000,
+  "random_seed": 42,
+  "interleave_mode": true,
+  "leader_window_focus": false,
+  "bank_awareness": false,
+  "finality_target": "confirmed"
+}

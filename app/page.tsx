@@ -3,6 +3,7 @@
 import { useChrono } from '@/hooks/useChrono';
 import { Navigation } from '@/components/chrono/navigation';
 import { HeroSection } from '@/components/chrono/hero-section';
+import { AlpenglowCountdown } from '@/components/chrono/alpenglow-countdown';
 import { LiveNetworkSection } from '@/components/chrono/live-network-section';
 import { BankGraphSection } from '@/components/chrono/bank-graph-section';
 import { FinalitySection } from '@/components/chrono/finality-section';
@@ -40,6 +41,9 @@ export default function Home() {
         networkStatus={networkStatus}
         connected={networkStatus.connected}
       />
+
+      {/* Alpenglow Hardfork Countdown & Plain-English Explainer */}
+      <AlpenglowCountdown />
 
       {/* Live Network & Slot Clock View */}
       <LiveNetworkSection

@@ -103,20 +103,24 @@ impl FreshnessState {
         };
 
         // 3. Blockhash Freshness:
-        // Recent blockhash is valid for 150 slots (~60s under 400ms, ~37s under 250ms).
-        // FRESH: < 10,000ms old (~25 slots)
-        // AGING: 10,000ms to 30,000ms old
-        // STALE: > 35,000ms old (high risk of expiry before inclusion)
+        // Recent blockhash validity is strictly bound to 150 slots by protocol rule.
+        // Under SIMD-0525 (200ms), 150 slots corresponds to a nominal target-based window of ~30,000ms (~30s).
+        // Under legacy 400ms, nominal window was ~60,000ms.
+        // FRESH: < 35 slots (nominal < 7,000ms at 200ms, < 14,000ms at 400ms)
+        // AGING: 35 to 110 slots (approaching deadline)
+        // STALE: > 110 slots (> ~22,000ms at 200ms) or age exceeds 75% of nominal window (high rejection risk)
         let blockhash_age_ms = now_ms.saturating_sub(blockhash_acquired_at_ms);
-        let blockhash_age_slots = blockhash_age_ms
-            .checked_div(slot_target_duration_ms)
-            .unwrap_or(blockhash_age_ms / 250);
+        let effective_slot_duration = slot_target_duration_ms.max(50);
+        let blockhash_age_slots = blockhash_age_ms / effective_slot_duration;
+        let nominal_expiry_ms = effective_slot_duration.saturating_mul(150);
+        let stale_threshold_ms = (nominal_expiry_ms * 75) / 100; // 75% of nominal window (~22.5s at 200ms, ~45s at 400ms)
+        let aging_threshold_ms = (nominal_expiry_ms * 35) / 100; // 35% of nominal window (~10.5s at 200ms, ~21s at 400ms)
 
         let blockhash_tier = if blockhash_acquired_at_ms == 0 {
             FreshnessTier::Unknown
-        } else if blockhash_age_ms > 35_000 {
+        } else if blockhash_age_slots > 110 || blockhash_age_ms > stale_threshold_ms {
             FreshnessTier::Stale
-        } else if blockhash_age_ms > 12_000 {
+        } else if blockhash_age_slots > 35 || blockhash_age_ms > aging_threshold_ms {
             FreshnessTier::Aging
         } else {
             FreshnessTier::Fresh

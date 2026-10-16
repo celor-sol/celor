@@ -200,8 +200,8 @@ export default function TelemetryPage() {
         status: 'LIVE',
         slot: {
           current_slot: 507745280,
-          target_duration_ms: 400,
-          elapsed_ms: 120,
+          target_duration_ms: 200,
+          elapsed_ms: 60,
           phase_ratio: 0.3,
           provenance: 'DIRECT',
         },
@@ -327,7 +327,7 @@ export default function TelemetryPage() {
           verification_reason: 'Fast-path BLS12-381 aggregate signature verified (~82.1% stake threshold met)',
           participant_count: 1135,
           stake_fraction_estimate: 0.821,
-          received_at_nanos: (Date.now() - 400) * 1_000_000,
+          received_at_nanos: (Date.now() - 200) * 1_000_000,
         },
       ]);
     }
@@ -645,7 +645,7 @@ export default function TelemetryPage() {
                   {snapshot?.slot?.current_slot?.toLocaleString() || 'Connecting...'}
                 </div>
                 <div className="text-xs font-mono text-muted-foreground mt-2">
-                  Target Duration: {snapshot?.slot?.target_duration_ms || 400}ms
+                  Target Duration: {snapshot?.slot?.target_duration_ms || 200}ms
                 </div>
               </div>
 

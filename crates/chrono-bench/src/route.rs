@@ -563,6 +563,11 @@ impl ExecutionRoute for DirectLeaderQuicRoute {
     async fn submit_transaction(&self, tx_base64: &str) -> Result<SubmissionAck, RouteError> {
         let t_total_start = Instant::now();
 
+        // Defense-in-depth: Mainnet safety guard inside QUIC execution route
+        if self.rpc_url.to_lowercase().contains("mainnet") {
+            return Err(RouteError::Other("MAINNET_SAFETY_GUARD_ACTIVE: Direct QUIC execution against mainnet strictly prohibited".into()));
+        }
+
         if self.fallback_policy == FallbackPolicy::RpcOnly {
             return self.fallback_route.submit_transaction(tx_base64).await;
         }

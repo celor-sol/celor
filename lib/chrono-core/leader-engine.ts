@@ -54,7 +54,7 @@ export class LeaderEngine {
       currentLeader: this.currentLeader,
       nextLeader: this.nextLeader,
       upcomingLeaders: [...this.upcomingLeaders],
-      leaderEstimatedDurationMs: 250,
+      leaderEstimatedDurationMs: 200,
       handoffState: this.handoffState,
       provenance: this.currentLeader ? 'DERIVED' : 'UNAVAILABLE',
     };

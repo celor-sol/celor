@@ -287,8 +287,8 @@ impl SlotDuration {
 
 impl Default for SlotDuration {
     fn default() -> Self {
-        // Default to active SIMD-0525 250ms target
-        Self::MS_250
+        // Default to active SIMD-0525 200ms target
+        Self::MS_200
     }
 }
 
@@ -383,7 +383,7 @@ impl Default for ProtocolProfile {
     fn default() -> Self {
         Self {
             consensus_mode: ConsensusMode::Unknown,
-            target_slot_duration: SlotDuration::MS_250,
+            target_slot_duration: SlotDuration::MS_200,
             alpenglow_genesis_cert_present: false,
             multi_bank_enabled: false,
             update_parent_enabled: false,

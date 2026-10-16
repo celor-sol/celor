@@ -18,10 +18,10 @@ export function useChrono() {
 
   const [slotProgress, setSlotProgress] = useState<SlotProgress>({
     slot: 507745280,
-    targetDurationMs: 400,
-    targetSlotDurationMs: 400,
-    elapsedMs: 80,
-    remainingMs: 320,
+    targetDurationMs: 200,
+    targetSlotDurationMs: 200,
+    elapsedMs: 40,
+    remainingMs: 160,
     phaseRatio: 0.2,
     isMeasured: false,
     isRealTime: true,
@@ -46,7 +46,7 @@ export function useChrono() {
     connected: true,
     chronoStatus: 'LIVE',
     rpcEndpoint: 'https://api.devnet.solana.com',
-    targetSlotDurationMs: 400,
+    targetSlotDurationMs: 200,
     currentSlot: 507745280,
     liveTps: 2840,
     activeValidators: 1450,

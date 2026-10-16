@@ -381,7 +381,7 @@ export default function BenchmarksPage() {
                 <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-semibold">[UNCHANGED]</span>
               </div>
               <div className="text-2xl font-mono font-bold mt-1 text-foreground">
-                ~400ms <span className="text-xs font-normal text-muted-foreground">slot window</span>
+                ~200ms <span className="text-xs font-normal text-muted-foreground">slot window (SIMD-0525)</span>
               </div>
               <div className="text-[11px] text-muted-foreground font-sans mt-1">
                 SVM program bytecode execution & compute unit accounting remain 100% identical.

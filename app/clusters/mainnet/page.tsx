@@ -58,7 +58,7 @@ export default function MainnetClusterPage() {
               Solana Mainnet-Beta
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground max-w-2xl font-sans leading-relaxed">
-              Solana production cluster operating under the canonical TowerBFT consensus model (~12.8s finality root).
+              Solana production cluster operating under the canonical TowerBFT consensus model (~6.4s finality root at 200ms target; historically ~12.8s at 400ms).
               CELOR monitors Mainnet-Beta as an empirical control baseline to prove comparative latency improvements under Alpenglow.
             </p>
           </div>
@@ -99,9 +99,9 @@ export default function MainnetClusterPage() {
 
           <div className="p-4 sm:p-6 rounded-2xl border border-foreground/10 bg-foreground/[0.02]">
             <div className="text-[11px] text-muted-foreground uppercase">Root Finality Latency</div>
-            <div className="text-2xl sm:text-3xl font-bold mt-2 text-foreground">~12.8 s</div>
+            <div className="text-2xl sm:text-3xl font-bold mt-2 text-foreground">~6.4 s</div>
             <div className="text-[11px] text-muted-foreground mt-2">
-              32 slots × 400ms target
+              32 slots × 200ms target (SIMD-0525)
             </div>
           </div>
 

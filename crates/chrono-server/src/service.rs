@@ -81,6 +81,7 @@ impl ChronoServer {
             sniper_engine: self.sniper_engine.clone(),
             quic_route: self.quic_route.clone(),
             sniper_ws_tx: self.sniper_ws_tx.clone(),
+            playground_engine: Arc::new(crate::playground::PlaygroundEngine::new()),
         };
 
         let cors = CorsLayer::new()

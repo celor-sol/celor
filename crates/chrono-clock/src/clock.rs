@@ -143,8 +143,8 @@ impl SlotClock {
 
 impl Default for SlotClock {
     fn default() -> Self {
-        // Default to active SIMD-0525 250ms target
-        Self::new(SlotDuration::MS_250)
+        // Default to active SIMD-0525 200ms target
+        Self::new(SlotDuration::MS_200)
     }
 }
 

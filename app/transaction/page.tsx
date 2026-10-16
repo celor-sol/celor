@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useChrono } from '@/hooks/useChrono';
+import { useAbandonedTxAlert } from '@/hooks/useAbandonedTxAlert';
+import { AbandonedTxAlertToast } from '@/components/chrono/abandoned-tx-alert-toast';
 import { Navigation } from '@/components/chrono/navigation';
 import { FooterSection } from '@/components/chrono/footer-section';
 import type { TransactionAutopsyResult } from '@/lib/chrono-client/types';
@@ -30,6 +32,7 @@ export default function TransactionPage() {
   const [result, setResult] = useState<TransactionAutopsyResult | null>(null);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(true);
   const [copied, setCopied] = useState(false);
+  const { activeToast, dismissToast, checkAndAlert } = useAbandonedTxAlert();
 
   const handleAnalyze = async (sigToAnalyze?: string) => {
     const targetSig = (sigToAnalyze || signature).trim();
@@ -40,6 +43,7 @@ export default function TransactionPage() {
     try {
       const res = await analyzeTransaction(targetSig);
       setResult(res);
+      checkAndAlert(res);
     } catch (err: any) {
       setResult({
         signature: targetSig,
@@ -81,6 +85,19 @@ export default function TransactionPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Auto-analyze signature if passed via URL search parameters
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const querySig = params.get('signature');
+      if (querySig && querySig.trim()) {
+        const cleanSig = querySig.trim();
+        setSignature(cleanSig);
+        handleAnalyze(cleanSig);
+      }
+    }
+  }, []);
 
   return (
     <main className="relative min-h-screen overflow-x-hidden noise-overlay bg-background text-foreground">
@@ -146,6 +163,35 @@ export default function TransactionPage() {
             >
               {isLoading ? 'Inspecting State...' : 'Analyze Signature'}
             </Button>
+          </div>
+
+          {/* Trench Quick-Test Scenario Presets */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-[11px] font-mono text-muted-foreground mr-1">Trench Presets:</span>
+            <button
+              type="button"
+              onClick={() => {
+                const reorgSig = 'simd0337-reorg-abandoned-tx-8xLz9Q';
+                setSignature(reorgSig);
+                handleAnalyze(reorgSig);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 transition-all cursor-pointer"
+            >
+              <AlertTriangle className="w-3 h-3" />
+              <span>⚡ Test Reorg Dropped TX (SIMD-0337)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const canonSig = '5K3LzHk9474U8N2a3f76h9wJ7G9H3K2L1J5N8M6P4Q2R';
+                setSignature(canonSig);
+                handleAnalyze(canonSig);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all cursor-pointer"
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              <span>✓ Test Canonical Fast-Path TX</span>
+            </button>
           </div>
 
           <div className="text-[11px] sm:text-xs font-mono text-muted-foreground flex items-center gap-2">
@@ -527,6 +573,16 @@ export default function TransactionPage() {
           </div>
         )}
       </div>
+
+      {/* Floating Abandoned Transaction Alert Toast */}
+      <AbandonedTxAlertToast
+        activeToast={activeToast}
+        onDismiss={dismissToast}
+        onInspect={(sig) => {
+          setSignature(sig);
+          handleAnalyze(sig);
+        }}
+      />
 
       <FooterSection />
     </main>

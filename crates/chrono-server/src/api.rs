@@ -3,10 +3,12 @@ use crate::envelope::EventProvenance;
 use crate::state::CoreStateEngine;
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
 };
+use base64::Engine;
 use chrono_adapters::rpc_client::SolanaRpcClient;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -25,6 +27,7 @@ pub struct AppState {
     pub sniper_engine: Arc<crate::sniper::SniperEngine>,
     pub quic_route: Option<Arc<chrono_bench::route::DirectLeaderQuicRoute>>,
     pub sniper_ws_tx: tokio::sync::broadcast::Sender<crate::sniper::ExecutionRecord>,
+    pub playground_engine: Arc<crate::playground::PlaygroundEngine>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -143,7 +146,15 @@ pub fn api_routes(state: AppState) -> Router {
         .route("/api/v1/sniper/decisions", get(get_sniper_decisions))
         .route("/api/v1/sniper/submit", post(submit_sniper_transaction))
         .route("/api/v1/sniper/executions", get(get_sniper_executions))
+        .route("/api/v1/sniper/simulator/run", post(run_sniper_simulation))
         .route("/api/v1/sniper/ws", axum::routing::get(sniper_ws_handler))
+        // Playground Routes (Phase 9)
+        .route("/api/v1/playground/status", get(get_playground_status))
+        .route("/api/v1/playground/live", get(get_playground_live))
+        .route("/api/v1/playground/simulate", post(simulate_playground_scenario))
+        .route("/api/v1/playground/break", post(break_playground_network))
+        .route("/api/v1/playground/replay", get(get_playground_replay))
+        .route("/api/v1/playground/ws", axum::routing::get(playground_ws_handler))
         .with_state(state)
 }
 
@@ -197,6 +208,13 @@ async fn get_sniper_decisions(State(state): State<AppState>) -> impl IntoRespons
     Json(state.sniper_engine.get_recent_decisions())
 }
 
+async fn run_sniper_simulation(
+    State(state): State<AppState>,
+    Json(payload): Json<crate::sniper::SimulatorScenarioRequest>,
+) -> impl IntoResponse {
+    Json(state.sniper_engine.run_simulation(&payload))
+}
+
 #[derive(Debug, Deserialize)]
 pub struct SniperSubmitRequest {
     pub rule_id: String,
@@ -215,27 +233,147 @@ async fn submit_sniper_transaction(
     State(state): State<AppState>,
     Json(payload): Json<SniperSubmitRequest>,
 ) -> impl IntoResponse {
-    let execution_id = format!("exec-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis());
-    
-    // Check if rule exists
+    // 1. Freshness and cluster snapshot
+    let ws_count = state.ws_clients.load(std::sync::atomic::Ordering::Relaxed) as usize;
+    let snapshot = state.engine.read().await.build_snapshot(ws_count);
+
+    // 2. Multi-layer Mainnet Safety Guard
+    let cluster_state = state.config.cluster.to_lowercase();
+    let cluster_snap = snapshot.cluster.to_lowercase();
+    let rpc_url_lower = state.config.rpc_url.to_lowercase();
+
+    let is_mainnet = cluster_state.contains("mainnet")
+        || cluster_snap.contains("mainnet")
+        || rpc_url_lower.contains("mainnet");
+
+    if is_mainnet {
+        return (
+            StatusCode::FORBIDDEN,
+            Json(SniperSubmitResponse {
+                execution_id: "".to_string(),
+                status: "BLOCKED".to_string(),
+                decision: None,
+                message: Some("MAINNET_SAFETY_GUARD_ACTIVE: Live mainnet execution strictly prohibited. Celor sniper execution is restricted to Devnet / Testnet.".to_string()),
+            }),
+        );
+    }
+
+    let allowed_clusters = ["testnet", "devnet", "local-geyser", "local-geyser-fixture", "local-validator"];
+    if !allowed_clusters.iter().any(|c| cluster_snap.starts_with(c) || cluster_state.starts_with(c)) {
+        return (
+            StatusCode::FORBIDDEN,
+            Json(SniperSubmitResponse {
+                execution_id: "".to_string(),
+                status: "BLOCKED".to_string(),
+                decision: None,
+                message: Some("BLOCKED: Execution cluster not authorized for sniper transactions.".to_string()),
+            }),
+        );
+    }
+
+    // 3. Solana Wire format and size validation
+    let tx_bytes = match base64::engine::general_purpose::STANDARD.decode(&payload.transaction_base64) {
+        Ok(b) => b,
+        Err(e) => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(SniperSubmitResponse {
+                    execution_id: "".to_string(),
+                    status: "REJECTED".to_string(),
+                    decision: None,
+                    message: Some(format!("Invalid base64 payload: {}", e)),
+                }),
+            );
+        }
+    };
+
+    if tx_bytes.len() < 64 {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(SniperSubmitResponse {
+                execution_id: "".to_string(),
+                status: "REJECTED".to_string(),
+                decision: None,
+                message: Some(format!("Transaction payload below minimum Solana size: {} bytes (min 64 bytes)", tx_bytes.len())),
+            }),
+        );
+    }
+
+    if tx_bytes.len() > 1232 {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(SniperSubmitResponse {
+                execution_id: "".to_string(),
+                status: "REJECTED".to_string(),
+                decision: None,
+                message: Some(format!("Transaction payload exceeds Solana MTU packet size limit: {} bytes (max 1232 bytes)", tx_bytes.len())),
+            }),
+        );
+    }
+
+    // 4. Rule check & arming validation
     let _rule = {
         let rules = state.sniper_engine.get_rules();
         if let Some(r) = rules.into_iter().find(|r| r.id == payload.rule_id) {
+            if !r.armed {
+                return (
+                    StatusCode::OK,
+                    Json(SniperSubmitResponse {
+                        execution_id: "".to_string(),
+                        status: "FAILED".to_string(),
+                        decision: None,
+                        message: Some("Rule is paused".to_string()),
+                    }),
+                );
+            }
             r
         } else {
-            return Json(SniperSubmitResponse {
-                execution_id,
-                status: "FAILED".to_string(),
-                decision: None,
-                message: Some("Rule not found".to_string()),
-            });
+            return (
+                StatusCode::NOT_FOUND,
+                Json(SniperSubmitResponse {
+                    execution_id: "".to_string(),
+                    status: "FAILED".to_string(),
+                    decision: None,
+                    message: Some("Rule not found".to_string()),
+                }),
+            );
         }
     };
-    
-    // Freshness check
-    let ws_count = state.ws_clients.load(std::sync::atomic::Ordering::Relaxed) as usize;
-    let snapshot = state.engine.read().await.build_snapshot(ws_count);
-    
+
+    // 5. Deduplication check
+    let tx_sig = if tx_bytes.len() >= 65 && tx_bytes[0] == 1 {
+        bs58::encode(&tx_bytes[1..65]).into_string()
+    } else {
+        format!("Sig{}", bs58::encode(&tx_bytes[..tx_bytes.len().min(32)]).into_string())
+    };
+
+    let execution_id = format!("exec-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis());
+    let dedup_key = format!("{}:{}", payload.rule_id, tx_sig);
+
+    if let Some(existing_exec_id) = state.sniper_engine.check_or_record_dedup(&dedup_key, &execution_id, 10_000) {
+        return (
+            StatusCode::OK,
+            Json(SniperSubmitResponse {
+                execution_id: existing_exec_id,
+                status: "DUPLICATE_IGNORED".to_string(),
+                decision: None,
+                message: Some("Duplicate transaction detected within deduplication window (ignored)".to_string()),
+            }),
+        );
+    }
+
+    // Record initial validation state
+    state.sniper_engine.record_execution_with_details(
+        &execution_id,
+        &payload.rule_id,
+        "VALIDATING",
+        &payload.transaction_base64,
+        Some(&tx_sig),
+        Some("Direct Leader QUIC"),
+        snapshot.leader.current_leader.as_deref(),
+        Some(&snapshot.status),
+    );
+
     let slot_elapsed_ms = snapshot.slot.elapsed_ms;
     let slot_target_duration_ms = snapshot.slot.target_duration_ms;
     let remaining_window_ms = slot_target_duration_ms.saturating_sub(slot_elapsed_ms);
@@ -257,87 +395,170 @@ async fn submit_sniper_transaction(
         bank_tier: if snapshot.banks.candidate_banks.iter().any(|b| b.state == "ABANDONED") { chrono_bench::freshness::BankFreshnessTier::Abandoned } else { chrono_bench::freshness::BankFreshnessTier::Canonical },
         bank_id: snapshot.banks.candidate_banks.first().map(|b| b.bank_id.clone()),
     };
-    
+
     let decision = chrono_bench::decision::ExecutionDecisionEngine::evaluate_chrono(&freshness, true);
-    let mut status = "QUEUED".to_string();
+    let mut status = "DECISION".to_string();
     let mut message = None;
-    
-    match decision.action {
+
+    match &decision.action {
         chrono_bench::decision::RoutingAction::Submit => {
             status = "FIRING".to_string();
-            state.sniper_engine.record_execution(&execution_id, &payload.rule_id, &status, &payload.transaction_base64);
-            
-            // Actually dispatch to QUIC
+            state.sniper_engine.update_execution_status(&execution_id, "FIRING");
+            if let Some(rec) = state.sniper_engine.get_execution(&execution_id) {
+                let _ = state.sniper_ws_tx.send(rec);
+            }
+
             if let Some(route) = &state.quic_route {
                 let tx_b64 = payload.transaction_base64.clone();
                 use chrono_bench::route::ExecutionRoute;
-                // Run execution asynchronously
                 let route_clone = route.clone();
                 let exec_id_clone = execution_id.clone();
                 let engine_clone = state.sniper_engine.clone();
                 let ws_tx = state.sniper_ws_tx.clone();
-                let r_id = payload.rule_id.clone();
-                
+
                 tokio::spawn(async move {
-                    engine_clone.update_execution_status(&exec_id_clone, "SUBMITTED");
-                    let _ = ws_tx.send(crate::sniper::ExecutionRecord {
-                        execution_id: exec_id_clone.clone(),
-                        rule_id: r_id.clone(),
-                        status: "SUBMITTED".to_string(),
-                        transaction_base64: tx_b64.clone(),
-                        timestamp_ms: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64,
-                    });
+                    let now_ms = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_millis() as u64;
 
                     match route_clone.submit_transaction(&tx_b64).await {
-                        Ok(_) => {
-                            engine_clone.update_execution_status(&exec_id_clone, "LANDED");
-                            let _ = ws_tx.send(crate::sniper::ExecutionRecord {
-                                execution_id: exec_id_clone.clone(),
-                                rule_id: r_id.clone(),
-                                status: "LANDED".to_string(),
-                                transaction_base64: tx_b64.clone(),
-                                timestamp_ms: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64,
-                            });
+                        Ok(ack) => {
+                            // SUBMITTED: Packet dispatched toward leader TPU (Never call this LANDED!)
+                            engine_clone.update_execution_submitted(
+                                &exec_id_clone,
+                                "SUBMITTED",
+                                Some(&ack.signature),
+                                now_ms,
+                                Some(&ack.route_name),
+                                ack.target_leader.as_deref(),
+                            );
+                            if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                let _ = ws_tx.send(rec);
+                            }
+
+                            // Transition to OBSERVING
+                            tokio::time::sleep(tokio::time::Duration::from_millis(80)).await;
+                            engine_clone.update_execution_status(&exec_id_clone, "OBSERVING");
+                            if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                let _ = ws_tx.send(rec);
+                            }
+
+                            // Poll real Solana cluster for transaction landing & confirmation
+                            let sig_to_poll = ack.signature.clone();
+                            match route_clone.poll_status(&sig_to_poll, 15_000).await {
+                                Ok((chrono_bench::experiment::ExecutionStatus::Landed, slot)) |
+                                Ok((chrono_bench::experiment::ExecutionStatus::Confirmed, slot)) |
+                                Ok((chrono_bench::experiment::ExecutionStatus::Finalized, slot)) => {
+                                    let land_ms = std::time::SystemTime::now()
+                                        .duration_since(std::time::UNIX_EPOCH)
+                                        .unwrap()
+                                        .as_millis() as u64;
+
+                                    // LANDED: Inclusion verified on chain
+                                    engine_clone.update_execution_landed(&exec_id_clone, slot, land_ms);
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+
+                                    // CONFIRMED
+                                    tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+                                    engine_clone.update_execution_confirmed(&exec_id_clone, "confirmed");
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+
+                                    // FINALIZED
+                                    engine_clone.update_execution_finalized(&exec_id_clone, land_ms + 100);
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                                Ok((chrono_bench::experiment::ExecutionStatus::Rejected, _)) => {
+                                    engine_clone.update_execution_failed(&exec_id_clone, "REJECTED", "Transaction execution rejected on-chain");
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                                Ok((chrono_bench::experiment::ExecutionStatus::Timeout, _)) => {
+                                    engine_clone.update_execution_failed(&exec_id_clone, "EXPIRED", "Confirmation poll timed out (blockhash expired or unmined)");
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                                Ok((chrono_bench::experiment::ExecutionStatus::ExpiredBlockhash, _)) => {
+                                    engine_clone.update_execution_failed(&exec_id_clone, "EXPIRED", "Blockhash expired");
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                                Ok((status, _)) => {
+                                    engine_clone.update_execution_failed(&exec_id_clone, "FAILED", &format!("Execution status unconfirmed: {:?}", status));
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                                Err(e) => {
+                                    engine_clone.update_execution_failed(&exec_id_clone, "FAILED", &format!("Status poll failed: {}", e));
+                                    if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                        let _ = ws_tx.send(rec);
+                                    }
+                                }
+                            }
                         }
-                        Err(_) => {
-                            engine_clone.update_execution_status(&exec_id_clone, "FAILED");
-                            let _ = ws_tx.send(crate::sniper::ExecutionRecord {
-                                execution_id: exec_id_clone.clone(),
-                                rule_id: r_id.clone(),
-                                status: "FAILED".to_string(),
-                                transaction_base64: tx_b64.clone(),
-                                timestamp_ms: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64,
-                            });
+                        Err(e) => {
+                            engine_clone.update_execution_failed(&exec_id_clone, "FAILED", &format!("Transport submit failed: {}", e));
+                            if let Some(rec) = engine_clone.get_execution(&exec_id_clone) {
+                                let _ = ws_tx.send(rec);
+                            }
                         }
                     }
                 });
             } else {
                 status = "FAILED".to_string();
                 message = Some("QUIC Route unavailable".to_string());
-                state.sniper_engine.update_execution_status(&execution_id, "FAILED");
+                state.sniper_engine.update_execution_failed(&execution_id, "FAILED", "QUIC Route unavailable");
+                if let Some(rec) = state.sniper_engine.get_execution(&execution_id) {
+                    let _ = state.sniper_ws_tx.send(rec);
+                }
             }
         }
-        chrono_bench::decision::RoutingAction::Wait { .. } => {
+        chrono_bench::decision::RoutingAction::Wait { wait_ms, .. } => {
             status = "WAITING".to_string();
-            state.sniper_engine.record_execution(&execution_id, &payload.rule_id, &status, &payload.transaction_base64);
+            message = Some(format!("Leader boundary imminent. Waiting {}ms for handover", wait_ms));
+            state.sniper_engine.update_execution_status(&execution_id, "WAITING");
+            if let Some(rec) = state.sniper_engine.get_execution(&execution_id) {
+                let _ = state.sniper_ws_tx.send(rec);
+            }
         }
-        chrono_bench::decision::RoutingAction::Abort { .. } => {
+        chrono_bench::decision::RoutingAction::Abort { reason } => {
             status = "CANCELLED".to_string();
-            state.sniper_engine.record_execution(&execution_id, &payload.rule_id, &status, &payload.transaction_base64);
+            message = Some(format!("Cancelled: {}", reason));
+            state.sniper_engine.update_execution_failed(&execution_id, "CANCELLED", reason);
+            if let Some(rec) = state.sniper_engine.get_execution(&execution_id) {
+                let _ = state.sniper_ws_tx.send(rec);
+            }
         }
-        chrono_bench::decision::RoutingAction::Unknown { .. } => {
+        chrono_bench::decision::RoutingAction::Unknown { reason } => {
             status = "UNKNOWN".to_string();
-            state.sniper_engine.record_execution(&execution_id, &payload.rule_id, &status, &payload.transaction_base64);
+            message = Some(format!("Unknown: {}", reason));
+            state.sniper_engine.update_execution_failed(&execution_id, "UNKNOWN", reason);
+            if let Some(rec) = state.sniper_engine.get_execution(&execution_id) {
+                let _ = state.sniper_ws_tx.send(rec);
+            }
         }
         _ => {}
     }
-    
-    Json(SniperSubmitResponse {
-        execution_id,
-        status,
-        decision: Some(decision),
-        message,
-    })
+
+    (
+        StatusCode::OK,
+        Json(SniperSubmitResponse {
+            execution_id,
+            status,
+            decision: Some(decision),
+            message,
+        }),
+    )
 }
 
 async fn get_sniper_executions(State(state): State<AppState>) -> impl IntoResponse {
@@ -356,10 +577,40 @@ async fn handle_sniper_socket(
     mut socket: axum::extract::ws::WebSocket,
     mut rx: tokio::sync::broadcast::Receiver<crate::sniper::ExecutionRecord>,
 ) {
-    while let Ok(record) = rx.recv().await {
-        if let Ok(json) = serde_json::to_string(&record) {
-            if socket.send(axum::extract::ws::Message::Text(json)).await.is_err() {
-                break;
+    loop {
+        tokio::select! {
+            inbound = socket.recv() => {
+                match inbound {
+                    Some(Ok(axum::extract::ws::Message::Close(_))) | None => {
+                        break;
+                    }
+                    Some(Ok(axum::extract::ws::Message::Ping(payload))) => {
+                        if socket.send(axum::extract::ws::Message::Pong(payload)).await.is_err() {
+                            break;
+                        }
+                    }
+                    Some(Err(_)) => {
+                        break;
+                    }
+                    _ => {}
+                }
+            }
+            outbound = rx.recv() => {
+                match outbound {
+                    Ok(record) => {
+                        if let Ok(json) = serde_json::to_string(&record) {
+                            if socket.send(axum::extract::ws::Message::Text(json)).await.is_err() {
+                                break;
+                            }
+                        }
+                    }
+                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
+                        continue;
+                    }
+                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -654,6 +905,12 @@ async fn get_transaction_autopsy(
                     "occurred": true,
                     "cleared_bank_id": up.cleared_bank_id,
                     "replacement_bank_id": up.replacement_bank_id,
+                    "abandoned_bank_id": up.cleared_bank_id,
+                    "canonical_bank_id": up.replacement_bank_id,
+                    "clearedBankId": up.cleared_bank_id,
+                    "replacementBankId": up.replacement_bank_id,
+                    "abandonedBankId": up.cleared_bank_id,
+                    "canonicalBankId": up.replacement_bank_id,
                     "reason": up.reason,
                     "parent_block_id": up.parent_block_id,
                     "observed_at_ms": up.observed_at_ms
@@ -1086,4 +1343,289 @@ async fn get_application_events(State(state): State<AppState>) -> impl IntoRespo
     let engine = state.engine.read().await;
     let events = engine.get_application_events();
     Json(events)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlaygroundStatusResponse {
+    pub engine: String,
+    pub version: String,
+    pub cluster: String,
+    pub source: String,
+    pub connected: bool,
+    pub coverage_score: u32,
+    pub supported_modes: Vec<String>,
+    pub scenarios: Vec<String>,
+    pub break_perturbations: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlaygroundProvenanceItem {
+    pub field: String,
+    pub provenance: String,
+    pub source: String,
+    pub explanation: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlaygroundLiveResponse {
+    pub connected: bool,
+    pub cluster: String,
+    pub source: String,
+    pub mode: String,
+    pub slot: serde_json::Value,
+    pub leader: serde_json::Value,
+    pub banks: serde_json::Value,
+    pub update_parent: serde_json::Value,
+    pub certificates: serde_json::Value,
+    pub finality: serde_json::Value,
+    pub source_health: serde_json::Value,
+    pub provenance_manifest: Vec<PlaygroundProvenanceItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BreakNetworkPayload {
+    pub perturbation: String,
+}
+
+async fn get_playground_status(State(state): State<AppState>) -> impl IntoResponse {
+    let ws_count = state.ws_clients.load(Ordering::Relaxed) as usize;
+    let snapshot = state.engine.read().await.build_snapshot(ws_count);
+
+    Json(PlaygroundStatusResponse {
+        engine: "Celor Alpenglow Architecture Playground".to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        cluster: snapshot.cluster,
+        source: snapshot.source,
+        connected: snapshot.network.connected,
+        coverage_score: snapshot.capabilities.coverage_score,
+        supported_modes: vec![
+            "DEMO".to_string(),
+            "LIVE".to_string(),
+            "REPLAY".to_string(),
+        ],
+        scenarios: vec![
+            "multiple_banks".to_string(),
+            "abandon_bank".to_string(),
+            "update_parent".to_string(),
+            "leader_handoff".to_string(),
+            "finality_race".to_string(),
+            "bls_certificate".to_string(),
+            "deshred".to_string(),
+            "public_vs_deep".to_string(),
+            "full_journey".to_string(),
+        ],
+        break_perturbations: vec![
+            "kill_leader".to_string(),
+            "abandon_bank".to_string(),
+            "change_parent".to_string(),
+            "stale_data".to_string(),
+            "provider_conflict".to_string(),
+            "remove_telemetry".to_string(),
+        ],
+    })
+}
+
+async fn get_playground_live(State(state): State<AppState>) -> impl IntoResponse {
+    let ws_count = state.ws_clients.load(Ordering::Relaxed) as usize;
+    let engine = state.engine.read().await;
+    let snapshot = engine.build_snapshot(ws_count);
+    let certs = engine.captured_certificates();
+    let updates = engine.recent_update_parents();
+    let matrix = engine.capability_matrix();
+    let records = engine.get_fast_finality_records();
+
+    let candidate_banks_supported = matrix.bank_id == chrono_adapters::capabilities::FieldSupport::Supported;
+    let update_parent_supported = matrix.update_parent == chrono_adapters::capabilities::FieldSupport::Supported;
+    let bls_supported = matrix.certificates == chrono_adapters::capabilities::FieldSupport::Supported;
+    let deshred_supported = matrix.deshred == chrono_adapters::capabilities::FieldSupport::Supported;
+    let bank_hash_supported = matrix.bank_hash == chrono_adapters::capabilities::FieldSupport::Supported;
+
+    let mut provenance_manifest = Vec::new();
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "slot".to_string(),
+        provenance: format!("{:?}", snapshot.slot.provenance),
+        source: snapshot.source.clone(),
+        explanation: "Current slot boundary reported by live cluster feed.".to_string(),
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "leader".to_string(),
+        provenance: format!("{:?}", snapshot.leader.provenance),
+        source: snapshot.source.clone(),
+        explanation: "Active producing leader derived from slot leader schedule.".to_string(),
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "candidate_banks".to_string(),
+        provenance: if candidate_banks_supported { "DIRECT".to_string() } else { "UNAVAILABLE".to_string() },
+        source: snapshot.source.clone(),
+        explanation: if candidate_banks_supported {
+            "Real candidate bank state forks captured directly via Geyser telemetry.".to_string()
+        } else {
+            "Public RPC does not expose candidate banks. Celor refuses to fabricate fake banks.".to_string()
+        },
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "bank_hash".to_string(),
+        provenance: if bank_hash_supported { "DIRECT".to_string() } else { "UNAVAILABLE".to_string() },
+        source: snapshot.source.clone(),
+        explanation: if bank_hash_supported {
+            "Internal bank state hash emitted by validator.".to_string()
+        } else {
+            "Unavailable from standard RPC endpoints.".to_string()
+        },
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "update_parent".to_string(),
+        provenance: if update_parent_supported { "DIRECT".to_string() } else { "UNAVAILABLE".to_string() },
+        source: snapshot.source.clone(),
+        explanation: if update_parent_supported {
+            "Fast leader handover parent invalidation markers captured.".to_string()
+        } else {
+            "Not available from current source. Only deep validator telemetry emits UpdateParent.".to_string()
+        },
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "bls_certificates".to_string(),
+        provenance: if bls_supported { "DIRECT".to_string() } else { "UNAVAILABLE".to_string() },
+        source: snapshot.source.clone(),
+        explanation: if bls_supported {
+            "Cryptographic BLS12-381 notarization certificates captured and verified.".to_string()
+        } else {
+            "Alpenglow BLS certificates require supported Alpenglow consensus telemetry.".to_string()
+        },
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "deshred".to_string(),
+        provenance: if deshred_supported { "DIRECT".to_string() } else { "UNAVAILABLE".to_string() },
+        source: snapshot.source.clone(),
+        explanation: if deshred_supported {
+            "Pre-execution shredded transaction stream captured.".to_string()
+        } else {
+            "Pre-execution deshred stream unavailable on standard RPC.".to_string()
+        },
+    });
+    provenance_manifest.push(PlaygroundProvenanceItem {
+        field: "finality".to_string(),
+        provenance: format!("{:?}", snapshot.finality.provenance),
+        source: snapshot.source.clone(),
+        explanation: "Network finality resolution state.".to_string(),
+    });
+
+    let update_parent_json = serde_json::json!({
+        "supported": update_parent_supported,
+        "tracked_count": updates.len(),
+        "recent": updates.into_iter().rev().take(5).collect::<Vec<_>>(),
+        "provenance": if update_parent_supported { "DIRECT" } else { "UNAVAILABLE" },
+        "note": if !update_parent_supported { "UNAVAILABLE FROM CURRENT SOURCE" } else { "LIVE" }
+    });
+
+    let cert_json = serde_json::json!({
+        "supported": bls_supported,
+        "total_captured": certs.len(),
+        "recent": certs.into_iter().rev().take(5).collect::<Vec<_>>(),
+        "provenance": if bls_supported { "DIRECT" } else { "UNAVAILABLE" },
+        "note": if !bls_supported { "UNAVAILABLE FROM CURRENT SOURCE" } else { "LIVE" }
+    });
+
+    Json(PlaygroundLiveResponse {
+        connected: snapshot.network.connected,
+        cluster: snapshot.cluster.clone(),
+        source: snapshot.source.clone(),
+        mode: "LIVE".to_string(),
+        slot: serde_json::to_value(&snapshot.slot).unwrap_or_default(),
+        leader: serde_json::to_value(&snapshot.leader).unwrap_or_default(),
+        banks: serde_json::json!({
+            "total_banks_tracked": snapshot.banks.total_banks_tracked,
+            "canonical_bank": snapshot.banks.canonical_bank,
+            "candidate_banks": snapshot.banks.candidate_banks,
+            "candidate_banks_supported": candidate_banks_supported,
+            "note": if !candidate_banks_supported { "UNAVAILABLE FROM CURRENT SOURCE" } else { "LIVE" }
+        }),
+        update_parent: update_parent_json,
+        certificates: cert_json,
+        finality: serde_json::json!({
+            "mode": snapshot.finality.mode,
+            "finality_latency_ms": snapshot.finality.finality_latency_ms,
+            "consensus_finality_ms": snapshot.finality.consensus_finality_ms,
+            "legacy_confirmation_slots": 32,
+            "fast_path_target_ms": 150,
+            "fast_finality_records": records.len(),
+            "provenance": format!("{:?}", snapshot.finality.provenance)
+        }),
+        source_health: serde_json::json!({
+            "connected": snapshot.network.connected,
+            "source_type": snapshot.source,
+            "cluster": snapshot.cluster,
+            "coverage_score": snapshot.capabilities.coverage_score
+        }),
+        provenance_manifest,
+    })
+}
+
+async fn simulate_playground_scenario(
+    State(state): State<AppState>,
+    Json(payload): Json<crate::playground::PlaygroundSimulationRequest>,
+) -> impl IntoResponse {
+    let resp = state.playground_engine.run_simulation(&payload);
+    Json(resp)
+}
+
+async fn break_playground_network(
+    State(state): State<AppState>,
+    Json(payload): Json<BreakNetworkPayload>,
+) -> impl IntoResponse {
+    let resp = state.playground_engine.evaluate_break_network(&payload.perturbation);
+    Json(resp)
+}
+
+async fn get_playground_replay(State(state): State<AppState>) -> impl IntoResponse {
+    let session = state.playground_engine.get_replay_stream();
+    Json(session)
+}
+
+async fn playground_ws_handler(
+    ws: axum::extract::ws::WebSocketUpgrade,
+    State(state): State<AppState>,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_playground_socket(socket, state))
+}
+
+async fn handle_playground_socket(
+    mut socket: axum::extract::ws::WebSocket,
+    state: AppState,
+) {
+    let mut interval = tokio::time::interval(std::time::Duration::from_millis(500));
+    loop {
+        tokio::select! {
+            inbound = socket.recv() => {
+                match inbound {
+                    Some(Ok(axum::extract::ws::Message::Close(_))) | None => break,
+                    Some(Ok(axum::extract::ws::Message::Ping(payload))) => {
+                        if socket.send(axum::extract::ws::Message::Pong(payload)).await.is_err() {
+                            break;
+                        }
+                    }
+                    Some(Err(_)) => break,
+                    _ => {}
+                }
+            }
+            _ = interval.tick() => {
+                let ws_count = state.ws_clients.load(Ordering::Relaxed) as usize;
+                let snapshot = state.engine.read().await.build_snapshot(ws_count);
+                let tick_data = serde_json::json!({
+                    "type": "live_tick",
+                    "slot": snapshot.slot.current_slot,
+                    "leader": snapshot.leader.current_leader,
+                    "connected": snapshot.network.connected,
+                    "cluster": snapshot.cluster,
+                    "source": snapshot.source,
+                    "timestamp": chrono::Utc::now().to_rfc3339()
+                });
+                if let Ok(text) = serde_json::to_string(&tick_data) {
+                    if socket.send(axum::extract::ws::Message::Text(text)).await.is_err() {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }

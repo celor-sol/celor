@@ -17,6 +17,9 @@ interface NavigationProps {
 
 const navLinks = [
   { name: 'Live', href: '/' },
+  { name: 'Epoch 1064', href: '/speed#epoch1064', badge: 'NEW' },
+  { name: '200ms Shockwave', href: '/speed', badge: 'LIVE' },
+  { name: 'Playground', href: '/playground' },
   { name: 'Contract', href: '/contract' },
   { name: 'Telemetry', href: '/telemetry' },
   { name: 'Autopsy', href: '/transaction' },
@@ -56,8 +59,8 @@ const CLUSTER_ITEMS: {
     id: 'mainnet-beta',
     label: 'Mainnet-Beta',
     shortLabel: 'Mainnet',
-    badge: 'TOWER_BFT BASELINE',
-    badgeColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+    badge: 'ALPENGLOW OCT 21 (~14:50 UTC)',
+    badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     href: '/clusters/mainnet',
   },
   {
@@ -170,7 +173,15 @@ export function Navigation({
                     isActive ? 'text-foreground font-medium' : 'text-foreground/70 hover:text-foreground'
                   }`}
                 >
-                  {link.name}
+                  <span className="flex items-center gap-1.5">
+                    {link.name}
+                    {link.badge && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 uppercase animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        {link.badge}
+                      </span>
+                    )}
+                  </span>
                   <span
                     className={`absolute -bottom-1 left-0 h-px bg-foreground transition-all duration-300 ${
                       isActive ? 'w-full' : 'w-0 group-hover:w-full'
@@ -375,7 +386,14 @@ export function Navigation({
                     transitionDelay: isMobileMenuOpen ? `${i * 30}ms` : '0ms',
                   }}
                 >
-                  <span>{link.name}</span>
+                  <span className="flex items-center gap-2">
+                    <span>{link.name}</span>
+                    {link.badge && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 uppercase">
+                        {link.badge}
+                      </span>
+                    )}
+                  </span>
                   <span className="text-xs font-mono text-muted-foreground">→</span>
                 </Link>
               );

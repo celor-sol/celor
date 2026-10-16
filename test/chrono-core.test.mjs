@@ -70,13 +70,10 @@ test('LeaderEngine tracks slot schedule and fast leader handoff phases', () => {
   const buildingInfo = engine.recomputeLeaders(200, 0.2);
   assert.equal(buildingInfo.currentLeader, 'LeaderA');
   assert.equal(buildingInfo.nextLeader, 'LeaderB');
-  assert.equal(buildingInfo.handoffState, 'BUILDING');
-
-  const readyInfo = engine.recomputeLeaders(200, 0.7);
-  assert.equal(readyInfo.handoffState, 'PARENT_READY');
+  assert.equal(buildingInfo.handoffState, 'LEADER_TRANSITION_PENDING');
 
   const handoverInfo = engine.recomputeLeaders(200, 0.95);
-  assert.equal(handoverInfo.handoffState, 'HANDOVER');
+  assert.equal(handoverInfo.handoffState, 'HANDOVER_IMMINENT');
 });
 
 test('FinalityEngine tracks Observed -> Canonical -> Finalized lifecycle', () => {
@@ -137,3 +134,49 @@ test('ChronoEventBus dispatches typed events without cross-contamination', () =>
   unsubSlot();
   unsubLeader();
 });
+
+test('SIMD-0525: SlotClock defaults to 200ms and supports legacy 400ms profiles', () => {
+  // Test default 200ms instantiation
+  const clock200 = new SlotClock();
+  assert.equal(clock200.getTargetSlotDuration(), 200);
+
+  clock200.onSlotObserved(70000000);
+  const p200 = clock200.getSlotProgress();
+  assert.equal(p200.targetSlotDurationMs, 200);
+  assert.equal(p200.slot, 70000000);
+
+  // Test explicit 400ms historical replay profile
+  const clock400 = new SlotClock(400);
+  assert.equal(clock400.getTargetSlotDuration(), 400);
+  clock400.onSlotObserved(50000000);
+  const p400 = clock400.getSlotProgress();
+  assert.equal(p400.targetSlotDurationMs, 400);
+  assert.equal(p400.slot, 50000000);
+});
+
+test('SIMD-0525: LeaderEngine estimates 200ms duration per slot and handles 4-slot windows', () => {
+  const engine = new LeaderEngine();
+  engine.updateLeaderForSlot(100, 'LeaderX');
+  engine.updateLeaderForSlot(101, 'LeaderX');
+  engine.updateLeaderForSlot(102, 'LeaderX');
+  engine.updateLeaderForSlot(103, 'LeaderX');
+  engine.updateLeaderForSlot(104, 'LeaderY');
+
+  // Within the same 4-slot tenure
+  const continuation = engine.recomputeLeaders(100, 0.5);
+  assert.equal(continuation.currentLeader, 'LeaderX');
+  assert.equal(continuation.nextLeader, 'LeaderX');
+  assert.equal(continuation.handoffState, 'SLOT_CONTINUATION');
+  assert.equal(continuation.leaderEstimatedDurationMs, 200);
+
+  // At the boundary slot of the 4-slot window (slot 103 -> 104)
+  const pendingHandoff = engine.recomputeLeaders(103, 0.4);
+  assert.equal(pendingHandoff.currentLeader, 'LeaderX');
+  assert.equal(pendingHandoff.nextLeader, 'LeaderY');
+  assert.equal(pendingHandoff.handoffState, 'LEADER_TRANSITION_PENDING');
+
+  // Near the end of the boundary slot (handoff imminent)
+  const imminent = engine.recomputeLeaders(103, 0.9);
+  assert.equal(imminent.handoffState, 'HANDOVER_IMMINENT');
+});
+

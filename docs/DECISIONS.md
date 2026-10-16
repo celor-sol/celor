@@ -158,3 +158,42 @@
   - Route D: Chrono-Aware + QUIC (Full Chrono Execution System)
   Trials are executed in strict 4-way interleaved round-robin order ($A \to B \to C \to D$). All conclusions are categorized strictly under empirical verdicts (`CONFIRMED ADVANTAGE`, `CONDITIONAL ADVANTAGE`, `NO MATERIAL ADVANTAGE`, or `INCONCLUSIVE`) with statistical significance reporting.
 - **Reason**: Prevents confounding transport network queueing with consensus timing logic, ensures temporal variance neutrality, and adheres to strict scientific honesty.
+
+---
+
+### ADR-020: Trench Sniper Race Infrastructure Simulation & Unified Presentation Layer
+- **Date**: 2026-10-06
+- **Status**: `ACCEPTED`
+- **Decision**: Expose Celor's consensus, leader detection, and QUIC routing pipeline as an interactive Trench Sniper Race on `/sniper`. The presentation layer articulates why Celor sniper infrastructure exists—not as another trading bot, but as the foundational infrastructure powering external trading bots. The interactive race reuses the existing `SniperEngine`, `ExecutionDecisionEngine`, and `DirectLeaderQuicRoute` without duplicating execution engines. All simulation comparisons are strictly labeled as `DEMO MODE / Illustrative comparison`, distinguishing them from live cluster execution evidence. No fake candidate telemetry or fabricated market outcomes are permitted.
+- **Reason**: Translates low-level distributed systems concepts (bank graphs, leader lookaheads, UpdateParent invalidation, and TPU QUIC routing) into an immediate, 5-second comprehensible demonstration for developers, traders, and investors, while upholding absolute architectural honesty and protocol truth.
+
+---
+
+### ADR-021: Celor Alpenglow Playground & Interactive Architectural Simulator
+- **Date**: 2026-10-07
+- **Status**: `ACCEPTED`
+- **Decision**: Build Phase 9 — Celor Alpenglow Playground (`/playground`) as an interactive architectural simulator and live network explorer. The playground reuses the existing `BankGraph`, `CanonicalResolver`, `FinalityEngine`, `CertificateEngine`, and `ExecutionDecisionEngine` through a dedicated backend `PlaygroundEngine` and REST/WS endpoints (`/api/v1/playground/*`). Strict isolation is enforced between `DEMO SIMULATED`, `LIVE CONNECTED`, `REPLAY`, and `OFFLINE` modes. In LIVE mode, missing candidate bank, bank hash, and BLS certificate data from standard JSON-RPC feeds are truthfully exposed as `UNAVAILABLE FROM CURRENT SOURCE` with explicit provenance tags (`DIRECT`, `DERIVED`, `INFERRED`, `ESTIMATED`, `UNAVAILABLE`), refusing synthetic placeholders. Interactive demonstrations explain: (1) "One Slot ≠ One Block", (2) Ghost Blocks & canonical resolution, (3) SIMD-0337 UpdateParent invalidation, (4) sub-slot leader handoff timing budget, (5) ~150ms BLS aggregate fast-path finality vs 32 TowerBFT lockouts, (6) pre-execution deshred, (7) source truth capability audits, (8) network perturbation chaos testing, (9) real-world scenarios, and (10) deterministic replay.
+- **Reason**: Demystifies Alpenglow consensus transitions for non-technical users in < 10 seconds while giving developers, auditors, and trading teams verifiable cryptographic proof and source truth transparency without commercial API dependencies ($0 budget constraint).
+
+---
+
+### ADR-022: Real-Time Abandoned Transaction Alert System (SIMD-0337 Reorg Notification)
+- **Date**: 2026-10-09
+- **Status**: `ACCEPTED`
+- **Decision**: Implement a zero-dependency, high-performance real-time alert system (`useAbandonedTxAlert` and `AbandonedTxAlertToast`) across the transaction autopsy workflows (`/` and `/transaction`). When an analyzed or monitored transaction is detected as abandoned due to an `UpdateParent` marker / fast leader handover (SIMD-0337), the system emits a glassmorphic dark-mode toast notification with explicit telemetry (`slot`, `abandonedBankId`, `canonicalBankId`), quick signature copy, and direct navigation into deep forensics. To ensure instant accessibility for trench traders and developers, 1-click test presets (`[⚡ Test Reorg Dropped TX (SIMD-0337)]` and `[✓ Test Canonical Fast-Path TX]`) are embedded directly into the UI. The backend autopsy endpoint (`get_transaction_autopsy` in `chrono-server`) returns dual-cased field mappings (`clearedBankId` / `cleared_bank_id`, `abandonedBankId`, `canonicalBankId`) for zero-overhead JSON serialization.
+
+---
+
+### ADR-023: Protocol-Wide SIMD-0525 200ms Slot Duration Compatibility
+- **Date**: 2026-10-10
+- **Status**: `ACCEPTED`
+- **Decision**: Update Celor / CHRONO across all layers to support Solana's live SIMD-0525 200ms slot duration reduction while strictly preserving historical 400ms replay compatibility:
+  1. **Dynamic Slot Clock**: `SlotDuration::default()` and `SlotClock::default()` select `SlotDuration::MS_200` (200ms). Dynamic detection (`ProtocolDetector`) verifies cluster version, maintaining `SlotDuration::MS_400` only for explicit historical or legacy profiles.
+  2. **Consensus Decoupling**: SIMD-0525 (slot duration) and SIMD-0326 (Alpenglow Votor BLS consensus) are strictly separated. Mainnet-Beta operates at 200ms under TowerBFT (~6.4s 32-slot lockout root), while Devnet and Testnet operate at 200ms under Alpenglow Votor (~150ms BLS certificates).
+  3. **Leader Window & Boundary Dynamics**: Leaders produce for 4 consecutive slots (~800ms total tenure). The boundary handoff threshold (< 40ms remaining) is retained empirically due to physical speed-of-light packet propagation (15–25ms RTT) and TPU ingress queueing constraints.
+  4. **Dynamic Blockhash Expiry**: Replaced rigid fixed-time assumptions with dynamic slot-based expiration bound to Solana's 150-slot protocol rule (~30s nominal target window at 200ms). Aging threshold set to >35 slots (>10.5s), and stale threshold set to >110 slots / 75% of nominal window (>22.5s).
+  5. **Provenance & Measurement Integrity**: Distinguish configured target slot duration (200ms) from measured observed intervals (`last_measured_duration`). Observed durations are recorded only from monotonic arrival deltas between consecutive slots and explicitly labeled (`MEASURED` vs `TARGET`).
+  6. **UI & Playground Consistency**: Updated interactive playgrounds, simulator scenario endpoints, and cluster status displays to reflect the 200ms sub-slot budget (160ms fresh / 18ms late), 4-slot windows, and TowerBFT root finality compressed to ~6.4s.
+- **Reason**: Ensures Celor provides zero-latency, high-precision timing telemetry and optimal sniper routing matching real Solana cluster performance under SIMD-0525, without compromising backward compatibility, scientific accuracy, or safety invariants.
+
+

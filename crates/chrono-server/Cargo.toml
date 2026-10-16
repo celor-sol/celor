@@ -26,6 +26,7 @@ thiserror = { workspace = true }
 chrono = { workspace = true }
 reqwest = { workspace = true }
 base64 = "0.23.1"
+bs58 = "0.5"
 
 [dev-dependencies]
 chrono-geyser-plugin = { path = "../chrono-geyser-plugin" }

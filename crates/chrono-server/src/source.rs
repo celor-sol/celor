@@ -163,7 +163,7 @@ impl ChronoSource for RpcWsSource {
                                     // If Solana WebSocket emitted a finalized root slot, emit FinalizedObserved
                                     if let Some(root_slot) = root_opt {
                                         let root_delta_slots = slot_u64.saturating_sub(root_slot.as_u64());
-                                        let root_latency_ms = root_delta_slots * 400;
+                                        let root_latency_ms = root_delta_slots * 200;
                                         let fin_ev = ChronoEvent::new(
                                             3,
                                             provider_id.clone(),

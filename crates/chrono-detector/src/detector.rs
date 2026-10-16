@@ -39,7 +39,7 @@ impl ProtocolDetector {
 
     /// Evaluates the cluster's active consensus, capabilities, and slot duration.
     pub async fn detect(&self, rpc_url: &str) -> Result<(ProtocolProfile, CapabilitySet), DetectorError> {
-        let (version_str, feature_set) = self.fetch_version(rpc_url).await?;
+        let (version_str, _feature_set) = self.fetch_version(rpc_url).await?;
         let genesis_cert_resp = self.fetch_ag_genesis_cert(rpc_url).await;
 
         let mut capabilities = CapabilitySet::default();
@@ -90,11 +90,12 @@ impl ProtocolDetector {
         }
 
         // 2. Evaluate Slot Duration based on active Solana version / feature set
-        // SIMD-0525: Mainnet / Testnet currently targeting 250ms; Devnet testing 200ms
-        if version_str.contains("4.4.") || version_str.contains("4.3.") || feature_set.unwrap_or(0) > 0 {
-            profile.target_slot_duration = SlotDuration::MS_250;
-        } else {
+        // SIMD-0525: 200ms slot duration reduction is LIVE on Mainnet-Beta, Devnet, and Testnet.
+        // Legacy 400ms is strictly preserved for explicit historical/legacy profiles.
+        if version_str.contains("legacy") || version_str.contains("pre-simd0525") {
             profile.target_slot_duration = SlotDuration::MS_400;
+        } else {
+            profile.target_slot_duration = SlotDuration::MS_200;
         }
 
         Ok((profile, capabilities))

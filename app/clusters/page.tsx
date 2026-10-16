@@ -78,8 +78,8 @@ const CLUSTERS: ClusterCardData[] = [
     protocolEngine: 'TowerBFT (32 Progressive Lockouts)',
     alpenglowActive: false,
     genesisSlot: null,
-    targetFinality: '~12.8 s',
-    observedFinality: '~12.8 s (32 slots)',
+    targetFinality: '~6.4 s',
+    observedFinality: '~6.4 s (32 slots × 200ms)',
     rpcUrl: 'https://api.mainnet-beta.solana.com',
     wsUrl: 'wss://api.mainnet-beta.solana.com',
     description:

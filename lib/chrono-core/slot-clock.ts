@@ -7,12 +7,12 @@ import type { SlotProgress } from './types';
  */
 export class SlotClock {
   private currentSlot: number = 0;
-  private targetSlotDurationMs: number = 250; // Defaulting to current Mainnet/Devnet 250ms
+  private targetSlotDurationMs: number = 200; // Live Mainnet/Devnet SIMD-0525 200ms
   private slotStartTimestampMs: number = 0;
-  private lastObservedSlotDurationMs: number = 250;
+  private lastObservedSlotDurationMs: number = 200;
   private totalSlotsObserved: number = 0;
 
-  constructor(targetSlotDurationMs: number = 250) {
+  constructor(targetSlotDurationMs: number = 200) {
     this.targetSlotDurationMs = targetSlotDurationMs;
     this.slotStartTimestampMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
   }

@@ -1,0 +1,16 @@
+{
+  "id": "20261006-143904-local-local-fixture",
+  "description": "Empirical Phase 5 Benchmark on local (Route: all)",
+  "cluster": "local",
+  "source": "local-fixture",
+  "route": "phase5-local-all",
+  "transaction_type": "sol-transfer-deterministic",
+  "sample_count": 10,
+  "max_tps": 100.0,
+  "timeout_ms": 12000,
+  "random_seed": 42,
+  "interleave_mode": true,
+  "leader_window_focus": false,
+  "bank_awareness": true,
+  "finality_target": "confirmed"
+}

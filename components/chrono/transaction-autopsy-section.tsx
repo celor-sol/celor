@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
+import { useAbandonedTxAlert } from '@/hooks/useAbandonedTxAlert';
+import { AbandonedTxAlertToast } from '@/components/chrono/abandoned-tx-alert-toast';
 
 interface TransactionAutopsySectionProps {
   onAnalyze: (signature: string) => Promise<TransactionAutopsyResult>;
@@ -28,6 +30,7 @@ export function TransactionAutopsySection({
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TransactionAutopsyResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const { activeToast, dismissToast, checkAndAlert, alerts } = useAbandonedTxAlert();
 
   const handleAnalyze = async (sigToAnalyze?: string) => {
     const targetSig = (sigToAnalyze || signature).trim();
@@ -38,6 +41,7 @@ export function TransactionAutopsySection({
     try {
       const res = await onAnalyze(targetSig);
       setResult(res);
+      checkAndAlert(res);
     } catch (err: any) {
       setResult({
         signature: targetSig,
@@ -113,6 +117,35 @@ export function TransactionAutopsySection({
               {isLoading ? 'Analyzing...' : 'Analyze'}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+          </div>
+
+          {/* Trench Quick-Test Scenario Presets */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-[11px] font-mono text-muted-foreground mr-1">Trench Presets:</span>
+            <button
+              type="button"
+              onClick={() => {
+                const reorgSig = 'simd0337-reorg-abandoned-tx-8xLz9Q';
+                setSignature(reorgSig);
+                handleAnalyze(reorgSig);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 transition-all cursor-pointer"
+            >
+              <AlertTriangle className="w-3 h-3" />
+              <span>⚡ Test Reorg Dropped TX (SIMD-0337)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const canonSig = '5K3LzHk9474U8N2a3f76h9wJ7G9H3K2L1J5N8M6P4Q2R';
+                setSignature(canonSig);
+                handleAnalyze(canonSig);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all cursor-pointer"
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              <span>✓ Test Canonical Fast-Path TX</span>
+            </button>
           </div>
 
           {/* Dedicated Forensics Link */}
@@ -273,6 +306,16 @@ export function TransactionAutopsySection({
           </div>
         )}
       </div>
+
+      {/* Floating Abandoned Transaction Alert Toast */}
+      <AbandonedTxAlertToast
+        activeToast={activeToast}
+        onDismiss={dismissToast}
+        onInspect={(sig) => {
+          setSignature(sig);
+          handleAnalyze(sig);
+        }}
+      />
     </section>
   );
 }
