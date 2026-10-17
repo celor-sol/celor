@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, Check, ChevronDown, ChevronUp, Layers, Zap, Info, ShieldCheck } from 'lucide-react';
+import { Copy, Check, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface PerformanceSampleData {
@@ -42,17 +42,17 @@ export function VoteEliminationProof({
   };
 
   return (
-    <div className="border border-foreground/10 rounded-2xl bg-background p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="border border-foreground/10 rounded-2xl bg-background p-4 sm:p-5 space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-foreground/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-foreground/10">
         <div>
-          <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <span>PROOF 01</span>
             <span className="text-muted-foreground">•</span>
             <span className="text-foreground font-semibold">SIMD-0326 VOTE ELIMINATION PROOF</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-display text-foreground font-semibold">
+          <h2 className="text-lg sm:text-xl font-display text-foreground font-semibold">
             On-Chain Vote Tax Elimination
           </h2>
         </div>
@@ -62,77 +62,77 @@ export function VoteEliminationProof({
             variant="outline"
             size="sm"
             onClick={() => setShowRawJson(!showRawJson)}
-            className="h-7 px-3 text-xs font-mono border-foreground/15 hover:bg-foreground/5 text-muted-foreground"
+            className="h-7 px-2.5 text-xs font-mono border-foreground/15 hover:bg-foreground/5 text-muted-foreground"
           >
             {showRawJson ? (
               <>
-                <ChevronUp className="w-3 h-3 mr-1.5" /> Hide Raw JSON
+                <ChevronUp className="w-3 h-3 mr-1" /> Hide RPC JSON
               </>
             ) : (
               <>
-                <ChevronDown className="w-3 h-3 mr-1.5" /> View RPC JSON
+                <ChevronDown className="w-3 h-3 mr-1" /> Inspect RPC JSON
               </>
             )}
           </Button>
         </div>
       </div>
 
-      {/* Main Comparison Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 font-mono text-xs">
+      {/* Main Comparison Grid (Web-Ratio Optimised, No Multi-Colour) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 font-mono text-xs">
         {/* Mainnet-Beta Card */}
-        <div className="p-4 sm:p-5 rounded-xl border border-amber-500/30 bg-amber-500/[0.02] space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-amber-500/20">
+        <div className="p-3.5 rounded-xl border border-foreground/15 bg-foreground/[0.01] space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-foreground/10">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-muted-foreground" />
               <span className="font-bold text-foreground">Mainnet-Beta (Live TowerBFT)</span>
             </div>
-            <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+            <span className="text-[10px] text-muted-foreground bg-foreground/5 px-2 py-0.5 rounded border border-foreground/10">
               [MEASURED {mainnetData ? `${mainnetData.measuredLatencyMs}ms` : '...'}]
             </span>
           </div>
 
           {mainnetData ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2.5 rounded-lg bg-background border border-foreground/10">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
                   <div className="text-[10px] text-muted-foreground uppercase">Sample Slot</div>
-                  <div className="font-bold text-foreground text-sm mt-0.5">
+                  <div className="font-bold text-foreground text-xs mt-0.5">
                     #{mainnetData.slot.toLocaleString()}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-foreground/10">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
                   <div className="text-[10px] text-muted-foreground uppercase">Total 60s Txs</div>
-                  <div className="font-bold text-foreground text-sm mt-0.5">
+                  <div className="font-bold text-foreground text-xs mt-0.5">
                     {mainnetData.numTransactions.toLocaleString()}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-amber-500/30">
-                  <div className="text-[10px] text-amber-400 uppercase font-semibold">Validator Vote Txs</div>
-                  <div className="font-bold text-amber-400 text-sm mt-0.5">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
+                  <div className="text-[10px] text-muted-foreground uppercase font-semibold">Validator Vote Txs</div>
+                  <div className="font-bold text-foreground text-xs mt-0.5">
                     {mainnetData.voteTransactions.toLocaleString()}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-emerald-500/30">
-                  <div className="text-[10px] text-emerald-400 uppercase font-semibold">Real User Swaps</div>
-                  <div className="font-bold text-emerald-400 text-sm mt-0.5">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
+                  <div className="text-[10px] text-muted-foreground uppercase font-semibold">User Swaps</div>
+                  <div className="font-bold text-emerald-400 text-xs mt-0.5">
                     {mainnetData.numNonVoteTransactions.toLocaleString()}
                   </div>
                 </div>
               </div>
 
-              {/* Progress bar */}
-              <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-amber-400 font-semibold">
-                    Vote Tax Bloat: {mainnetData.voteTaxPercent.toFixed(1)}%
+              {/* Progress bar (Monochrome + Emerald) */}
+              <div className="space-y-1 pt-0.5">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="text-muted-foreground font-semibold">
+                    Vote Tax: {mainnetData.voteTaxPercent.toFixed(1)}%
                   </span>
                   <span className="text-emerald-400 font-semibold">
                     User Apps: {mainnetData.nonVotePercent.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full h-3 rounded-full bg-background border border-foreground/15 overflow-hidden flex">
+                <div className="w-full h-2 rounded-full bg-background border border-foreground/15 overflow-hidden flex">
                   <div
-                    className="h-full bg-amber-500 transition-all duration-700"
+                    className="h-full bg-foreground/30 transition-all duration-700"
                     style={{ width: `${mainnetData.voteTaxPercent}%` }}
                     title={`Validator votes: ${mainnetData.voteTaxPercent.toFixed(1)}%`}
                   />
@@ -144,21 +144,21 @@ export function VoteEliminationProof({
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300 font-sans leading-relaxed">
-                Over {mainnetData.voteTransactions.toLocaleString()} validator vote transactions flood the chain every minute.
-                Traders pay inflated priority fees fighting validator votes for remaining slot space.
+              <div className="p-2.5 rounded-lg bg-foreground/[0.02] border border-foreground/10 text-[11px] text-muted-foreground font-sans leading-relaxed">
+                Over {mainnetData.voteTransactions.toLocaleString()} validator votes consume block space every minute.
+                Traders pay inflated priority fees fighting validator consensus transactions for slot inclusion.
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground animate-pulse">
-              Querying api.mainnet-beta.solana.com getRecentPerformanceSamples...
+            <div className="py-6 text-center text-muted-foreground animate-pulse text-xs">
+              Querying getRecentPerformanceSamples...
             </div>
           )}
         </div>
 
         {/* Devnet Alpenglow Card */}
-        <div className="p-4 sm:p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/[0.02] space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+        <div className="p-3.5 rounded-xl border border-foreground/15 bg-foreground/[0.01] space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-foreground/10">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="font-bold text-foreground">Devnet (Alpenglow SIMD-0326)</span>
@@ -169,45 +169,45 @@ export function VoteEliminationProof({
           </div>
 
           {devnetData ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2.5 rounded-lg bg-background border border-foreground/10">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
                   <div className="text-[10px] text-muted-foreground uppercase">Sample Slot</div>
-                  <div className="font-bold text-emerald-400 text-sm mt-0.5">
+                  <div className="font-bold text-foreground text-xs mt-0.5">
                     #{devnetData.slot.toLocaleString()}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-foreground/10">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
                   <div className="text-[10px] text-muted-foreground uppercase">Total 60s Txs</div>
-                  <div className="font-bold text-foreground text-sm mt-0.5">
+                  <div className="font-bold text-foreground text-xs mt-0.5">
                     {devnetData.numTransactions.toLocaleString()}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-emerald-500/30">
-                  <div className="text-[10px] text-emerald-400 uppercase font-semibold">Validator Vote Txs</div>
-                  <div className="font-bold text-emerald-400 text-sm mt-0.5">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
+                  <div className="text-[10px] text-muted-foreground uppercase font-semibold">Validator Vote Txs</div>
+                  <div className="font-bold text-emerald-400 text-xs mt-0.5">
                     0 (ZERO VOTE BLOAT)
                   </div>
                 </div>
-                <div className="p-2.5 rounded-lg bg-background border border-emerald-500/30">
-                  <div className="text-[10px] text-emerald-400 uppercase font-semibold">Real User Swaps</div>
-                  <div className="font-bold text-emerald-400 text-sm mt-0.5">
+                <div className="p-2 rounded-lg bg-background border border-foreground/10">
+                  <div className="text-[10px] text-muted-foreground uppercase font-semibold">User Swaps</div>
+                  <div className="font-bold text-emerald-400 text-xs mt-0.5">
                     {devnetData.numNonVoteTransactions.toLocaleString()} (100%)
                   </div>
                 </div>
               </div>
 
               {/* Progress bar */}
-              <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-emerald-400 font-semibold">
-                    Vote Tax Bloat: 0.0% (Off-Chain BLS Certs)
+              <div className="space-y-1 pt-0.5">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="text-muted-foreground font-semibold">
+                    Vote Tax: 0.0% (Off-Chain BLS)
                   </span>
                   <span className="text-emerald-400 font-semibold">
                     User Apps: 100.0%
                   </span>
                 </div>
-                <div className="w-full h-3 rounded-full bg-background border border-emerald-500/40 overflow-hidden flex">
+                <div className="w-full h-2 rounded-full bg-background border border-foreground/15 overflow-hidden flex">
                   <div
                     className="h-full bg-emerald-500 w-full transition-all duration-700"
                     title="100% of block space dedicated to user transactions"
@@ -215,14 +215,13 @@ export function VoteEliminationProof({
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 font-sans leading-relaxed">
-                Zero on-chain vote transactions recorded. All consensus voting is aggregated into lightweight 192-byte BLS certificates.
-                100% of compute units are liberated for user swaps and memecoin trades.
+              <div className="p-2.5 rounded-lg bg-foreground/[0.02] border border-foreground/10 text-[11px] text-muted-foreground font-sans leading-relaxed">
+                Zero on-chain vote transactions. Consensus voting is aggregated into lightweight 192-byte BLS certificates, liberating 100% of block space for user transactions.
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground animate-pulse">
-              Querying api.devnet.solana.com getRecentPerformanceSamples...
+            <div className="py-6 text-center text-muted-foreground animate-pulse text-xs">
+              Querying getRecentPerformanceSamples...
             </div>
           )}
         </div>
@@ -230,9 +229,9 @@ export function VoteEliminationProof({
 
       {/* Raw JSON Accordion */}
       {showRawJson && (
-        <div className="p-4 rounded-xl bg-background border border-foreground/15 font-mono text-xs space-y-3">
+        <div className="p-3 rounded-xl bg-background border border-foreground/15 font-mono text-xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-[11px] uppercase tracking-wider">
+            <span className="text-muted-foreground text-[10px] uppercase tracking-wider">
               Solana JSON-RPC Payload: getRecentPerformanceSamples(1)
             </span>
             <Button
@@ -252,13 +251,11 @@ export function VoteEliminationProof({
               )}
             </Button>
           </div>
-          <pre className="p-3 rounded-lg bg-foreground/[0.02] border border-foreground/10 overflow-x-auto text-[11px] text-foreground leading-relaxed">
+          <pre className="p-2.5 rounded-lg bg-foreground/[0.02] border border-foreground/10 overflow-x-auto text-[10px] text-foreground leading-relaxed max-h-48">
             {JSON.stringify(
               {
                 source: 'Official Solana JSON-RPC getRecentPerformanceSamples',
-                mainnet_endpoint: 'https://api.mainnet-beta.solana.com',
                 mainnet_sample: mainnetData?.rawJson || null,
-                devnet_endpoint: 'https://api.devnet.solana.com',
                 devnet_sample: devnetData?.rawJson || null,
               },
               null,
@@ -268,22 +265,22 @@ export function VoteEliminationProof({
         </div>
       )}
 
-      {/* Trench Summary Points (No dashes) */}
-      <div className="p-4 rounded-xl bg-foreground/[0.02] border border-foreground/10 font-sans text-xs space-y-2">
-        <div className="font-mono font-semibold text-foreground text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+      {/* Trench Summary Points (No dashes, Monochrome) */}
+      <div className="p-3 rounded-xl bg-foreground/[0.02] border border-foreground/10 font-sans text-xs space-y-1.5">
+        <div className="font-mono font-semibold text-foreground text-[11px] uppercase tracking-wider mb-1 flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           <span>Trench Reality</span>
         </div>
         <div className="text-muted-foreground leading-relaxed flex items-start gap-2">
           <span className="text-emerald-400 font-bold shrink-0">•</span>
           <span>
-            <strong className="text-foreground">Why priority fees spike on Mainnet:</strong> Over 60% of every block is filled with validator votes. Traders get priced out not because of other traders, but because validators eat the block space.
+            <strong className="text-foreground">Why priority fees spike on Mainnet:</strong> Over 60% of every block is filled with validator votes. Traders get priced out because validators eat the slot capacity.
           </span>
         </div>
         <div className="text-muted-foreground leading-relaxed flex items-start gap-2">
           <span className="text-emerald-400 font-bold shrink-0">•</span>
           <span>
-            <strong className="text-foreground">What Alpenglow changed:</strong> Votes move completely off-chain into 192-byte BLS certificates. Devnet proves that on-chain vote transactions drop to exactly zero, opening up 4x capacity.
+            <strong className="text-foreground">What Alpenglow changed:</strong> Votes move off-chain into 192-byte BLS certificates. Devnet proves on-chain vote transactions drop to exactly zero.
           </span>
         </div>
       </div>

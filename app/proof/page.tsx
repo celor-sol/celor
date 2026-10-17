@@ -9,7 +9,7 @@ import { VoteEliminationProof, PerformanceSampleData } from '@/components/chrono
 import { TxBlsVerifier } from '@/components/chrono/proof/tx-bls-verifier';
 import { GhostBankScanner } from '@/components/chrono/proof/ghost-bank-scanner';
 import { PriorityFeeRadar } from '@/components/chrono/proof/priority-fee-radar';
-import { ShieldCheck, Terminal, Cpu, Zap, Layers, RefreshCw } from 'lucide-react';
+import { fetchSolanaRpc } from '@/lib/solana-rpc';
 
 export default function ProofPage() {
   const { networkStatus, switchCluster } = useChrono();
@@ -23,91 +23,68 @@ export default function ProofPage() {
   const [devnetPerf, setDevnetPerf] = useState<PerformanceSampleData | null>(null);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(true);
-
-  const querySolanaRpc = async (
-    endpoint: string,
-    method: string,
-    params: any[] = []
-  ): Promise<{ result: any; latencyMs: number }> => {
-    const start = performance.now();
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
-    });
-    const latencyMs = Math.round(performance.now() - start);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    return { result: json.result, latencyMs };
-  };
+  const [autoRefresh, setAutoRefresh] = useState(false); // Default to manual/15s to prevent 429 rate limit spam
 
   const fetchAllProofs = useCallback(async () => {
     setIsRefreshing(true);
 
+    // Run parallel queries using resilient multi-endpoint dispatcher
     try {
-      // 1. Fetch Mainnet-Beta performance samples
-      try {
-        const { result: mainnetRes, latencyMs: mPing } = await querySolanaRpc(
-          'https://api.mainnet-beta.solana.com',
-          'getRecentPerformanceSamples',
-          [1]
-        );
-        setMainnetPing(mPing);
-        if (Array.isArray(mainnetRes) && mainnetRes[0]) {
-          const sample = mainnetRes[0];
-          setMainnetSlot(sample.slot);
-          const voteTxs = Math.max(0, sample.numTransactions - sample.numNonVoteTransactions);
-          const voteTax = (voteTxs / sample.numTransactions) * 100;
-          const nonVote = (sample.numNonVoteTransactions / sample.numTransactions) * 100;
+      const [mainnetSlotRes, devnetSlotRes, mainnetPerfRes, devnetPerfRes] = await Promise.allSettled([
+        fetchSolanaRpc<number>('mainnet', 'getSlot'),
+        fetchSolanaRpc<number>('devnet', 'getSlot'),
+        fetchSolanaRpc<any[]>('mainnet', 'getRecentPerformanceSamples', [1]),
+        fetchSolanaRpc<any[]>('devnet', 'getRecentPerformanceSamples', [1]),
+      ]);
 
-          setMainnetPerf({
-            slot: sample.slot,
-            numTransactions: sample.numTransactions,
-            numNonVoteTransactions: sample.numNonVoteTransactions,
-            numSlots: sample.numSlots,
-            samplePeriodSecs: sample.samplePeriodSecs,
-            voteTransactions: voteTxs,
-            voteTaxPercent: voteTax,
-            nonVotePercent: nonVote,
-            measuredLatencyMs: mPing,
-            rawJson: sample,
-          });
-        }
-      } catch (err) {
-        // Continue
+      if (mainnetSlotRes.status === 'fulfilled') {
+        setMainnetSlot(mainnetSlotRes.value.result);
+        setMainnetPing(mainnetSlotRes.value.latencyMs);
       }
 
-      // 2. Fetch Devnet performance samples (Alpenglow testbed)
-      try {
-        const { result: devnetRes, latencyMs: dPing } = await querySolanaRpc(
-          'https://api.devnet.solana.com',
-          'getRecentPerformanceSamples',
-          [1]
-        );
-        setDevnetPing(dPing);
-        if (Array.isArray(devnetRes) && devnetRes[0]) {
-          const sample = devnetRes[0];
-          setDevnetSlot(sample.slot);
-          const voteTxs = Math.max(0, sample.numTransactions - sample.numNonVoteTransactions);
-          const voteTax = sample.numTransactions > 0 ? (voteTxs / sample.numTransactions) * 100 : 0;
-          const nonVote = sample.numTransactions > 0 ? (sample.numNonVoteTransactions / sample.numTransactions) * 100 : 100;
+      if (devnetSlotRes.status === 'fulfilled') {
+        setDevnetSlot(devnetSlotRes.value.result);
+        setDevnetPing(devnetSlotRes.value.latencyMs);
+      }
 
-          setDevnetPerf({
-            slot: sample.slot,
-            numTransactions: sample.numTransactions,
-            numNonVoteTransactions: sample.numNonVoteTransactions,
-            numSlots: sample.numSlots,
-            samplePeriodSecs: sample.samplePeriodSecs,
-            voteTransactions: voteTxs,
-            voteTaxPercent: voteTax,
-            nonVotePercent: nonVote,
-            measuredLatencyMs: dPing,
-            rawJson: sample,
-          });
-        }
-      } catch (err) {
-        // Continue
+      if (mainnetPerfRes.status === 'fulfilled' && Array.isArray(mainnetPerfRes.value.result) && mainnetPerfRes.value.result[0]) {
+        const sample = mainnetPerfRes.value.result[0];
+        const voteTxs = Math.max(0, sample.numTransactions - sample.numNonVoteTransactions);
+        const voteTax = (voteTxs / sample.numTransactions) * 100;
+        const nonVote = (sample.numNonVoteTransactions / sample.numTransactions) * 100;
+
+        setMainnetPerf({
+          slot: sample.slot,
+          numTransactions: sample.numTransactions,
+          numNonVoteTransactions: sample.numNonVoteTransactions,
+          numSlots: sample.numSlots,
+          samplePeriodSecs: sample.samplePeriodSecs,
+          voteTransactions: voteTxs,
+          voteTaxPercent: voteTax,
+          nonVotePercent: nonVote,
+          measuredLatencyMs: mainnetPerfRes.value.latencyMs,
+          rawJson: sample,
+        });
+      }
+
+      if (devnetPerfRes.status === 'fulfilled' && Array.isArray(devnetPerfRes.value.result) && devnetPerfRes.value.result[0]) {
+        const sample = devnetPerfRes.value.result[0];
+        const voteTxs = Math.max(0, sample.numTransactions - sample.numNonVoteTransactions);
+        const voteTax = sample.numTransactions > 0 ? (voteTxs / sample.numTransactions) * 100 : 0;
+        const nonVote = sample.numTransactions > 0 ? (sample.numNonVoteTransactions / sample.numTransactions) * 100 : 100;
+
+        setDevnetPerf({
+          slot: sample.slot,
+          numTransactions: sample.numTransactions,
+          numNonVoteTransactions: sample.numNonVoteTransactions,
+          numSlots: sample.numSlots,
+          samplePeriodSecs: sample.samplePeriodSecs,
+          voteTransactions: voteTxs,
+          voteTaxPercent: voteTax,
+          nonVotePercent: nonVote,
+          measuredLatencyMs: devnetPerfRes.value.latencyMs,
+          rawJson: sample,
+        });
       }
     } finally {
       setIsRefreshing(false);
@@ -122,7 +99,7 @@ export default function ProofPage() {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
       fetchAllProofs();
-    }, 10000);
+    }, 15000); // 15 second throttle to respect rate limits
     return () => clearInterval(interval);
   }, [autoRefresh, fetchAllProofs]);
 
@@ -134,7 +111,7 @@ export default function ProofPage() {
         connected={networkStatus.connected}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-20 space-y-10 sm:space-y-12">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16 space-y-6 sm:space-y-8">
         {/* Header & Quick Status */}
         <ProofHeader
           mainnetSlot={mainnetSlot}
@@ -147,31 +124,31 @@ export default function ProofPage() {
           onToggleAutoRefresh={() => setAutoRefresh(!autoRefresh)}
         />
 
-        {/* Quick Anchor Navigation */}
-        <div className="flex items-center gap-2 border-b border-foreground/10 pb-2 text-xs font-mono overflow-x-auto scrollbar-none">
+        {/* Quick Anchor Navigation (Monochrome) */}
+        <div className="flex items-center gap-1.5 border-b border-foreground/10 pb-2 text-xs font-mono overflow-x-auto scrollbar-none">
           <a
             href="#vote-elimination"
-            className="px-3 py-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="px-2.5 py-1 rounded-md border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0 text-[11px]"
           >
-            01. Vote Elimination Proof
+            01. Vote Elimination
           </a>
           <a
             href="#bls-verifier"
-            className="px-3 py-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="px-2.5 py-1 rounded-md border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0 text-[11px]"
           >
-            02. BLS Finality Verifier
+            02. BLS Finality
           </a>
           <a
             href="#ghost-bank"
-            className="px-3 py-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="px-2.5 py-1 rounded-md border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0 text-[11px]"
           >
             03. Ghost Bank Scanner
           </a>
           <a
             href="#priority-radar"
-            className="px-3 py-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="px-2.5 py-1 rounded-md border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors shrink-0 text-[11px]"
           >
-            04. Priority Fee Radar
+            04. Priority Radar
           </a>
         </div>
 
