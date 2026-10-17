@@ -17,6 +17,7 @@ interface NavigationProps {
 
 const navLinks = [
   { name: 'Live', href: '/' },
+  { name: 'Block Space', href: '/blockspace', badge: '75% RECLAIM' },
   { name: 'Epoch 1064', href: '/speed#epoch1064', badge: 'NEW' },
   { name: '200ms Shockwave', href: '/speed', badge: 'LIVE' },
   { name: 'Playground', href: '/playground' },
