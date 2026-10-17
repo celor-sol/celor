@@ -33,7 +33,7 @@ export function FinalitySection({
     finalityInfo?.certificateType === 'BLS_FAST_PATH_CERT' ||
     finalityInfo?.certificateType === 'BLS_FALLBACK_CERT';
 
-  const consensusLatency = finalityInfo?.consensusFinalityMs ?? (isBls ? 231 : 12800);
+  const consensusLatency = finalityInfo?.consensusFinalityMs ?? (isBls ? 150 : 12800);
   const providerLag = finalityInfo?.providerLatencyMs ?? 1200;
   const chronoProcessing = finalityInfo?.chronoProcessingUs ?? 14;
 
@@ -181,7 +181,7 @@ export function FinalitySection({
                 <div className="flex items-center gap-3 p-3 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.03]">
                   <span className="w-6 h-6 rounded-full border border-emerald-500/40 flex items-center justify-center text-xs text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">3</span>
                   <div>
-                    <div className="font-semibold text-foreground text-xs sm:text-sm">~150ms target finality (~231ms observed)</div>
+                    <div className="font-semibold text-foreground text-xs sm:text-sm">~150ms Target Finality (Sub-Second BLS Cert)</div>
                     <div className="text-[11px] sm:text-xs text-muted-foreground">Multi-bank candidate resolution and UpdateParent handover</div>
                   </div>
                 </div>

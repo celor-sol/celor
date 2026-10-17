@@ -77,7 +77,7 @@ const MILESTONES: UpdateMilestone[] = [
       'Solana Devnet officially certified running Alpenglow Votor consensus with aggregate BLS12-381 certificate notarization.',
     details: [
       'Upgrade Genesis Slot recorded at #504,148,999.',
-      'Live observed consensus finality confirmed at ~231ms vs ~150ms protocol target.',
+      'Initial Devnet test benchmark measured ~231ms average consensus cycle vs ~150ms protocol target (experiment exp-20261003-202319-devnet-all).',
       'Legacy TowerBFT 32-lockout finality superseded by direct validator BLS certificate notarization.',
       'SVM transaction execution, program bytecodes, and fee structures confirmed 100% invariant/identical.',
     ],

@@ -143,7 +143,7 @@ export class ChronoClient {
       alpenglowActive: true,
       genesisSlot: 504148999,
       targetFinalityMs: 150,
-      observedFinalityMs: 231,
+      observedFinalityMs: null,
       protocolVersion: '4.4.0-beta.0',
       consensusEngine: 'Votor (Direct validator BLS certificates)',
       executionStatus: 'SVM UNCHANGED (Programs, transactions, fees remain identical)',
@@ -152,27 +152,27 @@ export class ChronoClient {
       coverageScore: 85,
       provenance: {
         slot: 'DIRECT',
-        leader: 'DIRECT',
-        finality: 'DIRECT',
+        leader: 'DERIVED',
+        finality: 'ESTIMATED',
       },
       finalCertificate: {
         type: 'BLS_FAST_PATH_CERT',
         stakePercent: 80.0,
-        latencyMs: 231,
-        status: 'VERIFIED',
+        latencyMs: 150,
+        status: 'ESTIMATED_TARGET',
         rawLen: 192,
       },
       deshredSupported: false,
     },
     dimensions: {
       slot: 'DIRECT',
-      leader: 'DIRECT',
-      bank_id: 'DIRECT',
-      bank_hash: 'DERIVED',
+      leader: 'DERIVED',
+      bank_id: 'UNAVAILABLE',
+      bank_hash: 'UNAVAILABLE',
       parent: 'DIRECT',
-      update_parent: 'DIRECT',
-      block_footer: 'DERIVED',
-      certificates: 'DIRECT',
+      update_parent: 'UNAVAILABLE',
+      block_footer: 'UNAVAILABLE',
+      certificates: 'UNAVAILABLE',
       producer_time: 'DERIVED',
       deshred: 'DERIVED',
     },
@@ -448,12 +448,12 @@ export class ChronoClient {
       };
       this.notifyLeader(this.leaderInfo);
 
-      // Build real candidate banks for current slot
+      // Build canonical bank for current slot (Public RPC exposes single linear canonical block)
       const canonicalBank: CandidateBank = {
-        bankId: `bank-${currentSlot}-1`,
+        bankId: `canonical-${currentSlot}`,
         rawBankId: 1,
         slot: currentSlot,
-        parentBankId: `bank-${currentSlot - 1}-1`,
+        parentBankId: `canonical-${currentSlot - 1}`,
         blockhash: latestBlockhash,
         bankHash: null,
         state: 'CANONICAL',
@@ -462,41 +462,28 @@ export class ChronoClient {
         provenance: 'DIRECT',
       };
 
-      const candidateBankB: CandidateBank = {
-        bankId: `bank-${currentSlot}-2`,
-        rawBankId: 2,
-        slot: currentSlot,
-        parentBankId: `bank-${currentSlot - 1}-1`,
-        blockhash: latestBlockhash.slice(0, 12) + 'alt' + latestBlockhash.slice(15),
-        bankHash: null,
-        state: 'OBSERVED',
-        txCount: 620,
-        observedAtMs: Date.now() - 40,
-        provenance: 'DIRECT',
-      };
-
-      this.candidateBanks = [canonicalBank, candidateBankB];
+      this.candidateBanks = [canonicalBank];
       this.notifyBanks(this.candidateBanks);
 
-      // Finality Info
+      // Finality Info - On public RPC, mark provenance as ESTIMATED based on protocol specification
       const isAlpenglow = config.isAlpenglow;
-      const consensusFinality = isAlpenglow ? 231 : (config.slotDuration === 200 ? 6400 : 12800);
+      const targetFinality = isAlpenglow ? 150 : (config.slotDuration === 200 ? 6400 : 12800);
 
       this.finalityInfo = {
         slot: currentSlot,
         mode: isAlpenglow ? 'ALPENGLOW_VOTOR' : 'TOWER_BFT_ROOT',
-        latencyMs: consensusFinality,
-        finalityLatencyMs: consensusFinality,
-        consensusFinalityMs: consensusFinality,
+        latencyMs: targetFinality,
+        finalityLatencyMs: targetFinality,
+        consensusFinalityMs: undefined,
         providerLatencyMs: 98,
         observationLatencyMs: 16,
         chronoProcessingUs: 14,
-        targetFinalityMs: isAlpenglow ? 150 : (config.slotDuration === 200 ? 6400 : 12800),
+        targetFinalityMs: targetFinality,
         certType: isAlpenglow ? 'BLS_FAST_PATH_CERT' : 'TOWER_BFT_ROOT',
         certificateType: (isAlpenglow ? 'BLS_FAST_PATH_CERT' : 'TOWER_BFT_ROOT') as any,
         stakePercent: isAlpenglow ? 80.0 : undefined,
         stakeParticipatedPercent: isAlpenglow ? 80.0 : undefined,
-        provenance: 'DIRECT',
+        provenance: 'ESTIMATED',
       };
       this.notifyFinality(this.finalityInfo);
 
@@ -519,7 +506,7 @@ export class ChronoClient {
           alpenglowActive: isAlpenglow,
           genesisSlot: config.genesisSlot,
           targetFinalityMs: isAlpenglow ? 150 : 12800,
-          observedFinalityMs: isAlpenglow ? 231 : null,
+          observedFinalityMs: null,
           protocolVersion: isAlpenglow ? '4.4.0-beta.0' : '2.1.14',
           consensusEngine: isAlpenglow
             ? 'Votor (Direct validator BLS certificates)'
@@ -530,29 +517,29 @@ export class ChronoClient {
           coverageScore: 85,
           provenance: {
             slot: 'DIRECT',
-            leader: 'DIRECT',
-            finality: 'DIRECT',
+            leader: 'DERIVED',
+            finality: 'ESTIMATED',
           },
           finalCertificate: {
             type: isAlpenglow ? 'BLS_FAST_PATH_CERT' : 'TOWER_BFT_ROOT',
             stakePercent: isAlpenglow ? 80.0 : 0,
-            latencyMs: consensusFinality,
-            status: 'VERIFIED',
+            latencyMs: targetFinality,
+            status: isAlpenglow ? 'ESTIMATED_TARGET' : 'ROOTED',
             rawLen: 192,
           },
           deshredSupported: false,
         },
         dimensions: {
           slot: 'DIRECT',
-          leader: 'DIRECT',
-          bank_id: 'DIRECT',
-          bank_hash: 'DERIVED',
+          leader: 'DERIVED',
+          bank_id: 'UNAVAILABLE',
+          bank_hash: 'UNAVAILABLE',
           parent: 'DIRECT',
-          update_parent: 'DIRECT',
-          block_footer: 'DERIVED',
-          certificates: 'DIRECT',
+          update_parent: 'UNAVAILABLE',
+          block_footer: 'UNAVAILABLE',
+          certificates: 'UNAVAILABLE',
           producer_time: 'DERIVED',
-          deshred: 'DERIVED',
+          deshred: 'UNAVAILABLE',
         },
         limitations: [],
       };
@@ -720,28 +707,28 @@ export class ChronoClient {
       provenance: 'DIRECT',
     };
 
-    this.candidateBanks = [canonicalBank, candidateBankB];
+    this.candidateBanks = [canonicalBank];
     this.notifyBanks(this.candidateBanks);
 
     // Finality update
     const isAlpenglow = config.isAlpenglow;
-    const consensusFinality = isAlpenglow ? 231 : 12800;
+    const targetFinality = isAlpenglow ? 150 : (config.slotDuration === 200 ? 6400 : 12800);
 
     this.finalityInfo = {
       slot: newSlot,
       mode: isAlpenglow ? 'ALPENGLOW_VOTOR' : 'TOWER_BFT_ROOT',
-      latencyMs: consensusFinality,
-      finalityLatencyMs: consensusFinality,
-      consensusFinalityMs: consensusFinality,
+      latencyMs: targetFinality,
+      finalityLatencyMs: targetFinality,
+      consensusFinalityMs: undefined,
       providerLatencyMs: 98,
       observationLatencyMs: 16,
       chronoProcessingUs: 14,
-      targetFinalityMs: isAlpenglow ? 150 : 12800,
+      targetFinalityMs: targetFinality,
       certType: isAlpenglow ? 'BLS_FAST_PATH_CERT' : 'TOWER_BFT_ROOT',
       certificateType: (isAlpenglow ? 'BLS_FAST_PATH_CERT' : 'TOWER_BFT_ROOT') as any,
       stakePercent: isAlpenglow ? 80.0 : undefined,
       stakeParticipatedPercent: isAlpenglow ? 80.0 : undefined,
-      provenance: 'DIRECT',
+      provenance: 'ESTIMATED',
     };
     this.notifyFinality(this.finalityInfo);
 
@@ -932,8 +919,9 @@ export class ChronoClient {
         const isAlpenglow =
           this.networkStatus.protocol?.alpenglowActive ??
           (this.networkStatus.cluster !== 'mainnet-beta' && this.networkStatus.cluster !== 'mainnet');
+        const targetFinality = isAlpenglow ? 150 : 12800;
         const consensusFinality = isAlpenglow
-          ? this.networkStatus.protocol?.observedFinalityMs ?? 231
+          ? this.networkStatus.protocol?.observedFinalityMs ?? targetFinality
           : providerLag ?? 12800;
 
         const finality: FinalityInfo = {
@@ -1044,7 +1032,7 @@ export class ChronoClient {
           alpenglowActive: snap.cluster !== 'mainnet' && snap.cluster !== 'mainnet-beta',
           genesisSlot: snap.cluster === 'devnet' ? 504148999 : snap.cluster === 'testnet' ? 444625255 : null,
           targetFinalityMs: snap.cluster !== 'mainnet' && snap.cluster !== 'mainnet-beta' ? 150 : 12800,
-          observedFinalityMs: snap.cluster !== 'mainnet' && snap.cluster !== 'mainnet-beta' ? 231 : null,
+          observedFinalityMs: snap.finality.consensus_finality_ms ?? null,
           protocolVersion:
             snap.cluster !== 'mainnet' && snap.cluster !== 'mainnet-beta' ? '4.4.0-beta.0' : '2.1.14',
           consensusEngine:
@@ -1055,7 +1043,7 @@ export class ChronoClient {
         };
 
     const consensusFinality =
-      snap.finality.consensus_finality_ms ?? (protocolInfo.alpenglowActive ? 231 : 12800);
+      snap.finality.consensus_finality_ms ?? (protocolInfo.alpenglowActive ? 150 : 12800);
     const providerLatency = snap.finality.provider_latency_ms ?? 98;
     const observationLatency = snap.finality.observation_latency_ms ?? 16;
     const chronoProcessingUs = snap.finality.chrono_processing_us ?? 14;

@@ -34,8 +34,8 @@ export function HeroSection({
   const isAlpenglow = protocol?.alpenglowActive ?? (networkStatus?.cluster !== 'mainnet-beta' && networkStatus?.cluster !== 'mainnet');
   const clusterName = (networkStatus?.cluster || 'devnet').toUpperCase();
   const genesisSlot = protocol?.genesisSlot ?? (networkStatus?.cluster === 'devnet' ? 504148999 : networkStatus?.cluster === 'testnet' ? 444625255 : null);
-  const observedFinality = finalityInfo?.consensusFinalityMs ?? protocol?.observedFinalityMs ?? (isAlpenglow ? 231 : 12800);
-  const targetFinality = protocol?.targetFinalityMs ?? (isAlpenglow ? 150 : 12800);
+  const observedFinality = finalityInfo?.consensusFinalityMs ?? protocol?.observedFinalityMs ?? (isAlpenglow ? 150 : (slotProgress.targetSlotDurationMs === 200 ? 6400 : 12800));
+  const targetFinality = protocol?.targetFinalityMs ?? (isAlpenglow ? 150 : (slotProgress.targetSlotDurationMs === 200 ? 6400 : 12800));
   const providerLag = finalityInfo?.providerLatencyMs ?? 1200;
   const slotNumberFormatted = slotProgress.slot > 0 ? slotProgress.slot.toLocaleString() : '—';
   const progressPercent = Math.min(100, Math.max(0, Math.round(slotProgress.phaseRatio * 100)));

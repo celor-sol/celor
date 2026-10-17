@@ -117,14 +117,18 @@ export function LiveNetworkSection({
     {
       label: 'CONSENSUS FINALITY',
       value: finalityInfo?.mode === 'ALPENGLOW_VOTOR'
-        ? `${finalityInfo.consensusFinalityMs || finalityInfo.finalityLatencyMs || 231}ms`
+        ? finalityInfo.consensusFinalityMs
+          ? `${finalityInfo.consensusFinalityMs}ms`
+          : '~150ms'
         : finalityInfo?.finalityLatencyMs
         ? `${(finalityInfo.finalityLatencyMs / 1000).toFixed(1)}s`
         : '~6.4s',
       detail: finalityInfo?.mode === 'ALPENGLOW_VOTOR'
-        ? 'Live Observed Alpenglow Finality (Target ~150ms)'
+        ? finalityInfo.consensusFinalityMs
+          ? 'Live Monotonic Finality (Geyser Level 4)'
+          : 'Protocol Target Finality (SIMD-0326 BLS Cert)'
         : 'TowerBFT progressive lockout root (32 slots × 200ms target)',
-      provenance: finalityInfo?.provenance || 'DIRECT',
+      provenance: finalityInfo?.provenance || 'ESTIMATED',
     },
     {
       label: 'PROVIDER NOTIFICATION LAG',
