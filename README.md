@@ -6,29 +6,39 @@ Fast infrastructure for Solana's new Alpenglow consensus.
 
 ## What is this?
 
-Solana is moving from legacy TowerBFT to Alpenglow (multi-candidate banks, fast leader handovers, BLS certificates). If you're building a bot, an indexer, or a trading terminal, the old RPC methods are going to be too slow and miss the micro-second reorgs. 
+Solana is moving from legacy TowerBFT to Alpenglow (multi-candidate banks, fast leader handovers, BLS certificates). If you are building a bot, an indexer, or a trading terminal, old RPC methods are too slow and miss micro-second reorgs.
 
-Celor normalizes all the new Alpenglow data (from Yellowstone gRPC, Geyser, or standard RPC) into one fast, clean stream.
+Celor normalizes all the new Alpenglow data from Yellowstone gRPC, Geyser, or standard RPC into one fast, clean stream.
 
 ```text
-Solana -> Yellowstone/Geyser -> Celor -> Your App
+Solana -> Yellowstone / Geyser -> Celor -> Your App
 ```
 
-It gives you:
-- **Real-time slots & leaders**: Across any provider.
-- **UpdateParent & Bank Graph**: Track exactly when a leader drops a block and hands over to the next one, instantly.
-- **BLS Certificates**: See the actual 80% stake notarization certs.
-- **Sub-150ms Finality**: Don't wait for 32 slots. Get the fast-path finality.
+Key features:
+1. Real-time slots and leaders across any provider.
+2. UpdateParent and Bank Graph to track block handovers instantly.
+3. BLS Certificates to verify 80% stake notarization certs directly.
+4. Sub-150ms Finality tracking without waiting for 32 legacy slots.
+5. Block Space Engine showing 48M Compute Units, 75% vote elimination, and 25ms BAM micro-auctions.
+
+## Live Dashboard
+
+You can test the entire engine live in your browser:
+* Web Dashboard: [celor.cloud](https://celor.cloud)
+* Block Space & True TPS Engine: [celor.cloud/blockspace](https://celor.cloud/blockspace)
+* 200ms Speed Shockwave & Countdown: [celor.cloud/speed](https://celor.cloud/speed)
+* Consensus Playground: [celor.cloud/playground](https://celor.cloud/playground)
+* Transaction Autopsy: [celor.cloud/transaction](https://celor.cloud/transaction)
 
 ## Run it locally
 
-Celor is open source and built to run on your own machine or server. 
+Celor is open source and built to run on your own machine or server.
 
 ### 1. Build
 
 ```bash
 git clone git@github.com:celor-sol/celor.git
-cd Celor
+cd celor
 cargo build --workspace
 ```
 
@@ -44,7 +54,7 @@ cargo run --bin celor -- serve --cluster devnet
 
 Connect your app to `ws://localhost:8900/api/v1/stream`.
 
-Want to see what's happening right now in the terminal? Run the inspector:
+Want to see what is happening right now in your terminal? Run the inspector:
 
 ```bash
 cargo run --bin celor -- inspect
@@ -53,11 +63,12 @@ cargo run --bin celor -- inspect
 ## Docs & Architecture
 
 Check the `/docs` folder for deep dives:
-- [How Celor works under the hood](./docs/ARCHITECTURE.md)
-- [Provider support matrix](./docs/PHASE_7_PROVIDER_MATRIX.md)
-- [Open Source vs Cloud Boundary](./docs/OPEN_SOURCE_BOUNDARY.md)
+1. [How Celor works under the hood](./docs/ARCHITECTURE.md)
+2. [Provider support matrix](./docs/PHASE_7_PROVIDER_MATRIX.md)
+3. [Open Source vs Cloud Boundary](./docs/OPEN_SOURCE_BOUNDARY.md)
+4. [Phase 9 Consensus Playground Audit](./docs/PHASE_9_PLAYGROUND_AUDIT.md)
 
-## Open Source 
+## Open Source
 
 The core engine of Celor is free and Apache 2.0 licensed. 
 We believe the core infrastructure should be open. We will charge later for hosted endpoints, massive historical data lakes, and managed routing (Celor Cloud), but the engine itself is yours to run.
