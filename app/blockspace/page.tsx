@@ -63,7 +63,7 @@ export default function BlockSpacePage() {
             <span className="font-bold">OCTOBER 21, 2026</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-display font-bold tracking-tight text-foreground">
+          <h1 className="text-4xl sm:text-6xl font-sans font-bold tracking-tight text-foreground">
             The 75% Block Space Reclaim
           </h1>
 
@@ -75,25 +75,25 @@ export default function BlockSpacePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 text-left font-mono">
             <div className="p-3.5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
               <div className="text-[10px] uppercase text-muted-foreground">Vote Tx Elimination</div>
-              <div className="text-xl sm:text-2xl font-bold font-display text-emerald-400 mt-1">-75%</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 mt-1">-75%</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">Off-chain BLS certs</div>
             </div>
 
             <div className="p-3.5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
               <div className="text-[10px] uppercase text-muted-foreground">User App Capacity</div>
-              <div className="text-xl sm:text-2xl font-bold font-display text-foreground mt-1">4.0x (+300%)</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-foreground mt-1">4.0x (+300%)</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">48M non-vote CU</div>
             </div>
 
             <div className="p-3.5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
               <div className="text-[10px] uppercase text-muted-foreground">BAM Micro-Auctions</div>
-              <div className="text-xl sm:text-2xl font-bold font-display text-cyan-400 mt-1">25ms</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-cyan-400 mt-1">25ms</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">8 ticks per 200ms slot</div>
             </div>
 
             <div className="p-3.5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
               <div className="text-[10px] uppercase text-muted-foreground">Single Pool Cap</div>
-              <div className="text-xl sm:text-2xl font-bold font-display text-purple-400 mt-1">2.0x Double</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-purple-400 mt-1">2.0x Double</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">60M CU/s limit</div>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function BlockSpacePage() {
         {/* Section 1: The 48M Compute Unit Block Space Meter */}
         <section id="block-meter" className="scroll-mt-24 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-display font-bold">
+            <h2 className="text-xl sm:text-2xl font-sans font-bold tracking-tight">
               1. Block Space Allocation & 48M Compute Units
             </h2>
             <span className="text-xs font-mono text-muted-foreground">SIMD-0326</span>
@@ -113,7 +113,7 @@ export default function BlockSpacePage() {
         {/* Section 2: The Viral "TPS Paradox" Engine */}
         <section id="tps-paradox" className="scroll-mt-24 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-display font-bold">
+            <h2 className="text-xl sm:text-2xl font-sans font-bold tracking-tight">
               2. The Social Media &quot;TPS Paradox&quot; Engine
             </h2>
             <span className="text-xs font-mono text-muted-foreground">Explorers vs Reality</span>
@@ -124,7 +124,7 @@ export default function BlockSpacePage() {
         {/* Section 3: Jito BAM 25ms Micro-Auction Visualizer */}
         <section id="bam-auctions" className="scroll-mt-24 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-display font-bold">
+            <h2 className="text-xl sm:text-2xl font-sans font-bold tracking-tight">
               3. Jito BAM 25ms Micro-Auction Engine
             </h2>
             <span className="text-xs font-mono text-muted-foreground">Sub-Slot MEV</span>
@@ -135,7 +135,7 @@ export default function BlockSpacePage() {
         {/* Section 4: Hotspot Account Cap Analyzer */}
         <section id="account-caps" className="scroll-mt-24 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-display font-bold">
+            <h2 className="text-xl sm:text-2xl font-sans font-bold tracking-tight">
               4. 12M CU Account Contention Limit
             </h2>
             <span className="text-xs font-mono text-muted-foreground">DEX & Meme Pools</span>

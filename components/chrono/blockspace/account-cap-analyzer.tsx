@@ -62,7 +62,7 @@ export function AccountCapAnalyzer() {
             SIMD-0008 + SIMD-0525
           </span>
         </div>
-        <h3 className="text-xl sm:text-2xl font-display font-semibold mt-1">
+        <h3 className="text-xl sm:text-2xl font-sans font-bold tracking-tight mt-1">
           12M Compute Unit Account Cap Engine
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl">
@@ -121,7 +121,7 @@ export function AccountCapAnalyzer() {
           <div className="flex items-center justify-between pb-3 border-b border-foreground/10">
             <div>
               <span className="text-xs font-mono font-bold text-amber-400 uppercase">Legacy 400ms Slot</span>
-              <div className="text-base font-display font-semibold text-foreground">2.5 Resets per Second</div>
+              <div className="text-base font-sans font-semibold text-foreground">2.5 Resets per Second</div>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-amber-500/20 text-amber-300 bg-amber-500/10">
               30M CU/s Ceiling
@@ -153,7 +153,7 @@ export function AccountCapAnalyzer() {
           <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20">
             <div>
               <span className="text-xs font-mono font-bold text-emerald-400 uppercase">Alpenglow 200ms Slot</span>
-              <div className="text-base font-display font-semibold text-foreground">5.0 Resets per Second</div>
+              <div className="text-base font-sans font-semibold text-foreground">5.0 Resets per Second</div>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/10">
               60M CU/s Ceiling (+100%)

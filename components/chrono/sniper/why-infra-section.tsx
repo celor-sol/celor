@@ -172,7 +172,7 @@ export function WhyInfraSection({ onOpenDocs }: { onOpenDocs?: () => void }) {
       <div className="border border-foreground/10 rounded-2xl bg-foreground/[0.02] p-8 sm:p-12 relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-5 text-center lg:text-left">
-            <div className="text-[clamp(3.5rem,10vw,6.5rem)] font-display leading-none tracking-tight font-bold text-foreground">
+            <div className="text-[clamp(3.5rem,10vw,6.5rem)] font-mono leading-none tracking-tight font-bold text-foreground">
               85.33×
             </div>
             <div className="text-sm font-mono uppercase tracking-widest text-muted-foreground mt-2">

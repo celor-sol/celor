@@ -126,7 +126,7 @@ export function BamMicroAuctionVisualizer() {
               25ms Micro-Auctions
             </span>
           </div>
-          <h3 className="text-xl sm:text-2xl font-display font-semibold mt-1">
+          <h3 className="text-xl sm:text-2xl font-sans font-bold tracking-tight mt-1">
             Jito BAM 25ms Batch Auction Visualizer
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">

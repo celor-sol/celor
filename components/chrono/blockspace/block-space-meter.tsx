@@ -159,7 +159,7 @@ export function BlockSpaceMeter() {
               {mode === 'alpenglow' ? 'SIMD-0326 VOTOR' : 'LEGACY TOWER BFT'}
             </span>
           </div>
-          <h3 className="text-xl sm:text-2xl font-display font-semibold mt-1">
+          <h3 className="text-xl sm:text-2xl font-sans font-bold tracking-tight mt-1">
             Block Space Allocation Meter
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
@@ -199,7 +199,7 @@ export function BlockSpaceMeter() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="p-4 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
             <div className="text-[11px] font-mono text-muted-foreground uppercase">Real User Space</div>
-            <div className="text-2xl sm:text-3xl font-display font-bold text-foreground mt-1 flex items-baseline gap-2">
+            <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground mt-1 flex items-baseline gap-2">
               <span>{(animatedCu / 1000000).toFixed(1)}M</span>
               <span className="text-xs font-mono font-normal text-muted-foreground">/ 48M CU</span>
             </div>
@@ -210,7 +210,7 @@ export function BlockSpaceMeter() {
 
           <div className="p-4 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
             <div className="text-[11px] font-mono text-muted-foreground uppercase">Validator Vote Overhead</div>
-            <div className="text-2xl sm:text-3xl font-display font-bold mt-1 text-foreground">
+            <div className="text-2xl sm:text-3xl font-mono font-bold mt-1 text-foreground">
               {mode === 'legacy' ? '36.0M CU' : '0.0 CU'}
             </div>
             <div className={`text-[11px] font-mono mt-1 ${mode === 'legacy' ? 'text-amber-400' : 'text-emerald-400'}`}>
@@ -220,7 +220,7 @@ export function BlockSpaceMeter() {
 
           <div className="p-4 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
             <div className="text-[11px] font-mono text-muted-foreground uppercase">App Capacity Multiplier</div>
-            <div className="text-2xl sm:text-3xl font-display font-bold text-foreground mt-1 flex items-center gap-2">
+            <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground mt-1 flex items-center gap-2">
               <span className={mode === 'alpenglow' ? 'text-emerald-400' : ''}>
                 {mode === 'alpenglow' ? '4.0x' : '1.0x'}
               </span>
@@ -290,7 +290,7 @@ export function BlockSpaceMeter() {
                   {seg.badge}
                 </span>
               </div>
-              <div className="text-lg font-display font-bold text-foreground mt-2">
+              <div className="text-lg font-mono font-bold text-foreground mt-2">
                 {(seg.cu / 1000000).toFixed(1)}M CU
                 <span className="text-xs font-mono text-muted-foreground font-normal ml-1">
                   ({seg.percent}%)

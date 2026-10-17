@@ -53,7 +53,7 @@ export function TpsParadoxSimulator() {
             Viral Metric Explained
           </span>
         </div>
-        <h3 className="text-xl sm:text-2xl font-display font-semibold mt-1">
+        <h3 className="text-xl sm:text-2xl font-sans font-bold tracking-tight mt-1">
           The &quot;TPS Paradox&quot; Engine
         </h3>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl">
@@ -122,7 +122,7 @@ export function TpsParadoxSimulator() {
           <div className="flex items-center justify-between pb-3 border-b border-foreground/10">
             <div>
               <span className="text-xs font-mono font-bold text-amber-400 uppercase">Legacy TowerBFT</span>
-              <div className="text-lg font-display font-semibold text-foreground">Explorer View</div>
+              <div className="text-base font-sans font-semibold text-foreground">Explorer View</div>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-amber-500/20 text-amber-300 bg-amber-500/10">
               75% Vote Overhead
@@ -132,7 +132,7 @@ export function TpsParadoxSimulator() {
           <div className="space-y-4 pt-4">
             <div>
               <div className="text-[11px] font-mono text-muted-foreground uppercase">Headline Explorer TPS</div>
-              <div className="text-3xl font-display font-bold text-foreground mt-0.5 flex items-baseline gap-2">
+              <div className="text-3xl font-mono font-bold text-foreground mt-0.5 flex items-baseline gap-2">
                 <span>{legacyHeadlineTps.toLocaleString()}</span>
                 <span className="text-xs font-mono text-muted-foreground">TPS</span>
               </div>
@@ -178,7 +178,7 @@ export function TpsParadoxSimulator() {
           <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20">
             <div>
               <span className="text-xs font-mono font-bold text-emerald-400 uppercase">Alpenglow Votor</span>
-              <div className="text-lg font-display font-semibold text-foreground">Clean Explorer View</div>
+              <div className="text-base font-sans font-semibold text-foreground">Clean Explorer View</div>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/10">
               0% Vote Overhead
@@ -188,7 +188,7 @@ export function TpsParadoxSimulator() {
           <div className="space-y-4 pt-4">
             <div>
               <div className="text-[11px] font-mono text-muted-foreground uppercase">Headline Explorer TPS</div>
-              <div className="text-3xl font-display font-bold text-foreground mt-0.5 flex items-baseline gap-2">
+              <div className="text-3xl font-mono font-bold text-foreground mt-0.5 flex items-baseline gap-2">
                 <span className="text-emerald-400">{alpenglowHeadlineTps.toLocaleString()}</span>
                 <span className="text-xs font-mono text-muted-foreground">True User TPS</span>
               </div>

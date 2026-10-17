@@ -1,6 +1,26 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
+import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  variable: '--font-instrument',
+  display: 'swap',
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-instrument-serif',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+});
 
 
 export const metadata: Metadata = {
@@ -83,7 +103,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico?v=5" sizes="any" />
         <link rel="icon" href="/favicon-32x32.png?v=5" type="image/png" sizes="32x32" />
