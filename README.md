@@ -25,6 +25,7 @@ Key features:
 
 You can test the entire engine live in your browser:
 * Web Dashboard: [celor.cloud](https://celor.cloud)
+* Consensus Proof Engine: [celor.cloud/proof](https://celor.cloud/proof)
 * Block Space & True TPS Engine: [celor.cloud/blockspace](https://celor.cloud/blockspace)
 * 200ms Speed Shockwave & Countdown: [celor.cloud/speed](https://celor.cloud/speed)
 * Consensus Playground: [celor.cloud/playground](https://celor.cloud/playground)
