@@ -20,16 +20,34 @@ Key features:
 3. BLS Certificates to verify 80% stake notarization certs directly.
 4. Sub-150ms Finality tracking without waiting for 32 legacy slots.
 5. Block Space Engine showing 48M Compute Units, 75% vote elimination, and 25ms BAM micro-auctions.
+6. 800ms Leader Tenure & Dead Zone Radar with Slot 4 pre-routing alerts (SIMD-0525 + SIMD-0337).
 
 ## Live Dashboard
 
 You can test the entire engine live in your browser:
 * Web Dashboard: [celor.cloud](https://celor.cloud)
+* Leader Tenure & Dead Zone Radar: [celor.cloud/radar](https://celor.cloud/radar)
 * Consensus Proof Engine: [celor.cloud/proof](https://celor.cloud/proof)
 * Block Space & True TPS Engine: [celor.cloud/blockspace](https://celor.cloud/blockspace)
 * 200ms Speed Shockwave & Countdown: [celor.cloud/speed](https://celor.cloud/speed)
 * Consensus Playground: [celor.cloud/playground](https://celor.cloud/playground)
 * Transaction Autopsy: [celor.cloud/transaction](https://celor.cloud/transaction)
+
+## Live Edge API & Terminal Firehose (No Browser Needed)
+
+Developers, bots, and scripts can connect directly without opening a browser:
+
+### 1. Instant REST Edge Radar
+Query real-time 800ms leader tenure, dead-zone risk, and priority fee tiers for any token:
+```bash
+curl -s "https://celor.cloud/api/radar?account=FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump" | jq .
+```
+
+### 2. Live SSE Terminal Firehose
+Stream real-time 200ms sub-slot ticks and Slot 4 handoff warnings directly into your terminal:
+```bash
+curl -N "https://celor.cloud/api/stream"
+```
 
 ## Run it locally
 

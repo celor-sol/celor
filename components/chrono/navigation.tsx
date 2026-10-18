@@ -17,6 +17,8 @@ interface NavigationProps {
 
 const navLinks = [
   { name: 'Live', href: '/' },
+  { name: 'Radar', href: '/radar', badge: '800MS' },
+  { name: 'Fees', href: '/fees' },
   { name: 'Proof', href: '/proof', badge: '100% REAL' },
   { name: 'Block Space', href: '/blockspace', badge: '4X CAPACITY' },
   { name: 'Epoch 1064', href: '/speed#epoch1064', badge: 'NEW' },
