@@ -68,25 +68,26 @@ async function handleSseStream(context: any) {
         timestamp: Math.floor(Date.now() / 1000),
       });
 
-      // 2. Fetch Initial State from Solana Mainnet RPC
+      // 2. Fetch Initial State from Solana Mainnet RPC with commitment: "processed"
       let currentSlot = 0;
       let leaders: string[] = [];
       try {
-        const [slotResp, leaderResp] = await Promise.all([
-          fetch(RPC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getSlot' }),
-          }),
-          fetch(RPC_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'getSlotLeaders', params: [0, 8] }),
-          }),
-        ]);
+        const batchResp = await fetch(RPC_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify([
+            { jsonrpc: '2.0', id: 1, method: 'getSlot', params: [{ commitment: 'processed' }] },
+            { jsonrpc: '2.0', id: 2, method: 'getEpochInfo', params: [{ commitment: 'processed' }] },
+          ]),
+        });
 
-        const slotJson = await slotResp.json();
-        currentSlot = slotJson.result || 458340000;
+        const batchJson = await batchResp.json();
+        const slotResult = Array.isArray(batchJson) ? batchJson.find((r: any) => r.id === 1)?.result : null;
+        const epochResult = Array.isArray(batchJson) ? batchJson.find((r: any) => r.id === 2)?.result : null;
+
+        const processedSlot = typeof slotResult === 'number' ? slotResult : 458775000;
+        const absoluteSlot = epochResult?.absoluteSlot ? Number(epochResult.absoluteSlot) : processedSlot;
+        currentSlot = Math.max(processedSlot, absoluteSlot);
 
         // Query real leaders for currentSlot
         const realLeaderResp = await fetch(RPC_ENDPOINT, {
@@ -97,8 +98,8 @@ async function handleSseStream(context: any) {
         const realLeaderJson = await realLeaderResp.json();
         leaders = realLeaderJson.result || [];
       } catch {
-        currentSlot = 458342000;
-        leaders = ['7CR3Jq4ny2tsr3DX3DvyjoU8TYs776MGkU6nLMWjAqCT', 'BtsmiEEvnSuUnKxqXj2PZRYpPJAc7C34mGz8gtJ1DAaH'];
+        currentSlot = 458775000;
+        leaders = ['8uJiHDJ1b7UDQ4KFsQGJXK9nUCkokdKRJymg1Wy9nxvM', 'Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM'];
       }
 
       // 3. Continuous Event Loop (Sub-Slot Progression)
