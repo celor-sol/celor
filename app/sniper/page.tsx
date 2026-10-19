@@ -9,6 +9,7 @@ import { TrenchRace } from '@/components/chrono/sniper/trench-race';
 import { InfraStrip } from '@/components/chrono/sniper/infra-strip';
 import { WhyInfraSection } from '@/components/chrono/sniper/why-infra-section';
 import { DevnetExecution } from '@/components/chrono/sniper/devnet-execution';
+import { AnzaV432MigrationLinter } from '@/components/chrono/sniper/anza-v432-migration-linter';
 import {
   Activity,
   Zap,
@@ -24,7 +25,7 @@ import {
 
 export default function SniperPage() {
   const { networkStatus, switchCluster } = useChrono();
-  const [activeTab, setActiveTab] = useState<'race' | 'rules' | 'feed' | 'execution'>('race');
+  const [activeTab, setActiveTab] = useState<'v432' | 'race' | 'rules' | 'feed' | 'execution'>('v432');
 
   const [rules, setRules] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -155,6 +156,21 @@ export default function SniperPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-foreground/10 pb-4 mb-8 sm:mb-12 gap-4">
           <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide py-1">
             <button
+              onClick={() => setActiveTab('v432')}
+              className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 whitespace-nowrap ${
+                activeTab === 'v432'
+                  ? 'bg-foreground text-background font-bold shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-emerald-400" />
+              v4.3.2 Linter & Edge Route
+              <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-400 font-mono font-bold tracking-wider">
+                LIVE
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('race')}
               className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'race'
@@ -221,6 +237,13 @@ export default function SniperPage() {
             </span>
           </div>
         </div>
+
+        {/* TAB 0: ANZA V4.3.2 MIGRATION LINTER & PRE-ROUTING (NEW) */}
+        {activeTab === 'v432' && (
+          <div className="space-y-8">
+            <AnzaV432MigrationLinter />
+          </div>
+        )}
 
         {/* TAB 1: TRENCH RACE (DEFAULT EXPERIENCE) */}
         {activeTab === 'race' && (

@@ -26,6 +26,7 @@ Key features:
 
 You can test the entire engine live in your browser:
 * Web Dashboard: [celor.cloud](https://celor.cloud)
+* Anza v4.3.2 Migration & Sniper Route: [celor.cloud/sniper](https://celor.cloud/sniper)
 * Leader Tenure & Dead Zone Radar: [celor.cloud/radar](https://celor.cloud/radar)
 * Consensus Proof Engine: [celor.cloud/proof](https://celor.cloud/proof)
 * Block Space & True TPS Engine: [celor.cloud/blockspace](https://celor.cloud/blockspace)
@@ -35,15 +36,28 @@ You can test the entire engine live in your browser:
 
 ## Live Edge API & Terminal Firehose (No Browser Needed)
 
-Developers, bots, and scripts can connect directly without opening a browser:
+Developers, bots, and sniper scripts can connect directly without opening a browser:
 
-### 1. Instant REST Edge Radar
+### 1. Anza v4.3.2 Pre-Routing Edge API (For Snipers & Bots)
+Query real-time leader active tenure, detect the **Slot 4 Dead Zone (600–800ms)**, and retrieve the incoming leader pubkey for instant TPU pre-routing:
+```bash
+curl -s "https://celor.cloud/api/route" | jq .
+```
+
+Returns:
+* `leader_tenure.slot_in_window`: 1–4 sub-slots.
+* `leader_tenure.zone`: `ACTIVE_EXECUTION` vs `SLOT_4_DEAD_ZONE`.
+* `routing_decision.action`: `SUBMIT_ACTIVE` vs `PRE_ROUTE_INCOMING`.
+* `routing_decision.recommended_target_leader`: TPU destination pubkey.
+* `speed_proof`: 150ms Votor vs 12,800ms TowerBFT ($85.3\text{x}$ finality speedup, 18.4% slippage saved).
+
+### 2. Instant REST Edge Radar
 Query real-time 800ms leader tenure, dead-zone risk, and priority fee tiers for any token:
 ```bash
 curl -s "https://celor.cloud/api/radar?account=FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump" | jq .
 ```
 
-### 2. Live SSE Terminal Firehose
+### 3. Live SSE Terminal Firehose
 Stream real-time 200ms sub-slot ticks and Slot 4 handoff warnings directly into your terminal:
 ```bash
 curl -N "https://celor.cloud/api/stream"
