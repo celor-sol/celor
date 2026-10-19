@@ -1673,6 +1673,45 @@ async fn handle_jito_bundles_rpc(
             let is_dead_zone = slot_in_window == 4;
             let bundle_uuid = format!("celor-bundle-{}-{}", current_slot, chrono::Utc::now().timestamp_millis());
 
+            // Extract transactions from params: [ [ "tx1", "tx2" ] ] or [ "tx1", "tx2" ]
+            let params = payload.get("params").and_then(|p| p.as_array());
+            let raw_txs = match params.and_then(|p| p.first()).and_then(|p| p.as_array()) {
+                Some(arr) => arr.clone(),
+                None => match params {
+                    Some(arr) => arr.clone(),
+                    None => vec![],
+                },
+            };
+
+            let mut dispatched_signatures = Vec::new();
+            let mut quic_ack_time_ns = None;
+            let mut target_leader = None;
+
+            if let Some(ref route) = state.quic_route {
+                use chrono_bench::route::ExecutionRoute;
+                for tx_val in &raw_txs {
+                    if let Some(raw_str) = tx_val.as_str() {
+                        let tx_bytes = bs58::decode(raw_str).into_vec()
+                            .or_else(|_| base64::engine::general_purpose::STANDARD.decode(raw_str))
+                            .unwrap_or_default();
+
+                        if !tx_bytes.is_empty() {
+                            let tx_b64 = base64::engine::general_purpose::STANDARD.encode(&tx_bytes);
+                            match route.submit_transaction(&tx_b64).await {
+                                Ok(ack) => {
+                                    dispatched_signatures.push(ack.signature.clone());
+                                    quic_ack_time_ns = Some(ack.ack_time_ns);
+                                    target_leader = ack.target_leader;
+                                }
+                                Err(err) => {
+                                    tracing::warn!("QUIC direct dispatch notice: {}", err);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             Json(serde_json::json!({
                 "jsonrpc": "2.0",
                 "result": bundle_uuid,
@@ -1682,6 +1721,15 @@ async fn handle_jito_bundles_rpc(
                     "slot_in_window": slot_in_window,
                     "zone": if is_dead_zone { "SLOT_4_DEAD_ZONE" } else { "ACTIVE_WINDOW" },
                     "execution_path": if is_dead_zone { "PRE_ROUTED_INCOMING_LEADER_TPU" } else { "DIRECT_ACTIVE_LEADER_TPU" },
+                    "target_leader": target_leader.unwrap_or_else(|| {
+                        if is_dead_zone {
+                            snapshot.leader.next_leader.clone().unwrap_or_else(|| "IncomingLeader".to_string())
+                        } else {
+                            snapshot.leader.current_leader.clone().unwrap_or_else(|| "ActiveLeader".to_string())
+                        }
+                    }),
+                    "dispatched_signatures": dispatched_signatures,
+                    "quic_ack_time_ns": quic_ack_time_ns,
                     "jito_bribe_eliminated": true,
                     "recommended_native_fee_micro_lamports": 45000,
                     "estimated_saving_vs_jito_sol": 0.01
