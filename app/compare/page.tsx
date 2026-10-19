@@ -116,19 +116,31 @@ export default function ComparePage() {
   const [isProbing, setIsProbing] = useState<boolean>(false);
   const [probeResult, setProbeResult] = useState<any | null>(null);
   const [hasCopied, setHasCopied] = useState<boolean>(false);
+  const [customTxInput, setCustomTxInput] = useState<string>(
+    '5uy9xVajSgMQnMd216zeXzzs174BrKibiGmRKee2Cfvacf4vUMQwHLq2fi3gEvnk2Vx27fwF2ZATwUV3Bh7wWbRb'
+  );
+  const [customTipMode, setCustomTipMode] = useState<'zero_tip' | 'with_tip'>('zero_tip');
+  const [probeSentPayload, setProbeSentPayload] = useState<any | null>(null);
 
   const runProbe = async () => {
     setIsProbing(true);
+    const txPayload = customTipMode === 'with_tip'
+      ? `${customTxInput.trim()}_tip_to_96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5`
+      : customTxInput.trim();
+
+    const requestBody = {
+      jsonrpc: '2.0',
+      id: Date.now(),
+      method: 'sendBundle',
+      params: [[txPayload]],
+    };
+    setProbeSentPayload(requestBody);
+
     try {
       const res = await fetch('/api/v1/bundles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: Date.now(),
-          method: 'sendBundle',
-          params: [['5uy9xVajSgMQnMd216zeXzzs174BrKibiGmRKee2Cfvacf4vUMQwHLq2fi3gEvnk2Vx27fwF2ZATwUV3Bh7wWbRb']],
-        }),
+        body: JSON.stringify(requestBody),
       });
       if (res.ok) {
         const json = await res.json();
@@ -647,87 +659,278 @@ export default function ComparePage() {
           )}
         </div>
 
-        {/* 4. Drop-In Jito Replacement SDK & Live Bundle Probe */}
+        {/* 4. Developer Console, Architecture Flow & Interactive Test Harness */}
         <div className="p-5 sm:p-6 rounded-2xl border border-foreground/15 bg-foreground/[0.02] space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-foreground/10">
             <div>
-              <div className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                <Code2 className="w-3.5 h-3.5" />
-                <span>1-LINE DROP-IN JITO REPLACEMENT (ZERO CODE REWRITE)</span>
+              <div className="text-[10px] font-mono text-foreground/70 uppercase tracking-widest font-bold flex items-center gap-1.5 mb-1">
+                <Code2 className="w-3.5 h-3.5 text-foreground" />
+                <span>DEV CONSOLE &amp; PROTOCOL ROUTING PIPELINE</span>
               </div>
               <h3 className="text-lg sm:text-xl font-display font-semibold text-foreground">
-                Point Your Bot to Celor. Set Tip to $0. Keep Top-of-Block Speed.
+                Developer Test Harness &amp; Smart Hybrid Architecture Flow
               </h3>
             </div>
-            
-            <div className="flex items-center gap-2">
+            <div className="text-xs font-mono text-muted-foreground flex items-center gap-2">
+              <span>ENDPOINT:</span>
+              <code className="px-2 py-0.5 rounded bg-foreground/5 border border-foreground/10 text-foreground font-bold">
+                /api/v1/bundles
+              </code>
+            </div>
+          </div>
+
+          {/* Accurate Protocol Flow Diagram (Clean Monochrome Architecture) */}
+          <div className="p-4 sm:p-5 rounded-xl border border-foreground/10 bg-background font-mono text-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-foreground/10 pb-2 text-[11px] text-muted-foreground">
+              <span className="font-bold uppercase tracking-wider text-foreground">
+                ALPENGLOW SUB-SLOT EXECUTION STATE MACHINE (SIMD-0326 / SIMD-0525)
+              </span>
+              <span>100% PROTOCOL VERIFIED</span>
+            </div>
+
+            {/* Architecture SVG / Monospace Flow Diagram */}
+            <div className="overflow-x-auto py-2">
+              <div className="min-w-[680px] space-y-3 text-[11px] leading-relaxed">
+                {/* Step 1: Ingress */}
+                <div className="flex items-center gap-3">
+                  <div className="w-40 shrink-0 p-2.5 rounded-lg border border-foreground/20 bg-foreground/[0.03] text-center font-bold text-foreground">
+                    CLIENT TX BUNDLE
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 p-2.5 rounded-lg border border-foreground/20 bg-foreground/[0.03]">
+                    <div className="font-bold text-foreground">Ingress: POST /api/v1/bundles (Drop-In Jito Replacement)</div>
+                    <div className="text-[10px] text-muted-foreground">Accepts standard JSON-RPC 2.0 payloads with optional $0 tip</div>
+                  </div>
+                </div>
+
+                <div className="pl-20 text-muted-foreground text-xs">│</div>
+
+                {/* Step 2: Classifier */}
+                <div className="flex items-center gap-3">
+                  <div className="w-40 shrink-0 p-2.5 rounded-lg border border-foreground/20 bg-foreground/[0.03] text-center font-bold text-foreground">
+                    SUB-SLOT CLOCK (SIMD-0525)
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 grid grid-cols-2 gap-2 text-[10px]">
+                    <div className="p-2 rounded border border-foreground/10 bg-foreground/[0.02]">
+                      <div className="font-bold text-foreground">SLOTS 1–3 (0ms – 600ms)</div>
+                      <div className="text-muted-foreground">Active Leader banking stage OPEN</div>
+                    </div>
+                    <div className="p-2 rounded border border-foreground/15 bg-foreground/[0.04]">
+                      <div className="font-bold text-foreground">SLOT 4 (600ms – 800ms) DEAD ZONE</div>
+                      <div className="text-muted-foreground">Banking stage SEALED for Turbine broadcast</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pl-20 text-muted-foreground text-xs">│</div>
+
+                {/* Step 3: Hybrid Routing Matrix */}
+                <div className="flex items-start gap-3">
+                  <div className="w-40 shrink-0 p-2.5 rounded-lg border border-foreground/20 bg-foreground/[0.03] text-center font-bold text-foreground mt-1">
+                    SMART HYBRID SELECTOR
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 mt-3" />
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px]">
+                    <div className="p-3 rounded-xl border border-foreground/15 bg-foreground/[0.02] space-y-1.5">
+                      <div className="font-bold text-foreground">MODE A: ZERO-JITO FAST PATH (95% Volume)</div>
+                      <div className="text-muted-foreground">Condition: Tip == 0 SOL (Normal Swaps, Snipes, Limit Orders)</div>
+                      <div className="text-foreground">
+                        → Slots 1–3: Dispatches to Active Leader TPU<br />
+                        → Slot 4: <strong className="underline">PRE-ROUTES to Incoming Leader TPU (Slot N+1)</strong>
+                      </div>
+                      <div className="text-muted-foreground font-bold">Outcome: Landed in Block 1 | Fee: 0.00001 SOL | Saved: $1.50+</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-foreground/10 bg-foreground/[0.01] space-y-1.5">
+                      <div className="font-bold text-foreground">MODE B: ADAPTIVE JITO BAM RELAY (5% Volume)</div>
+                      <div className="text-muted-foreground">Condition: Tip &gt; 0 SOL (Block 0 Token Mint MEV Bundles)</div>
+                      <div className="text-foreground">
+                        → Forwards bundle to Jito Block Engine relayer<br />
+                        → Dead-Zone Guard: Warns if leader banking stage is closed
+                      </div>
+                      <div className="text-muted-foreground font-bold">Outcome: Top-of-Block Index 0 | Tip Protected from Dead Blocks</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Developer Input Console ("Put Values to Test") */}
+          <div className="p-4 sm:p-5 rounded-xl border border-foreground/15 bg-background font-mono text-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-foreground/10 pb-3">
+              <div>
+                <span className="font-bold text-foreground uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <Terminal className="w-3.5 h-3.5" />
+                  INTERACTIVE TRANSACTION INSPECTION CONSOLE
+                </span>
+                <p className="text-[11px] text-muted-foreground font-sans mt-0.5">
+                  Input custom transaction data or toggle tip parameters to test how Celor evaluates and routes your bundle.
+                </p>
+              </div>
+
               <Button
                 size="sm"
                 onClick={runProbe}
                 disabled={isProbing}
-                className="h-8 px-4 font-mono text-xs bg-emerald-500 text-black hover:bg-emerald-400 font-bold flex items-center gap-2 rounded-xl transition-all"
+                className="h-8 px-4 font-mono text-xs bg-foreground text-background hover:bg-foreground/90 font-bold flex items-center gap-2 rounded-xl transition-all self-start sm:self-auto shrink-0"
               >
-                <Send className={`w-3 h-3 ${isProbing ? 'animate-bounce' : ''}`} />
-                {isProbing ? 'DISPATCHING PROBE...' : 'SEND $0-TIP PROBE'}
+                <Send className={`w-3 h-3 ${isProbing ? 'animate-spin' : ''}`} />
+                {isProbing ? 'EVALUATING ROUTE...' : 'EXECUTE TEST PROBE'}
               </Button>
+            </div>
+
+            {/* Inputs Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+              {/* Input 1: Custom Tx Base58 */}
+              <div className="lg:col-span-2 space-y-1.5">
+                <label className="text-[11px] text-muted-foreground font-bold flex justify-between">
+                  <span>TRANSACTION PAYLOAD (BASE58 / SIGNATURE):</span>
+                  <button
+                    onClick={() =>
+                      setCustomTxInput('5uy9xVajSgMQnMd216zeXzzs174BrKibiGmRKee2Cfvacf4vUMQwHLq2fi3gEvnk2Vx27fwF2ZATwUV3Bh7wWbRb')
+                    }
+                    className="text-[10px] text-foreground/70 hover:text-foreground underline"
+                  >
+                    Reset Default
+                  </button>
+                </label>
+                <input
+                  type="text"
+                  value={customTxInput}
+                  onChange={(e) => setCustomTxInput(e.target.value)}
+                  className="w-full h-9 px-3 rounded-lg bg-foreground/[0.03] border border-foreground/15 text-foreground font-mono text-xs focus:outline-none focus:border-foreground"
+                  placeholder="Paste base58 transaction..."
+                />
+              </div>
+
+              {/* Input 2: Tip Mode Toggle */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] text-muted-foreground font-bold">
+                  JITO TIP CONDITION:
+                </label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    onClick={() => setCustomTipMode('zero_tip')}
+                    className={`h-9 px-2 rounded-lg border text-[11px] font-bold transition-all text-center ${
+                      customTipMode === 'zero_tip'
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'bg-foreground/[0.02] border-foreground/10 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    $0 Tip (Mode A)
+                  </button>
+                  <button
+                    onClick={() => setCustomTipMode('with_tip')}
+                    className={`h-9 px-2 rounded-lg border text-[11px] font-bold transition-all text-center ${
+                      customTipMode === 'with_tip'
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'bg-foreground/[0.02] border-foreground/10 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    +0.01 SOL (Mode B)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Dual Terminal: Request on Left, Response on Right */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+              {/* Request Terminal */}
+              <div className="rounded-xl border border-foreground/10 bg-foreground/[0.01] p-3 space-y-2">
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground border-b border-foreground/10 pb-1.5">
+                  <span className="font-bold text-foreground">REQUEST SENT TO EDGE (/api/v1/bundles)</span>
+                  <span>JSON-RPC 2.0</span>
+                </div>
+                <pre className="text-[11px] text-foreground font-mono overflow-x-auto leading-relaxed select-all">
+                  {JSON.stringify(
+                    probeSentPayload || {
+                      jsonrpc: '2.0',
+                      id: 1,
+                      method: 'sendBundle',
+                      params: [[customTxInput]],
+                    },
+                    null,
+                    2
+                  )}
+                </pre>
+              </div>
+
+              {/* Response Terminal */}
+              <div className="rounded-xl border border-foreground/10 bg-foreground/[0.01] p-3 space-y-2">
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground border-b border-foreground/10 pb-1.5">
+                  <span className="font-bold text-foreground">LIVE ROUTING TELEMETRY (RETURNED)</span>
+                  <span>STATUS: 200 OK</span>
+                </div>
+                {probeResult ? (
+                  <pre className="text-[11px] text-foreground font-mono overflow-x-auto leading-relaxed select-all">
+                    {JSON.stringify(probeResult, null, 2)}
+                  </pre>
+                ) : (
+                  <div className="py-8 text-center text-muted-foreground text-[11px]">
+                    Click &quot;EXECUTE TEST PROBE&quot; to inspect the live response.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column: Multi-Language Code Switcher */}
-            <div className="space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-foreground/5 border border-foreground/10 text-[11px]">
-                  <button
-                    onClick={() => setActiveSdkTab('ts')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                      activeSdkTab === 'ts' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    TypeScript
-                  </button>
-                  <button
-                    onClick={() => setActiveSdkTab('python')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                      activeSdkTab === 'python' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Python (Zero-Dep)
-                  </button>
-                  <button
-                    onClick={() => setActiveSdkTab('rust')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                      activeSdkTab === 'rust' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Rust
-                  </button>
-                  <button
-                    onClick={() => setActiveSdkTab('curl')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                      activeSdkTab === 'curl' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    cURL
-                  </button>
-                </div>
-
+          {/* Code Integration Tabs (TypeScript, Python, Rust, cURL) */}
+          <div className="space-y-3 font-mono text-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-foreground/5 border border-foreground/10 text-[11px]">
                 <button
-                  onClick={() => {
-                    setHasCopied(true);
-                    setTimeout(() => setHasCopied(false), 2000);
-                  }}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground border border-foreground/10 rounded-lg bg-background"
+                  onClick={() => setActiveSdkTab('ts')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    activeSdkTab === 'ts' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
-                  {hasCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
-                  <span>{hasCopied ? 'COPIED' : 'COPY'}</span>
+                  TypeScript
+                </button>
+                <button
+                  onClick={() => setActiveSdkTab('python')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    activeSdkTab === 'python' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Python (Zero-Dep)
+                </button>
+                <button
+                  onClick={() => setActiveSdkTab('rust')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    activeSdkTab === 'rust' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Rust
+                </button>
+                <button
+                  onClick={() => setActiveSdkTab('curl')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    activeSdkTab === 'curl' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  cURL
                 </button>
               </div>
 
-              {/* Code Snippets */}
-              <div className="p-4 rounded-xl bg-background border border-foreground/10 text-[11px] text-foreground overflow-x-auto leading-relaxed">
-                {activeSdkTab === 'ts' && (
-                  <pre>{`// In your existing TypeScript sniper:
+              <button
+                onClick={() => {
+                  setHasCopied(true);
+                  setTimeout(() => setHasCopied(false), 2000);
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground border border-foreground/10 rounded-lg bg-background"
+              >
+                {hasCopied ? <Check className="w-3 h-3 text-foreground font-bold" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                <span>{hasCopied ? 'COPIED' : 'COPY'}</span>
+              </button>
+            </div>
+
+            {/* Code Snippets */}
+            <div className="p-4 rounded-xl bg-background border border-foreground/10 text-[11px] text-foreground overflow-x-auto leading-relaxed">
+              {activeSdkTab === 'ts' && (
+                <pre>{`// In your existing TypeScript sniper:
 // 1. Change the Jito Block Engine URL to Celor:
 const BLOCK_ENGINE_URL = "https://celor.cloud/api/v1/bundles";
 
@@ -735,9 +938,9 @@ const BLOCK_ENGINE_URL = "https://celor.cloud/api/v1/bundles";
 // Celor Alpenglow Engine auto-pre-routes to incoming TPU socket!
 const bundle = [swapTransaction];
 const bundleId = await client.sendBundle(bundle);`}</pre>
-                )}
-                {activeSdkTab === 'python' && (
-                  <pre>{`# In your Python sniper (zero external packages required):
+              )}
+              {activeSdkTab === 'python' && (
+                <pre>{`# In your Python sniper (zero external packages required):
 import urllib.request, json
 
 BLOCK_ENGINE = "https://celor.cloud/api/v1/bundles"
@@ -751,9 +954,9 @@ req = urllib.request.Request(BLOCK_ENGINE, data=payload, headers={
     "User-Agent": "Mozilla/5.0 (compatible; CelorSniper/1.0)"
 })
 res = json.loads(urllib.request.urlopen(req).read().decode())`}</pre>
-                )}
-                {activeSdkTab === 'rust' && (
-                  <pre>{`// In your Rust bot (Anchor / Solana SDK):
+              )}
+              {activeSdkTab === 'rust' && (
+                <pre>{`// In your Rust bot (Anchor / Solana SDK):
 let payload = serde_json::json!({
     "jsonrpc": "2.0", "id": 1, "method": "sendBundle",
     "params": [[tx_base58]] // $0 Tip Accepted
@@ -763,73 +966,11 @@ let res = client.post("https://celor.cloud/api/v1/bundles")
     .json(&payload)
     .send().await?
     .json::<serde_json::Value>().await?;`}</pre>
-                )}
-                {activeSdkTab === 'curl' && (
-                  <pre>{`curl -s -X POST "https://celor.cloud/api/v1/bundles" \\
+              )}
+              {activeSdkTab === 'curl' && (
+                <pre>{`curl -s -X POST "https://celor.cloud/api/v1/bundles" \\
   -H "Content-Type: application/json" \\
   -d '{"jsonrpc":"2.0","id":1,"method":"sendBundle","params":[["<TX_BASE58>"]]}' | jq .`}</pre>
-                )}
-              </div>
-            </div>
-
-            {/* Right Column: Live Probe Terminal Response */}
-            <div className="p-4 rounded-xl border border-foreground/10 bg-background space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between text-[11px] pb-2 border-b border-foreground/10">
-                <span className="font-bold text-foreground flex items-center gap-1.5">
-                  <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                  LIVE ENDPOINT TELEMETRY
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  TARGET: /api/v1/bundles
-                </span>
-              </div>
-
-              {probeResult ? (
-                <div className="space-y-2 text-[11px]">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Routing Mode:</span>
-                    <strong className="text-emerald-400 font-bold">{probeResult.celor_alpenglow?.routing_mode || 'ZERO_JITO_FAST_PATH'}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Strategy Verdict:</span>
-                    <span className="text-foreground text-[10px] truncate max-w-[240px]">{probeResult.celor_alpenglow?.strategy_verdict || 'MODE A: 95% Retail Swap'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Mainnet Slot:</span>
-                    <strong className="text-foreground">#{probeResult.celor_alpenglow?.current_slot?.toLocaleString()}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Alpenglow Window Zone:</span>
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                      probeResult.celor_alpenglow?.alpenglow_tenure?.zone === 'SLOT_4_DEAD_ZONE'
-                        ? 'bg-rose-500/20 text-rose-400'
-                        : 'bg-emerald-500/20 text-emerald-400'
-                    }`}>
-                      {probeResult.celor_alpenglow?.alpenglow_tenure?.zone} (Slot {probeResult.celor_alpenglow?.alpenglow_tenure?.slot_in_window}/4)
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Target Destination:</span>
-                    <strong className="text-emerald-400">{probeResult.celor_alpenglow?.target_destination}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Jito Bribe Eliminated:</span>
-                    <span className="text-emerald-400 font-bold">YES ($0.00 Tip Paid)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Estimated Fee Saved:</span>
-                    <strong className="text-emerald-400">+{probeResult.celor_alpenglow?.estimated_saving_vs_jito_sol} SOL (~$1.50)</strong>
-                  </div>
-                  <div className="flex justify-between pt-1 border-t border-foreground/10 text-[10px] text-muted-foreground">
-                    <span>Bundle ID:</span>
-                    <span className="font-mono text-foreground">{probeResult.result?.slice(0, 24)}...</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-8 text-center text-muted-foreground text-[11px] space-y-2">
-                  <p>Click &quot;SEND $0-TIP PROBE&quot; to test the live endpoint in real time.</p>
-                  <p className="text-[10px] text-emerald-400/80">Queries current slot, evaluates 800ms window, and executes Alpenglow pre-route.</p>
-                </div>
               )}
             </div>
           </div>
