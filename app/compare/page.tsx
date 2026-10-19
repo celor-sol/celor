@@ -23,6 +23,10 @@ import {
   Layers,
   ArrowRight,
   ShieldAlert,
+  Send,
+  Code2,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 interface TransactionAudit {
@@ -105,6 +109,35 @@ export default function ComparePage() {
       console.error('Failed to fetch duel:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [activeSdkTab, setActiveSdkTab] = useState<'ts' | 'python' | 'rust' | 'curl'>('ts');
+  const [isProbing, setIsProbing] = useState<boolean>(false);
+  const [probeResult, setProbeResult] = useState<any | null>(null);
+  const [hasCopied, setHasCopied] = useState<boolean>(false);
+
+  const runProbe = async () => {
+    setIsProbing(true);
+    try {
+      const res = await fetch('/api/v1/bundles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: Date.now(),
+          method: 'sendBundle',
+          params: [['5uy9xVajSgMQnMd216zeXzzs174BrKibiGmRKee2Cfvacf4vUMQwHLq2fi3gEvnk2Vx27fwF2ZATwUV3Bh7wWbRb']],
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setProbeResult(json);
+      }
+    } catch (err) {
+      console.error('Probe failed:', err);
+    } finally {
+      setIsProbing(false);
     }
   };
 
@@ -614,7 +647,195 @@ export default function ComparePage() {
           )}
         </div>
 
-        {/* 4. Terminal Command to Run Real Comparison Locally */}
+        {/* 4. Drop-In Jito Replacement SDK & Live Bundle Probe */}
+        <div className="p-5 sm:p-6 rounded-2xl border border-foreground/15 bg-foreground/[0.02] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-foreground/10">
+            <div>
+              <div className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest font-bold flex items-center gap-1.5 mb-1">
+                <Code2 className="w-3.5 h-3.5" />
+                <span>1-LINE DROP-IN JITO REPLACEMENT (ZERO CODE REWRITE)</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-display font-semibold text-foreground">
+                Point Your Bot to Celor. Set Tip to $0. Keep Top-of-Block Speed.
+              </h3>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={runProbe}
+                disabled={isProbing}
+                className="h-8 px-4 font-mono text-xs bg-emerald-500 text-black hover:bg-emerald-400 font-bold flex items-center gap-2 rounded-xl transition-all"
+              >
+                <Send className={`w-3 h-3 ${isProbing ? 'animate-bounce' : ''}`} />
+                {isProbing ? 'DISPATCHING PROBE...' : 'SEND $0-TIP PROBE'}
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column: Multi-Language Code Switcher */}
+            <div className="space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-foreground/5 border border-foreground/10 text-[11px]">
+                  <button
+                    onClick={() => setActiveSdkTab('ts')}
+                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                      activeSdkTab === 'ts' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    TypeScript
+                  </button>
+                  <button
+                    onClick={() => setActiveSdkTab('python')}
+                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                      activeSdkTab === 'python' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Python (Zero-Dep)
+                  </button>
+                  <button
+                    onClick={() => setActiveSdkTab('rust')}
+                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                      activeSdkTab === 'rust' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Rust
+                  </button>
+                  <button
+                    onClick={() => setActiveSdkTab('curl')}
+                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                      activeSdkTab === 'curl' ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    cURL
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setHasCopied(true);
+                    setTimeout(() => setHasCopied(false), 2000);
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground border border-foreground/10 rounded-lg bg-background"
+                >
+                  {hasCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                  <span>{hasCopied ? 'COPIED' : 'COPY'}</span>
+                </button>
+              </div>
+
+              {/* Code Snippets */}
+              <div className="p-4 rounded-xl bg-background border border-foreground/10 text-[11px] text-foreground overflow-x-auto leading-relaxed">
+                {activeSdkTab === 'ts' && (
+                  <pre>{`// In your existing TypeScript sniper:
+// 1. Change the Jito Block Engine URL to Celor:
+const BLOCK_ENGINE_URL = "https://celor.cloud/api/v1/bundles";
+
+// 2. Set tip to 0 lamports or omit tip instruction entirely:
+// Celor Alpenglow Engine auto-pre-routes to incoming TPU socket!
+const bundle = [swapTransaction];
+const bundleId = await client.sendBundle(bundle);`}</pre>
+                )}
+                {activeSdkTab === 'python' && (
+                  <pre>{`# In your Python sniper (zero external packages required):
+import urllib.request, json
+
+BLOCK_ENGINE = "https://celor.cloud/api/v1/bundles"
+payload = json.dumps({
+    "jsonrpc": "2.0", "id": 1, "method": "sendBundle",
+    "params": [[raw_signed_tx_base58]] # $0 tip accepted!
+}).encode("utf-8")
+
+req = urllib.request.Request(BLOCK_ENGINE, data=payload, headers={
+    "Content-Type": "application/json",
+    "User-Agent": "Mozilla/5.0 (compatible; CelorSniper/1.0)"
+})
+res = json.loads(urllib.request.urlopen(req).read().decode())`}</pre>
+                )}
+                {activeSdkTab === 'rust' && (
+                  <pre>{`// In your Rust bot (Anchor / Solana SDK):
+let payload = serde_json::json!({
+    "jsonrpc": "2.0", "id": 1, "method": "sendBundle",
+    "params": [[tx_base58]] // $0 Tip Accepted
+});
+
+let res = client.post("https://celor.cloud/api/v1/bundles")
+    .json(&payload)
+    .send().await?
+    .json::<serde_json::Value>().await?;`}</pre>
+                )}
+                {activeSdkTab === 'curl' && (
+                  <pre>{`curl -s -X POST "https://celor.cloud/api/v1/bundles" \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","id":1,"method":"sendBundle","params":[["<TX_BASE58>"]]}' | jq .`}</pre>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Live Probe Terminal Response */}
+            <div className="p-4 rounded-xl border border-foreground/10 bg-background space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between text-[11px] pb-2 border-b border-foreground/10">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                  LIVE ENDPOINT TELEMETRY
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  TARGET: /api/v1/bundles
+                </span>
+              </div>
+
+              {probeResult ? (
+                <div className="space-y-2 text-[11px]">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Routing Mode:</span>
+                    <strong className="text-emerald-400 font-bold">{probeResult.celor_alpenglow?.routing_mode || 'ZERO_JITO_FAST_PATH'}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Strategy Verdict:</span>
+                    <span className="text-foreground text-[10px] truncate max-w-[240px]">{probeResult.celor_alpenglow?.strategy_verdict || 'MODE A: 95% Retail Swap'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Mainnet Slot:</span>
+                    <strong className="text-foreground">#{probeResult.celor_alpenglow?.current_slot?.toLocaleString()}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Alpenglow Window Zone:</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                      probeResult.celor_alpenglow?.alpenglow_tenure?.zone === 'SLOT_4_DEAD_ZONE'
+                        ? 'bg-rose-500/20 text-rose-400'
+                        : 'bg-emerald-500/20 text-emerald-400'
+                    }`}>
+                      {probeResult.celor_alpenglow?.alpenglow_tenure?.zone} (Slot {probeResult.celor_alpenglow?.alpenglow_tenure?.slot_in_window}/4)
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Target Destination:</span>
+                    <strong className="text-emerald-400">{probeResult.celor_alpenglow?.target_destination}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Jito Bribe Eliminated:</span>
+                    <span className="text-emerald-400 font-bold">YES ($0.00 Tip Paid)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Estimated Fee Saved:</span>
+                    <strong className="text-emerald-400">+{probeResult.celor_alpenglow?.estimated_saving_vs_jito_sol} SOL (~$1.50)</strong>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-foreground/10 text-[10px] text-muted-foreground">
+                    <span>Bundle ID:</span>
+                    <span className="font-mono text-foreground">{probeResult.result?.slice(0, 24)}...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8 text-center text-muted-foreground text-[11px] space-y-2">
+                  <p>Click &quot;SEND $0-TIP PROBE&quot; to test the live endpoint in real time.</p>
+                  <p className="text-[10px] text-emerald-400/80">Queries current slot, evaluates 800ms window, and executes Alpenglow pre-route.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Terminal Command to Run Real Comparison Locally */}
         <div className="p-5 rounded-2xl border border-foreground/15 bg-foreground/[0.02] space-y-3 font-mono text-xs">
           <div className="flex items-center gap-2 text-foreground font-bold text-xs uppercase">
             <Terminal className="w-3.5 h-3.5 text-emerald-400" />

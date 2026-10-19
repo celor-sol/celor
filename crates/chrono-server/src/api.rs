@@ -1712,11 +1712,30 @@ async fn handle_jito_bundles_rpc(
                 }
             }
 
+            let has_jito_tip = raw_txs.iter().any(|tx_val| {
+                if let Some(s) = tx_val.as_str() {
+                    s.contains("96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5")
+                        || s.contains("HFqU5x63VTxvQssQn138i2NN7MQWUEWFquidukCc1uHS")
+                } else {
+                    false
+                }
+            });
+
+            let routing_mode = if has_jito_tip { "ADAPTIVE_JITO_BAM_MEV" } else { "ZERO_JITO_FAST_PATH" };
+            let strategy_verdict = if has_jito_tip {
+                "MODE B: 5% High-Contention Block 0 Bundle (Forwarded to Jito BAM with Dead Zone Guard)"
+            } else {
+                "MODE A: 95% Retail Swap (Zero-Jito Fast Path - $0 Tip Bribe)"
+            };
+
             Json(serde_json::json!({
                 "jsonrpc": "2.0",
                 "result": bundle_uuid,
                 "id": id,
                 "celor_alpenglow": {
+                    "bundle_id": bundle_uuid,
+                    "routing_mode": routing_mode,
+                    "strategy_verdict": strategy_verdict,
                     "current_slot": current_slot,
                     "slot_in_window": slot_in_window,
                     "zone": if is_dead_zone { "SLOT_4_DEAD_ZONE" } else { "ACTIVE_WINDOW" },
@@ -1730,9 +1749,9 @@ async fn handle_jito_bundles_rpc(
                     }),
                     "dispatched_signatures": dispatched_signatures,
                     "quic_ack_time_ns": quic_ack_time_ns,
-                    "jito_bribe_eliminated": true,
+                    "jito_bribe_eliminated": !has_jito_tip,
                     "recommended_native_fee_micro_lamports": 45000,
-                    "estimated_saving_vs_jito_sol": 0.01
+                    "estimated_saving_vs_jito_sol": if has_jito_tip { 0.0 } else { 0.01 }
                 }
             }))
         }
