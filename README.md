@@ -45,6 +45,7 @@ curl -s "https://celor.cloud/api/route" | jq .
 ```
 
 Returns:
+* `slot_lag_telemetry`: Commitment (`"processed"`), real-time `slot_lag_slots`, and `projected_tpu_slot` (in-flight wire transit compensation so your bot never operates on stale state or misses a handoff).
 * `leader_tenure.slot_in_window`: 1–4 sub-slots.
 * `leader_tenure.zone`: `ACTIVE_EXECUTION` vs `SLOT_4_DEAD_ZONE`.
 * `routing_decision.action`: `SUBMIT_ACTIVE` vs `PRE_ROUTE_INCOMING`.

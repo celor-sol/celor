@@ -4,26 +4,43 @@ import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert,
   Zap,
-  Terminal,
   Check,
   Copy,
   Code2,
   RefreshCw,
   ExternalLink,
-  Flame,
-  ArrowRight,
   ShieldCheck,
-  Layers,
-  Cpu,
+  Clock,
+  Radio,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+interface SlotLagTelemetry {
+  commitment: string;
+  cluster_tip_slot: number;
+  processed_slot: number;
+  absolute_slot: number;
+  slot_lag_slots: number;
+  slot_lag_ms: number;
+  rpc_roundtrip_ms: number;
+  projected_tpu_slot: number;
+  slots_advanced_in_flight: number;
+  handoff_confidence: 'OPTIMAL_ZERO_LAG' | 'MONITORED_JITTER' | 'DEGRADED_RPC_LAG';
+  staleness_alibi_bypassed: boolean;
+  guarantee: string;
+}
 
 interface RoutingApiResponse {
   status: string;
   protocol: string;
   current_slot: number;
+  slot_duration_target_ms: number;
+  slot_lag_telemetry?: SlotLagTelemetry;
   leader_tenure: {
+    total_window_ms: number;
     slot_in_window: number;
+    slot_index: number;
+    remaining_slots: number;
     remaining_window_ms: number;
     zone: string;
     dead_zone_imminent: boolean;
@@ -82,18 +99,23 @@ export function AnzaV432MigrationLinter() {
   const curlCmd = `curl -s "https://celor.cloud/api/route" | jq .`;
 
   const tsCode = `// Celor Alpenglow (Anza v4.3.2) Pre-Routing Snippet for TypeScript (@solana/web3.js)
-import { Connection, Transaction, VersionedTransaction } from '@solana/web3.js';
+import { Connection, VersionedTransaction } from '@solana/web3.js';
 
 async function sendAlpenglowOptimizedTx(tx: VersionedTransaction, connection: Connection) {
-  // 1. Query Celor Cloudflare Edge Pre-Routing Decision (<30ms)
+  // 1. Query Celor Edge Pre-Routing Decision & Slot Lag Telemetry (<30ms)
   const routeRes = await fetch('https://celor.cloud/api/route');
-  const { routing_decision, leader_tenure } = await routeRes.json();
+  const { routing_decision, leader_tenure, slot_lag_telemetry } = await routeRes.json();
 
-  console.log(\`[SLOT \${routing_decision.current_slot}] Window \${leader_tenure.slot_in_window}/4 | Action: \${routing_decision.action}\`);
+  // Guard: Verify zero-lag cluster tip
+  if (slot_lag_telemetry?.slot_lag_slots > 1) {
+    console.warn(\`⚠️ Upstream RPC lag detected (\${slot_lag_telemetry.slot_lag_slots} slots). Fallback to shred stream.\`);
+  }
+
+  console.log(\`[SLOT \${slot_lag_telemetry?.projected_tpu_slot || leader_tenure.slot_in_window}] Window \${leader_tenure.slot_in_window}/4 | Action: \${routing_decision.action}\`);
 
   // 2. Pre-routing execution logic
   if (routing_decision.action === 'PRE_ROUTE_INCOMING') {
-    console.warn(\`⚠️ Slot 4 Dead Zone active! Bypassing leader \${routing_decision.avoid_leader}\`);
+    console.warn(\`⚠️ Slot 4 Dead Zone active! Bypassing dying leader \${routing_decision.avoid_leader}\`);
     console.log(\`⚡ Pre-routing TPU packet directly to incoming leader: \${routing_decision.recommended_target_leader}\`);
     
     // Dispatch raw wire transaction to incoming leader TPU address
@@ -114,18 +136,22 @@ import requests
 from solana.rpc.api import Client
 
 def send_alpenglow_tx(raw_tx_bytes: bytes, rpc_client: Client):
-    # 1. Fetch live edge pre-routing decision
+    # 1. Fetch live edge pre-routing decision and slot lag telemetry
     route = requests.get('https://celor.cloud/api/route').json()
     decision = route['routing_decision']
     tenure = route['leader_tenure']
+    lag = route.get('slot_lag_telemetry', {})
 
-    print(f"Slot window: {tenure['slot_in_window']}/4 | Action: {decision['action']}")
+    # Check for slot staleness
+    if lag.get('slot_lag_slots', 0) > 1:
+        print(f"⚠️ RPC lagged by {lag['slot_lag_slots']} slots! Using projected TPU slot {lag['projected_tpu_slot']}")
+
+    print(f"Target TPU Slot: {lag.get('projected_tpu_slot')} | Window: {tenure['slot_in_window']}/4 | Action: {decision['action']}")
 
     # 2. Check for Slot 4 Dead Zone
     if decision['action'] == 'PRE_ROUTE_INCOMING':
         print(f"⚠️ Handoff Dead Zone! Avoiding {decision['avoid_leader']}")
         print(f"⚡ Pre-routing directly to incoming leader: {decision['recommended_target_leader']}")
-        # Route to incoming validator
         return rpc_client.send_raw_transaction(raw_tx_bytes)
 
     return rpc_client.send_raw_transaction(raw_tx_bytes)`;
@@ -133,6 +159,13 @@ def send_alpenglow_tx(raw_tx_bytes: bytes, rpc_client: Client):
   const rustCode = `// Celor Alpenglow (Anza v4.3.2) Pre-Routing for Rust HFT Snipers
 use reqwest;
 use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct SlotLagTelemetry {
+    slot_lag_slots: u64,
+    projected_tpu_slot: u64,
+    handoff_confidence: String,
+}
 
 #[derive(Deserialize)]
 struct RouteDecision {
@@ -144,6 +177,7 @@ struct RouteDecision {
 #[derive(Deserialize)]
 struct RouteResponse {
     routing_decision: RouteDecision,
+    slot_lag_telemetry: Option<SlotLagTelemetry>,
 }
 
 pub async fn execute_alpenglow_snipe(raw_tx: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
@@ -152,6 +186,12 @@ pub async fn execute_alpenglow_snipe(raw_tx: &[u8]) -> Result<(), Box<dyn std::e
         .await?
         .json()
         .await?;
+
+    if let Some(lag) = &resp.slot_lag_telemetry {
+        if lag.slot_lag_slots > 1 {
+            eprintln!("⚠️ RPC lag detected: {} slots. Target TPU slot: {}", lag.slot_lag_slots, lag.projected_tpu_slot);
+        }
+    }
 
     if resp.routing_decision.action == "PRE_ROUTE_INCOMING" {
         println!("🚨 Slot 4 Dead Zone! Pre-routing to incoming leader: {}", 
@@ -273,6 +313,46 @@ pub async fn execute_alpenglow_snipe(raw_tx: &[u8]) -> Result<(), Box<dyn std::e
           </div>
         )}
 
+        {/* Slot Lag Telemetry & Anti-Staleness Guarantee Panel */}
+        {routeData?.slot_lag_telemetry && (
+          <div className="p-3.5 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.03] space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span className="text-[11px] font-bold text-foreground uppercase tracking-wide">
+                  Slot Lag Telemetry & Zero-Lag Handoff Verification
+                </span>
+                <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-400 font-bold">
+                  {routeData.slot_lag_telemetry.handoff_confidence}
+                </span>
+              </div>
+              <div className="text-[10px] text-muted-foreground font-mono">
+                Commitment: <strong className="text-foreground">{routeData.slot_lag_telemetry.commitment}</strong> • Lag: <strong className="text-emerald-400">{routeData.slot_lag_telemetry.slot_lag_slots} slots ({routeData.slot_lag_telemetry.slot_lag_ms}ms)</strong>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px] font-mono pt-1 border-t border-foreground/10">
+              <div>
+                <span className="text-muted-foreground">Cluster Tip Slot:</span>{' '}
+                <span className="text-foreground font-bold">#{routeData.slot_lag_telemetry.cluster_tip_slot.toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Projected TPU Slot:</span>{' '}
+                <span className="text-foreground font-bold">#{routeData.slot_lag_telemetry.projected_tpu_slot.toLocaleString()}</span>{' '}
+                <span className="text-[9px] text-emerald-400">(+{routeData.slot_lag_telemetry.slots_advanced_in_flight} inflight compensation)</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Edge RPC Roundtrip:</span>{' '}
+                <span className="text-foreground font-bold">{routeData.slot_lag_telemetry.rpc_roundtrip_ms}ms</span>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-muted-foreground font-sans leading-normal pt-0.5">
+              {routeData.slot_lag_telemetry.guarantee}
+            </div>
+          </div>
+        )}
+
         {/* Target vs Avoid Leader Breakdown */}
         {routeData && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
@@ -388,6 +468,23 @@ pub async fn execute_alpenglow_snipe(raw_tx: &[u8]) -> Result<(), Box<dyn std::e
             </div>
           )}
         </div>
+      </div>
+
+      {/* Critical Architecture Callout: Why 'Connected' Is a Weak Alibi */}
+      <div className="p-4 rounded-xl border border-foreground/15 bg-foreground/[0.02] space-y-2">
+        <div className="flex items-center gap-2 text-foreground font-bold text-xs uppercase tracking-wide">
+          <Clock className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Why &quot;Connected&quot; Is a Weak Alibi for Missing the Handoff</span>
+        </div>
+        <p className="text-[11px] text-muted-foreground font-sans leading-relaxed">
+          Standard Solana RPC nodes return HTTP 200 <code className="text-foreground">ok</code> on health checks even when lagging up to <strong>128 slots behind the cluster tip</strong>. In a 200ms slot world, being lagged by just 1 slot means your bot makes pre-routing decisions on an obsolete validator.
+        </p>
+        <p className="text-[11px] text-muted-foreground font-sans leading-relaxed">
+          Celor eliminates this alibi by enforcing:
+          (1) Explicit <code className="text-foreground font-mono">commitment: &quot;processed&quot;</code> queries,
+          (2) Dual verification of <code className="text-foreground font-mono">getSlot</code> against <code className="text-foreground font-mono">getEpochInfo.absoluteSlot</code> to calculate exact <code className="text-foreground font-mono">slot_lag_slots</code>, and
+          (3) <strong>In-Flight Wire Transit Compensation</strong>, which calculates the <em>Projected TPU Arrival Slot</em> so your packet lands in the exact active leader window when it reaches the validator.
+        </p>
       </div>
 
       {/* Drop-In Code Migration Generator */}
