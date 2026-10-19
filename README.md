@@ -71,6 +71,23 @@ Audit live network wire latency (Celor Edge vs Jito Block Engine vs Public RPC) 
 curl -s "https://celor.cloud/api/duel" | jq .
 ```
 
+### 5. Drop-In Jito Block Engine Replacement (Zero-Code Rewrite)
+Snipers and trading bots can swap their Jito Block Engine endpoint directly for Celor without rewriting any bundle code:
+```bash
+# Query Tip Accounts
+curl -s -X POST "https://celor.cloud/api/v1/bundles" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"getTipAccounts","params":[]}' | jq .
+
+# Send Bundle ($0 Tip Accepted - Auto Pre-Routed)
+curl -s -X POST "https://celor.cloud/api/v1/bundles" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"sendBundle","params":[["5uy9xVajSgMQnMd216zeXzzs174BrKibiGmRKee2Cfvacf4vUMQwHLq2fi3gEvnk2Vx27fwF2ZATwUV3Bh7wWbRb"]]}' | jq .
+```
+Runnable SDK Examples:
+* Node.js / TS: `node examples/jito_compat_sniper.mjs`
+* Python (Zero Dependencies): `python3 examples/jito_compat_sniper.py`
+
 ## Run it locally
 
 Celor is open source and built to run on your own machine or server.
