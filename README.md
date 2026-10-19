@@ -33,6 +33,7 @@ You can test the entire engine live in your browser:
 * 200ms Speed Shockwave & Countdown: [celor.cloud/speed](https://celor.cloud/speed)
 * Consensus Playground: [celor.cloud/playground](https://celor.cloud/playground)
 * Transaction Autopsy: [celor.cloud/transaction](https://celor.cloud/transaction)
+* Celor vs. Maestro & Legacy Bots Audit: [celor.cloud/compare](https://celor.cloud/compare)
 
 ## Live Edge API & Terminal Firehose (No Browser Needed)
 
@@ -62,6 +63,12 @@ curl -s "https://celor.cloud/api/radar?account=FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQG
 Stream real-time 200ms sub-slot ticks and Slot 4 handoff warnings directly into your terminal:
 ```bash
 curl -N "https://celor.cloud/api/stream"
+```
+
+### 4. Live Bot Duel & Mainnet Autopsy API
+Audit live network wire latency (Celor Edge vs Jito Block Engine vs Public RPC) and inspect real-time mainnet snipes on Pump.fun:
+```bash
+curl -s "https://celor.cloud/api/duel" | jq .
 ```
 
 ## Run it locally

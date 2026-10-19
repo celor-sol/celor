@@ -26,7 +26,7 @@ const navLinks = [
   { name: 'Playground', href: '/playground' },
   { name: 'Contract', href: '/contract' },
   { name: 'Telemetry', href: '/telemetry' },
-  { name: 'Autopsy', href: '/transaction' },
+  { name: 'Compare', href: '/compare', badge: 'VS MAESTRO' },
   { name: 'Sniper', href: '/sniper' },
   { name: 'Benchmarks', href: '/benchmarks' },
   { name: 'Network', href: '/network' },
