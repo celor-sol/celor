@@ -622,8 +622,7 @@ export default function EndpointsPage() {
 
   const handleRunRequest = async () => {
     setIsExecuting(true);
-    // Simulate real local / edge request with authentic latency
-    await new Promise((r) => setTimeout(r, 80));
+    await new Promise((r) => setTimeout(r, 60));
     setLiveTestResponse(selectedEndpoint.sampleResponse);
     setActiveCodeTab('RESPONSE');
     setIsExecuting(false);
@@ -704,7 +703,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   }, [selectedEndpoint]);
 
   return (
-    <div className="min-h-screen bg-black text-foreground font-sans selection:bg-foreground selection:text-background">
+    <div className="min-h-screen bg-[#070809] text-neutral-100 font-sans selection:bg-white selection:text-black">
       <Navigation
         currentCluster={networkStatus.cluster}
         onClusterChange={switchCluster}
@@ -713,44 +712,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 pb-20 sm:pb-32">
         {/* Sleek Minimal Header */}
-        <div className="pb-8 border-b border-foreground/10 mb-8 sm:mb-12">
-          <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground uppercase tracking-widest mb-3">
-            <span>CELOR</span>
+        <div className="pb-8 border-b border-neutral-800 mb-8 sm:mb-12">
+          <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 uppercase tracking-widest mb-3">
+            <span className="text-white font-bold">CELOR</span>
             <span>/</span>
-            <span className="text-foreground">Official API Reference & Live Console</span>
+            <span className="text-neutral-300">Official API Reference & Live Console</span>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight mb-4 text-foreground">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight mb-4 text-white">
                 Protocol API Endpoints
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl font-sans leading-relaxed">
+              <p className="text-sm sm:text-base text-neutral-400 max-w-2xl font-sans leading-relaxed">
                 Complete, verified reference for Celor’s consensus engine, Direct TPU QUIC routes, Votor BLS certificates,
                 and Jito-compatible drop-in endpoints. Tested under live Devnet and Testnet clusters.
               </p>
             </div>
 
-            {/* Official Token Address Box (Monochrome) */}
-            <div className="p-4 rounded-xl border border-foreground/15 bg-zinc-950/80 font-mono text-xs space-y-2 lg:max-w-md w-full">
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Hash className="w-3.5 h-3.5 text-foreground" />
+            {/* Official Token Address Box (Crisp White & Neutral) */}
+            <div className="p-4 rounded-xl border border-neutral-800 bg-[#0e0f11] font-mono text-xs space-y-2 lg:max-w-md w-full">
+              <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                <span className="flex items-center gap-1.5 text-neutral-300 font-bold">
+                  <Hash className="w-3.5 h-3.5 text-white" />
                   DEFAULT CELOR CONTRACT
                 </span>
-                <span className="px-1.5 py-0.2 rounded border border-foreground/20 text-[10px] text-foreground">
+                <span className="px-1.5 py-0.2 rounded border border-neutral-700 bg-neutral-900 text-[10px] text-neutral-300">
                   MAINNET-BETA
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-black border border-foreground/10">
-                <span className="text-foreground font-bold truncate text-[11px]">
+              <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-black border border-neutral-800">
+                <span className="text-white font-bold truncate text-[11px]">
                   {CELOR_TOKEN.ca}
                 </span>
                 <button
                   onClick={() => handleCopy(CELOR_TOKEN.ca, 'ca-hero')}
-                  className="inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground shrink-0 transition-colors"
+                  className="inline-flex items-center gap-1 text-[10px] text-neutral-300 hover:text-white shrink-0 transition-colors"
                 >
-                  {copiedKey === 'ca-hero' ? <Check className="w-3 h-3 text-foreground" /> : <Copy className="w-3 h-3" />}
+                  {copiedKey === 'ca-hero' ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedKey === 'ca-hero' ? 'COPIED' : 'COPY'}</span>
                 </button>
               </div>
@@ -758,22 +757,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
           </div>
 
           {/* Quick Metrics Header Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-foreground/10 font-mono text-xs">
-            <div className="p-3 rounded-lg border border-foreground/10 bg-zinc-950">
-              <div className="text-[10px] text-muted-foreground uppercase">Live Endpoints</div>
-              <div className="text-lg font-bold text-foreground mt-0.5">{ENDPOINTS.length} Documented</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-800 font-mono text-xs">
+            <div className="p-3.5 rounded-xl border border-neutral-800 bg-[#0e0f11]">
+              <div className="text-[10px] text-neutral-400 uppercase tracking-wider font-semibold">Live Endpoints</div>
+              <div className="text-lg font-bold text-white mt-1">{ENDPOINTS.length} Documented</div>
             </div>
-            <div className="p-3 rounded-lg border border-foreground/10 bg-zinc-950">
-              <div className="text-[10px] text-muted-foreground uppercase">Base Endpoint URL</div>
-              <div className="text-xs font-bold text-foreground truncate mt-1">https://celor.cloud</div>
+            <div className="p-3.5 rounded-xl border border-neutral-800 bg-[#0e0f11]">
+              <div className="text-[10px] text-neutral-400 uppercase tracking-wider font-semibold">Base Endpoint URL</div>
+              <div className="text-xs font-bold text-white truncate mt-1">https://celor.cloud</div>
             </div>
-            <div className="p-3 rounded-lg border border-foreground/10 bg-zinc-950">
-              <div className="text-[10px] text-muted-foreground uppercase">Jito Drop-In Compatibility</div>
-              <div className="text-xs font-bold text-foreground mt-1">100% Wire Compatible</div>
+            <div className="p-3.5 rounded-xl border border-neutral-800 bg-[#0e0f11]">
+              <div className="text-[10px] text-neutral-400 uppercase tracking-wider font-semibold">Jito Compatibility</div>
+              <div className="text-xs font-bold text-white mt-1">100% Wire Compatible</div>
             </div>
-            <div className="p-3 rounded-lg border border-foreground/10 bg-zinc-950">
-              <div className="text-[10px] text-muted-foreground uppercase">Authentication</div>
-              <div className="text-xs font-bold text-foreground mt-1">Open ($0 CapEx)</div>
+            <div className="p-3.5 rounded-xl border border-neutral-800 bg-[#0e0f11]">
+              <div className="text-[10px] text-neutral-400 uppercase tracking-wider font-semibold">Authentication</div>
+              <div className="text-xs font-bold text-white mt-1">Open ($0 CapEx)</div>
             </div>
           </div>
         </div>
@@ -788,8 +787,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-full border transition-all ${
                   selectedCategory === cat
-                    ? 'border-foreground bg-foreground text-black font-bold'
-                    : 'border-foreground/10 bg-zinc-950 text-muted-foreground hover:border-foreground/25 hover:text-foreground'
+                    ? 'border-white bg-white text-black font-bold shadow-md'
+                    : 'border-neutral-800 bg-[#0e0f11] text-neutral-400 hover:border-neutral-600 hover:text-white'
                 }`}
               >
                 {cat}
@@ -798,14 +797,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
           </div>
 
           {/* Search Input */}
-          <div className="relative min-w-[260px]">
-            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative min-w-[280px]">
+            <Search className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search endpoints (e.g. bundles, slot, quic)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-950 border border-foreground/15 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#0e0f11] border border-neutral-800 text-xs font-mono text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-500"
             />
           </div>
         </div>
@@ -815,7 +814,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
           {/* Left: Endpoint Navigation List (5 cols) */}
           <div className="lg:col-span-5 space-y-2 max-h-[850px] overflow-y-auto pr-2 font-mono text-xs">
             {filteredEndpoints.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground border border-foreground/10 rounded-xl bg-zinc-950">
+              <div className="p-8 text-center text-neutral-400 border border-neutral-800 rounded-xl bg-[#0e0f11]">
                 No endpoints matched your search.
               </div>
             ) : (
@@ -830,20 +829,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }}
                     className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'border-foreground bg-foreground/10 text-foreground shadow-md'
-                        : 'border-foreground/10 bg-zinc-950/60 text-muted-foreground hover:border-foreground/20 hover:text-foreground'
+                        ? 'border-white bg-white/10 text-white shadow-lg'
+                        : 'border-neutral-800 bg-[#0e0f11] text-neutral-400 hover:border-neutral-700 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold border border-foreground/20 bg-background text-foreground shrink-0">
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${
+                        ep.method === 'GET'
+                          ? 'border-neutral-600 bg-neutral-800 text-white'
+                          : ep.method === 'POST'
+                          ? 'border-white bg-white text-black'
+                          : 'border-neutral-500 bg-neutral-700 text-white'
+                      }`}>
                         {ep.method}
                       </span>
-                      <span className="truncate font-semibold text-foreground text-[11px]">
+                      <span className="truncate font-semibold text-white text-[11px]">
                         {ep.path}
                       </span>
                     </div>
 
-                    <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:inline">
+                    <span className="text-[10px] text-neutral-400 shrink-0 hidden sm:inline">
                       {ep.category.split(' ')[0]}
                     </span>
                   </button>
@@ -854,35 +859,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
           {/* Right: Detailed Inspector & Live Code Runner (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="p-6 sm:p-8 rounded-2xl border border-foreground/15 bg-zinc-950 shadow-2xl space-y-6">
+            <div className="p-6 sm:p-8 rounded-2xl border border-neutral-800 bg-[#0e0f11] shadow-2xl space-y-6">
               {/* Endpoint Header Bar */}
-              <div className="space-y-3 pb-6 border-b border-foreground/10">
+              <div className="space-y-3 pb-6 border-b border-neutral-800">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-mono font-bold border border-foreground/30 bg-foreground text-black">
+                    <span className="px-2 py-0.5 rounded text-xs font-mono font-bold border border-white bg-white text-black">
                       {selectedEndpoint.method}
                     </span>
-                    <span className="font-mono text-base sm:text-lg text-foreground font-semibold">
+                    <span className="font-mono text-base sm:text-lg text-white font-semibold">
                       {selectedEndpoint.path}
                     </span>
                   </div>
 
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-foreground/15 text-muted-foreground">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300">
                     {selectedEndpoint.category}
                   </span>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-display font-medium text-foreground">
+                <h2 className="text-xl sm:text-2xl font-display font-medium text-white">
                   {selectedEndpoint.title}
                 </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground font-sans leading-relaxed">
+                <p className="text-xs sm:text-sm text-neutral-300 font-sans leading-relaxed">
                   {selectedEndpoint.summary}
                 </p>
 
                 {selectedEndpoint.protocolSpec && (
-                  <div className="text-[11px] font-mono text-muted-foreground pt-1 flex items-center gap-2">
-                    <span className="text-foreground font-bold">Protocol Invariant:</span>
-                    <span className="px-2 py-0.5 rounded bg-foreground/5 border border-foreground/10 text-foreground">
+                  <div className="text-[11px] font-mono text-neutral-400 pt-1 flex items-center gap-2">
+                    <span className="text-white font-bold">Protocol Invariant:</span>
+                    <span className="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-700 text-neutral-200">
                       {selectedEndpoint.protocolSpec}
                     </span>
                   </div>
@@ -892,25 +897,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
               {/* Endpoint Parameters Table if available */}
               {selectedEndpoint.params && selectedEndpoint.params.length > 0 && (
                 <div className="space-y-2.5 font-mono text-xs">
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">
+                  <div className="text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
                     URL Parameters
                   </div>
-                  <div className="border border-foreground/10 rounded-xl overflow-hidden divide-y divide-foreground/5">
+                  <div className="border border-neutral-800 rounded-xl overflow-hidden divide-y divide-neutral-850">
                     {selectedEndpoint.params.map((p, idx) => (
                       <div key={idx} className="p-3 bg-black flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                          <span className="text-foreground font-semibold">{p.name}</span>
-                          <span className="text-muted-foreground text-[10px] ml-1.5">({p.type})</span>
+                          <span className="text-white font-semibold">{p.name}</span>
+                          <span className="text-neutral-400 text-[10px] ml-1.5">({p.type})</span>
                           {p.required && (
-                            <span className="text-[9px] ml-2 px-1 rounded border border-foreground/20 text-foreground">
+                            <span className="text-[9px] ml-2 px-1 rounded border border-neutral-600 bg-neutral-800 text-white font-bold">
                               REQUIRED
                             </span>
                           )}
-                          <div className="text-[11px] text-muted-foreground font-sans mt-0.5">{p.description}</div>
+                          <div className="text-[11px] text-neutral-400 font-sans mt-0.5">{p.description}</div>
                         </div>
                         {p.default && (
-                          <div className="text-[10px] text-muted-foreground shrink-0">
-                            Default: <code className="text-foreground">{p.default}</code>
+                          <div className="text-[10px] text-neutral-400 shrink-0">
+                            Default: <code className="text-white bg-neutral-900 px-1 py-0.5 rounded">{p.default}</code>
                           </div>
                         )}
                       </div>
@@ -921,7 +926,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
               {/* Interactive Request & Code Tabs */}
               <div className="space-y-3 font-mono text-xs">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-foreground/10 pb-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-2">
                   <div className="flex items-center gap-1.5">
                     {(['CURL', 'TYPESCRIPT', 'RUST', 'RESPONSE'] as CodeTab[]).map((tab) => (
                       <button
@@ -929,8 +934,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         onClick={() => setActiveCodeTab(tab)}
                         className={`px-3 py-1 rounded-lg text-[11px] transition-all ${
                           activeCodeTab === tab
-                            ? 'bg-foreground text-black font-bold'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+                            ? 'bg-white text-black font-bold shadow'
+                            : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
                         }`}
                       >
                         {tab}
@@ -943,9 +948,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                       onClick={handleRunRequest}
                       disabled={isExecuting}
                       size="sm"
-                      className="h-8 px-3.5 rounded-lg bg-foreground text-black hover:bg-foreground/90 font-mono text-[11px] font-bold"
+                      className="h-8 px-3.5 rounded-lg bg-white text-black hover:bg-neutral-200 font-mono text-[11px] font-bold"
                     >
-                      {isExecuting ? <RefreshCw className="w-3 h-3 animate-spin mr-1.5" /> : <Play className="w-3 h-3 mr-1.5" />}
+                      {isExecuting ? <RefreshCw className="w-3 h-3 animate-spin mr-1.5" /> : <Play className="w-3 h-3 mr-1.5 fill-black" />}
                       <span>{isExecuting ? 'Sending...' : 'Test Endpoint'}</span>
                     </Button>
                     <button
@@ -960,17 +965,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             : JSON.stringify(liveTestResponse || selectedEndpoint.sampleResponse, null, 2);
                         handleCopy(code, 'tab-code');
                       }}
-                      className="p-1.5 rounded-lg border border-foreground/15 text-muted-foreground hover:text-foreground transition-colors"
+                      className="p-1.5 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white bg-neutral-900 transition-colors"
                       title="Copy Code"
                     >
-                      {copiedKey === 'tab-code' ? <Check className="w-3.5 h-3.5 text-foreground" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedKey === 'tab-code' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
 
                 {/* Code Viewer Panel */}
-                <div className="relative rounded-xl border border-foreground/15 bg-black p-4 font-mono text-xs overflow-x-auto max-h-[380px]">
-                  <pre className="text-zinc-200 leading-relaxed">
+                <div className="relative rounded-xl border border-neutral-800 bg-black p-4 font-mono text-xs overflow-x-auto max-h-[380px]">
+                  <pre className="text-neutral-200 leading-relaxed font-mono">
                     {activeCodeTab === 'CURL' && curlCode}
                     {activeCodeTab === 'TYPESCRIPT' && tsCode}
                     {activeCodeTab === 'RUST' && rustCode}
@@ -981,13 +986,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
               {/* Jito Drop-In Quick Setup Box if bundles selected */}
               {selectedEndpoint.id.includes('bundles') && (
-                <div className="p-4 rounded-xl border border-foreground/15 bg-black space-y-2 font-mono text-xs">
-                  <div className="flex items-center justify-between text-foreground font-bold">
+                <div className="p-4 rounded-xl border border-neutral-800 bg-black space-y-2 font-mono text-xs">
+                  <div className="flex items-center justify-between text-white font-bold">
                     <span>⚡ JITO CLIENT DROP-IN CONFIGURATION</span>
-                    <span className="text-[10px] text-muted-foreground">$0 BRIBE ALLOWED</span>
+                    <span className="text-[10px] text-neutral-400">$0 BRIBE ALLOWED</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground font-sans leading-relaxed">
-                    Replace your existing Jito Block Engine URL with <code className="text-foreground">https://celor.cloud/api/v1/bundles</code>.
+                  <p className="text-[11px] text-neutral-300 font-sans leading-relaxed">
+                    Replace your existing Jito Block Engine URL with <code className="text-white bg-neutral-900 px-1 py-0.5 rounded">https://celor.cloud/api/v1/bundles</code>.
                     Celor evaluates the leader slot in 0.50 µs and dispatches directly to the leader TPU via QUIC, completely eliminating the 0.01 SOL Jito bribe requirement.
                   </p>
                 </div>
@@ -997,21 +1002,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         </div>
 
         {/* Global Developer Documentation Footer */}
-        <div className="mt-16 p-6 sm:p-10 rounded-3xl border border-foreground/15 bg-zinc-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="mt-16 p-6 sm:p-10 rounded-3xl border border-neutral-800 bg-[#0e0f11] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h3 className="text-lg sm:text-xl font-display font-medium text-foreground">
+            <h3 className="text-lg sm:text-xl font-display font-medium text-white">
               Run Celor Server Locally ($0 Budget Constraint)
             </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground font-sans max-w-2xl">
+            <p className="text-xs sm:text-sm text-neutral-400 font-sans max-w-2xl">
               Clone the open-source repository and start your own local consensus engine and REST/WS server with a single command.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="p-2.5 px-4 rounded-xl bg-black border border-foreground/15 font-mono text-xs text-foreground">
+            <div className="p-2.5 px-4 rounded-xl bg-black border border-neutral-800 font-mono text-xs text-white">
               <code>cargo run -p chrono-cli -- serve --port 8900</code>
             </div>
-            <Button asChild variant="outline" className="border-foreground/20 font-mono text-xs h-10 px-5 rounded-xl">
+            <Button asChild variant="outline" className="border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-white font-mono text-xs h-10 px-5 rounded-xl">
               <Link href="/developers">View Developer SDK</Link>
             </Button>
           </div>
