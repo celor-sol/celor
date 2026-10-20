@@ -33,6 +33,7 @@ const navLinks = [
   { name: 'Developers', href: '/developers' },
   { name: 'Protocol', href: '/protocol' },
   { name: 'Updates', href: '/updates' },
+  { name: 'Endpoints', href: '/endpoints', badge: 'API' },
 ];
 
 const CLUSTER_ITEMS: {
