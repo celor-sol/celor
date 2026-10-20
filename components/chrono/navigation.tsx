@@ -34,6 +34,7 @@ const navLinks = [
   { name: 'Protocol', href: '/protocol' },
   { name: 'Updates', href: '/updates' },
   { name: 'Endpoints', href: '/endpoints', badge: 'API' },
+  { name: 'Upgrade', href: '/upgrade', badge: 'EPOCH 1064' },
 ];
 
 const CLUSTER_ITEMS: {
