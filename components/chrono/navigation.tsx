@@ -121,6 +121,8 @@ export function Navigation({
     CLUSTER_ITEMS.find((c) => currentCluster.includes('devnet')) ||
     CLUSTER_ITEMS[0];
 
+  const isDarkPage = pathname === '/endpoints' || pathname === '/compare';
+
   return (
     <header
       className={`fixed z-50 transition-all duration-500 ${
@@ -130,7 +132,9 @@ export function Navigation({
       <nav
         className={`mx-auto transition-all duration-500 ${
           isScrolled || isMobileMenuOpen
-            ? 'bg-background/90 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-xl max-w-[1400px]'
+            ? isDarkPage
+              ? 'bg-[#0e0f11]/90 backdrop-blur-xl border border-neutral-800 rounded-2xl shadow-xl max-w-[1400px]'
+              : 'bg-background/90 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-xl max-w-[1400px]'
             : 'bg-transparent max-w-[1440px]'
         }`}
       >
@@ -153,14 +157,14 @@ export function Navigation({
             <span
               className={`font-display tracking-tight transition-all duration-500 font-semibold ${
                 isScrolled ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
-              }`}
+              } ${isDarkPage ? 'text-white' : 'text-foreground'}`}
             >
               CELOR
             </span>
             <span
-              className={`text-muted-foreground font-mono transition-all duration-500 ${
+              className={`font-mono transition-all duration-500 ${
                 isScrolled ? 'text-[9px] mt-0.5' : 'text-[11px] mt-1'
-              }`}
+              } ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'}`}
             >
               SOL
             </span>
@@ -175,22 +179,32 @@ export function Navigation({
                   key={link.name}
                   href={link.href}
                   className={`text-xs xl:text-sm whitespace-nowrap transition-colors duration-200 relative group font-sans ${
-                    isActive ? 'text-foreground font-medium' : 'text-foreground/70 hover:text-foreground'
+                    isDarkPage
+                      ? isActive
+                        ? 'text-white font-medium'
+                        : 'text-neutral-400 hover:text-white'
+                      : isActive
+                      ? 'text-foreground font-medium'
+                      : 'text-foreground/70 hover:text-foreground'
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
                     {link.name}
                     {link.badge && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 uppercase animate-pulse">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
+                        isDarkPage
+                          ? 'bg-neutral-800 text-neutral-200 border border-neutral-700'
+                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse'
+                      }`}>
+                        {!isDarkPage && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
                         {link.badge}
                       </span>
                     )}
                   </span>
                   <span
-                    className={`absolute -bottom-1 left-0 h-px bg-foreground transition-all duration-300 ${
-                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}
+                    className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                      isDarkPage ? 'bg-white' : 'bg-foreground'
+                    } ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}
                   />
                 </Link>
               );
@@ -204,7 +218,11 @@ export function Navigation({
               <button
                 type="button"
                 onClick={() => setIsClusterDropdownOpen(!isClusterDropdownOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-foreground/10 bg-foreground/[0.03] hover:bg-foreground/[0.06] text-xs font-mono transition-all duration-200 whitespace-nowrap"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-mono transition-all duration-200 whitespace-nowrap ${
+                  isDarkPage
+                    ? 'border-neutral-800 bg-[#0e0f11] hover:bg-neutral-900 text-neutral-300'
+                    : 'border-foreground/10 bg-foreground/[0.03] hover:bg-foreground/[0.06] text-foreground'
+                }`}
                 aria-label="Select Solana Cluster"
               >
                 <span
@@ -216,19 +234,29 @@ export function Navigation({
                       : 'bg-purple-400'
                   }`}
                 />
-                <span className="font-medium text-foreground">{activeClusterObj.label}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isClusterDropdownOpen ? 'rotate-180' : ''}`} />
+                <span className={`font-medium ${isDarkPage ? 'text-white' : 'text-foreground'}`}>{activeClusterObj.label}</span>
+                <ChevronDown className={`w-3.5 h-3.5 ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'} transition-transform duration-200 ${isClusterDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Cluster Dropdown Menu */}
               {isClusterDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-72 p-2 rounded-2xl bg-background/95 backdrop-blur-2xl border border-foreground/15 shadow-2xl z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-2 border-b border-foreground/10 mb-1 flex items-center justify-between">
-                    <span className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">Select Cluster</span>
+                <div className={`absolute right-0 mt-2 w-72 p-2 rounded-2xl backdrop-blur-2xl border shadow-2xl z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150 ${
+                  isDarkPage
+                    ? 'bg-[#0e0f11]/95 border-neutral-800 text-white'
+                    : 'bg-background/95 border-foreground/15 text-foreground'
+                }`}>
+                  <div className={`px-3 py-2 border-b mb-1 flex items-center justify-between ${
+                    isDarkPage ? 'border-neutral-800' : 'border-foreground/10'
+                  }`}>
+                    <span className={`text-[10px] uppercase font-semibold tracking-wider ${
+                      isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'
+                    }`}>Select Cluster</span>
                     <Link
                       href="/clusters"
                       onClick={() => setIsClusterDropdownOpen(false)}
-                      className="text-[10px] text-foreground underline underline-offset-2 hover:text-muted-foreground"
+                      className={`text-[10px] underline underline-offset-2 ${
+                        isDarkPage ? 'text-white hover:text-neutral-300' : 'text-foreground hover:text-muted-foreground'
+                      }`}
                     >
                       All Clusters Hub →
                     </Link>
@@ -247,7 +275,11 @@ export function Navigation({
                           }}
                           className={`flex items-center justify-between p-2.5 rounded-xl transition-all ${
                             isSelected
-                              ? 'bg-foreground/10 text-foreground font-semibold'
+                              ? isDarkPage
+                                ? 'bg-neutral-800 text-white font-semibold'
+                                : 'bg-foreground/10 text-foreground font-semibold'
+                              : isDarkPage
+                              ? 'hover:bg-neutral-900 text-neutral-400 hover:text-white'
                               : 'hover:bg-foreground/5 text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -267,7 +299,7 @@ export function Navigation({
                             <span className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${c.badgeColor}`}>
                               {c.id === 'devnet' || c.id === 'testnet' ? 'ALPENGLOW' : c.id === 'mainnet-beta' ? 'TOWER_BFT' : 'LAB'}
                             </span>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-foreground shrink-0" />}
+                            {isSelected && <Check className={`w-3.5 h-3.5 shrink-0 ${isDarkPage ? 'text-white' : 'text-foreground'}`} />}
                           </div>
                         </Link>
                       );
@@ -278,24 +310,32 @@ export function Navigation({
             </div>
 
             {/* Live Ingestion Indicator */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-foreground/10 text-xs font-mono whitespace-nowrap">
+            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-mono whitespace-nowrap ${
+              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/10'
+            }`}>
               <span
                 className={`w-2 h-2 rounded-full shrink-0 ${
                   connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
                 }`}
               />
-              <span className="text-muted-foreground text-[11px]">
+              <span className={`text-[11px] ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'}`}>
                 {connected ? 'LIVE' : 'CONNECTING'}
               </span>
             </div>
 
             {/* Token CA & Social */}
-            <div className="flex items-center gap-2 border-l border-foreground/10 pl-4 ml-2">
+            <div className={`flex items-center gap-2 border-l pl-4 ml-2 ${
+              isDarkPage ? 'border-neutral-800' : 'border-foreground/10'
+            }`}>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(CELOR_TOKEN.ca);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/[0.03] hover:bg-foreground/[0.08] border border-foreground/10 transition-colors text-xs font-mono text-muted-foreground hover:text-foreground"
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors text-xs font-mono ${
+                  isDarkPage
+                    ? 'bg-[#0e0f11] hover:bg-neutral-900 border-neutral-800 text-neutral-300 hover:text-white'
+                    : 'bg-foreground/[0.03] hover:bg-foreground/[0.08] border-foreground/10 text-muted-foreground hover:text-foreground'
+                }`}
                 title="Copy Contract Address"
               >
                 <span>{CELOR_TOKEN.shortCa}</span>
@@ -305,7 +345,11 @@ export function Navigation({
                 href={CELOR_TOKEN.xUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-foreground/5"
+                className={`p-1.5 transition-colors rounded-full ${
+                  isDarkPage
+                    ? 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+                }`}
                 title="Follow on X"
               >
                 <XIcon className="w-4 h-4" />
@@ -316,9 +360,11 @@ export function Navigation({
             <Button
               asChild
               size="sm"
-              className={`bg-foreground hover:bg-foreground/90 text-background rounded-full transition-all duration-300 font-sans whitespace-nowrap ${
-                isScrolled ? 'px-3.5 h-8 text-xs' : 'px-5 h-9 text-xs'
-              }`}
+              className={`rounded-full transition-all duration-300 font-sans whitespace-nowrap ${
+                isDarkPage
+                  ? 'bg-white hover:bg-neutral-200 text-black font-semibold'
+                  : 'bg-foreground hover:bg-foreground/90 text-background'
+              } ${isScrolled ? 'px-3.5 h-8 text-xs' : 'px-5 h-9 text-xs'}`}
             >
               <Link href="/transaction">Autopsy</Link>
             </Button>
@@ -326,13 +372,17 @@ export function Navigation({
 
           {/* Mobile Right Controls: Cluster Indicator + Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
-            <span className="flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border border-foreground/10 bg-foreground/[0.03]">
+            <span className={`flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border ${
+              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/10 bg-foreground/[0.03]'
+            }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="font-medium text-foreground">{activeClusterObj.shortLabel}</span>
+              <span className={`font-medium ${isDarkPage ? 'text-white' : 'text-foreground'}`}>{activeClusterObj.shortLabel}</span>
             </span>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-foreground rounded-lg hover:bg-foreground/5 transition-colors"
+              className={`p-2 rounded-lg transition-colors ${
+                isDarkPage ? 'text-white hover:bg-neutral-900' : 'text-foreground hover:bg-foreground/5'
+              }`}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -347,7 +397,9 @@ export function Navigation({
 
       {/* Mobile Menu - Full Screen Overlay */}
       <div
-        className={`lg:hidden fixed inset-0 bg-background/98 backdrop-blur-2xl z-50 transition-all duration-500 ${
+        className={`lg:hidden fixed inset-0 backdrop-blur-2xl z-50 transition-all duration-500 ${
+          isDarkPage ? 'bg-[#090a0b]/98 text-white' : 'bg-background/98 text-foreground'
+        } ${
           isMobileMenuOpen
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -356,19 +408,27 @@ export function Navigation({
       >
         <div className="flex flex-col h-full px-5 sm:px-6 pt-5 pb-8 overflow-y-auto">
           {/* Top Bar inside Drawer */}
-          <div className="flex items-center justify-between pb-4 border-b border-foreground/10 mb-4">
+          <div className={`flex items-center justify-between pb-4 border-b mb-4 ${
+            isDarkPage ? 'border-neutral-800' : 'border-foreground/10'
+          }`}>
             <div className="flex items-center gap-2.5">
               <img
                 src="/celor-logo.png?v=5"
                 alt="CELOR"
                 className="w-7 h-7 object-contain shrink-0"
               />
-              <span className="font-display tracking-tight text-xl font-semibold">CELOR</span>
-              <span className="text-muted-foreground font-mono text-[10px]">SOL</span>
+              <span className={`font-display tracking-tight text-xl font-semibold ${
+                isDarkPage ? 'text-white' : 'text-foreground'
+              }`}>CELOR</span>
+              <span className={`font-mono text-[10px] ${
+                isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'
+              }`}>SOL</span>
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 text-foreground rounded-lg hover:bg-foreground/5 transition-colors"
+              className={`p-2 rounded-lg transition-colors ${
+                isDarkPage ? 'text-white hover:bg-neutral-900' : 'text-foreground hover:bg-foreground/5'
+              }`}
               aria-label="Close menu"
             >
               <X className="w-6 h-6" />
@@ -385,7 +445,13 @@ export function Navigation({
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`text-2xl sm:text-3xl font-display transition-all duration-300 flex items-center justify-between py-1 ${
-                    isActive ? 'text-foreground font-semibold pl-2 border-l-2 border-foreground' : 'text-foreground/75 hover:text-foreground'
+                    isDarkPage
+                      ? isActive
+                        ? 'text-white font-semibold pl-2 border-l-2 border-white'
+                        : 'text-neutral-300 hover:text-white'
+                      : isActive
+                      ? 'text-foreground font-semibold pl-2 border-l-2 border-foreground'
+                      : 'text-foreground/75 hover:text-foreground'
                   }`}
                   style={{
                     transitionDelay: isMobileMenuOpen ? `${i * 30}ms` : '0ms',
@@ -394,25 +460,35 @@ export function Navigation({
                   <span className="flex items-center gap-2">
                     <span>{link.name}</span>
                     {link.badge && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 uppercase">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                        isDarkPage
+                          ? 'bg-neutral-800 text-neutral-200 border border-neutral-700'
+                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                      }`}>
                         {link.badge}
                       </span>
                     )}
                   </span>
-                  <span className="text-xs font-mono text-muted-foreground">→</span>
+                  <span className={`text-xs font-mono ${isDarkPage ? 'text-neutral-500' : 'text-muted-foreground'}`}>→</span>
                 </Link>
               );
             })}
           </div>
 
           {/* Cluster Selection in Mobile Menu */}
-          <div className="pt-4 border-t border-foreground/10 space-y-3">
+          <div className={`pt-4 border-t space-y-3 ${
+            isDarkPage ? 'border-neutral-800' : 'border-foreground/10'
+          }`}>
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-muted-foreground uppercase tracking-wider text-[11px]">Active Solana Cluster</span>
+              <span className={`uppercase tracking-wider text-[11px] ${
+                isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'
+              }`}>Active Solana Cluster</span>
               <Link
                 href="/clusters"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-foreground underline underline-offset-4 text-[11px]"
+                className={`text-[11px] underline underline-offset-4 ${
+                  isDarkPage ? 'text-white' : 'text-foreground'
+                }`}
               >
                 All Clusters
               </Link>
@@ -431,7 +507,11 @@ export function Navigation({
                     idx === CLUSTER_ITEMS.length - 1 ? 'col-span-2' : ''
                   } ${
                     currentCluster === c.id
-                      ? 'bg-foreground text-background border-foreground font-semibold'
+                      ? isDarkPage
+                        ? 'bg-white text-black font-semibold'
+                        : 'bg-foreground text-background border-foreground font-semibold'
+                      : isDarkPage
+                      ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#0e0f11]'
                       : 'border-foreground/10 text-muted-foreground hover:text-foreground bg-foreground/[0.01]'
                   }`}
                 >

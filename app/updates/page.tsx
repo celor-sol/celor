@@ -16,14 +16,13 @@ import {
   FileCode,
   Check,
   Copy,
-  Terminal,
 } from 'lucide-react';
 
 interface UpdateMilestone {
   id: string;
   date: string;
   month: 'OCTOBER 2026' | 'SEPTEMBER 2026' | 'AUGUST 2026';
-  category: 'CELOR CORE' | 'PROTOCOL TRANSITION' | 'VALIDATOR INFRA' | 'SECURITY & AUDITS';
+  category: 'CELOR ENGINE' | 'PROTOCOL TRANSITION' | 'VALIDATOR MILESTONE' | 'SECURITY & BENCHMARKS';
   title: string;
   summary: string;
   details: string[];
@@ -64,7 +63,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'interactive-playground-sandbox',
     date: 'OCTOBER 15, 2026',
     month: 'OCTOBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'Alpenglow Interactive Playground & Red-Team Stress Sandbox (Phase 9)',
     summary:
       'Launched the interactive browser playground and red-team simulation suite replicating 9 complex Alpenglow consensus perturbations under zero network execution leakage.',
@@ -111,7 +110,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'abandoned-tx-alert-watcher',
     date: 'OCTOBER 09, 2026',
     month: 'OCTOBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'Real-Time Abandoned Transaction Alerts & SIMD-0337 Forensic Watcher',
     summary:
       'Engineered sub-millisecond detection and instant alert dispatch for transactions dropped by Alpenglow parent-switch candidate invalidation, preventing phantom buys.',
@@ -134,7 +133,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'trench-sniper-engine-phase-8',
     date: 'OCTOBER 06, 2026',
     month: 'OCTOBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'Phase 8: Trench Execution Engine & 0.50 µs Decision Pipeline',
     summary:
       'Engineered the pure-Rust SniperEngine in chrono-server with thread-safe LRU deduplication, leader boundary evaluation, and 9-stage execution lifecycle tracking.',
@@ -158,7 +157,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'phase-7-production-readiness',
     date: 'OCTOBER 05, 2026',
     month: 'OCTOBER 2026',
-    category: 'SECURITY & AUDITS',
+    category: 'SECURITY & BENCHMARKS',
     title: 'Phase 7 Production Readiness: BLS12-381 Cryptographic Integrity & Evidence Graph',
     summary:
       'Completed production hardening across consensus verification, multi-source conflict reconciliation, and zero-allocation memory safety with 78 automated test suites passing.',
@@ -182,7 +181,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'direct-tpu-quic-route',
     date: 'OCTOBER 04, 2026',
     month: 'OCTOBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'Direct Leader TPU QUIC Route & 2x2 Factorial Benchmark Matrix (Phase 5)',
     summary:
       'Shipped pure-protocol DirectLeaderQuicRoute in chrono-bench, enabling point-to-point UDP/QUIC transaction dispatch directly into validator TPU sockets, bypassing public RPC relay hops.',
@@ -205,7 +204,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'chrono-core-bootstrap-phase-1-4',
     date: 'OCTOBER 03, 2026',
     month: 'OCTOBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'CHRONO Core In-Memory Consensus Pipeline & BankGraph Bootstrap (Phases 1–4)',
     summary:
       'Established the core Rust architecture across chrono-core, chrono-bank, and chrono-adapters, enforcing strict provider independence and microsecond pipeline execution.',
@@ -228,7 +227,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'agave-4-4-candidate-bank-hooks',
     date: 'SEPTEMBER 28, 2026',
     month: 'SEPTEMBER 2026',
-    category: 'VALIDATOR INFRA',
+    category: 'VALIDATOR MILESTONE',
     title: 'Agave 4.4 Upstream Conformance: Candidate Bank Arena & Block Footers',
     summary:
       'Mapped Celor internal types to upstream Agave 4.4 validator changes, establishing strict separation between validator-local bank_id and cluster-wide blockhash.',
@@ -247,7 +246,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'phase-6-geyser-ipc-plugin',
     date: 'SEPTEMBER 18, 2026',
     month: 'SEPTEMBER 2026',
-    category: 'CELOR CORE',
+    category: 'CELOR ENGINE',
     title: 'Phase 6: Full-Fidelity Geyser IPC Telemetry Plugin Architecture',
     summary:
       'Engineered the open-source chrono-geyser-plugin enabling Level 4 validator-side telemetry and direct Unix Domain Socket memory-mapped streaming.',
@@ -267,7 +266,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'multi-provider-normalization-spec',
     date: 'SEPTEMBER 08, 2026',
     month: 'SEPTEMBER 2026',
-    category: 'SECURITY & AUDITS',
+    category: 'SECURITY & BENCHMARKS',
     title: 'Multi-Provider Stream Normalization & Conflict Resolution Spec',
     summary:
       'Formalized the vendor-neutral ProviderAdapter abstraction layer across Helius LaserStream, Triton Yellowstone gRPC, WebSocket feeds, and Local Geyser plugins.',
@@ -334,7 +333,7 @@ const MILESTONES: UpdateMilestone[] = [
     id: 'simd-0298-block-footer-spec',
     date: 'AUGUST 04, 2026',
     month: 'AUGUST 2026',
-    category: 'VALIDATOR INFRA',
+    category: 'VALIDATOR MILESTONE',
     title: 'SIMD-0298: Block Footer and Producer Timing Specifications',
     summary:
       'Formalized the block footer format in Agave, enabling high-precision validator producer timestamps and certificate trailers on sealed blocks.',
@@ -351,7 +350,7 @@ const MILESTONES: UpdateMilestone[] = [
   },
 ];
 
-type CategoryFilter = 'ALL' | 'CELOR CORE' | 'PROTOCOL TRANSITION' | 'VALIDATOR INFRA' | 'SECURITY & AUDITS';
+type CategoryFilter = 'ALL' | 'CELOR ENGINE' | 'PROTOCOL TRANSITION' | 'VALIDATOR MILESTONE' | 'SECURITY & BENCHMARKS';
 
 export default function UpdatesPage() {
   const { networkStatus, switchCluster } = useChrono();
@@ -369,116 +368,105 @@ export default function UpdatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0b] text-[#ececed] flex flex-col font-mono text-xs selection:bg-neutral-800">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-foreground selection:text-background">
       <Navigation
         currentCluster={networkStatus.cluster}
         onClusterChange={switchCluster}
         connected={networkStatus.connected}
       />
 
-      <main className="flex-1 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 pt-24 sm:pt-28 pb-16 w-full space-y-10">
-        {/* Header Section (Zero Marketing Fluff, Clean Monochrome) */}
-        <div className="border border-neutral-800 bg-[#0e0f11] p-5 sm:p-6 rounded-xl space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-800 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 font-bold text-[10px]">
-                CELOR PROTOCOL SPEC
-              </span>
-              <span className="text-neutral-600">|</span>
-              <span className="text-neutral-400 text-[11px]">
-                ALPENGLOW TRANSITION &amp; ENGINEERING RELEASES
-              </span>
-            </div>
-            <div className="text-[11px] text-neutral-400">
-              CLUSTER: <strong className="text-white">{networkStatus.cluster?.toUpperCase() ?? 'DEVNET'}</strong>
-            </div>
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+        {/* Header */}
+        <div className="pb-6 sm:pb-8 border-b border-foreground/10 mb-8 sm:mb-12">
+          <div className="flex items-center gap-2 text-[11px] sm:text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3">
+            <span>CELOR</span>
+            <span>/</span>
+            <span className="text-foreground">Protocol Transition Updates & Changelog</span>
           </div>
-
-          <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-white uppercase font-mono">
-            Alpenglow Transition Timeline &amp; Engineering Changelog
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight mb-4 text-foreground">
+            Alpenglow Transition Timeline & Engineering Changelog
           </h1>
-          <p className="text-neutral-400 text-xs leading-relaxed max-w-4xl font-sans">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl font-sans leading-relaxed">
             Chronological engineering record of the Solana consensus transition from legacy TowerBFT to Alpenglow Votor,
             along with empirical CELOR low-level infrastructure releases, microsecond benchmarks, and security audits.
           </p>
 
-          {/* Quick Stats Grid - Pure Monochrome */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-neutral-800/80 font-mono">
-            <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60">
-              <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Test Suites</div>
-              <div className="text-base sm:text-lg font-bold text-white">78 / 78 Passed</div>
-              <div className="text-[10px] text-neutral-500 mt-0.5">0 Failed • 0 Panics</div>
+          {/* Quick Stats Grid - Clean Monochrome Styling */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 sm:mt-8 pt-6 border-t border-foreground/10 font-mono">
+            <div className="p-3.5 sm:p-4 rounded-xl border border-foreground/10 bg-foreground/[0.015]">
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Test Suites</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">78 / 78 Passed</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">0 Failed • 0 Panics</div>
             </div>
-            <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60">
-              <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Decision Engine</div>
-              <div className="text-base sm:text-lg font-bold text-white">0.50 µs</div>
-              <div className="text-[10px] text-neutral-500 mt-0.5">[MEASURED] p50 Latency</div>
+            <div className="p-3.5 sm:p-4 rounded-xl border border-foreground/10 bg-foreground/[0.015]">
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Decision Engine</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">0.50 µs</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">[MEASURED] p50 Latency</div>
             </div>
-            <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60">
-              <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Throughput</div>
-              <div className="text-base sm:text-lg font-bold text-white">1,003,526</div>
-              <div className="text-[10px] text-neutral-500 mt-0.5">Ops / Sec Ingestion</div>
+            <div className="p-3.5 sm:p-4 rounded-xl border border-foreground/10 bg-foreground/[0.015]">
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Throughput</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">1,003,526</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">Ops / Sec Ingestion</div>
             </div>
-            <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900/60">
-              <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Ghost Block Loss</div>
-              <div className="text-base sm:text-lg font-bold text-white">$0.00 Bribe</div>
-              <div className="text-[10px] text-neutral-500 mt-0.5">Instant Fork Abort</div>
+            <div className="p-3.5 sm:p-4 rounded-xl border border-foreground/10 bg-foreground/[0.015]">
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Ghost Block Loss</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">$0.00 Bribe</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">Instant Fork Abort</div>
             </div>
           </div>
         </div>
 
-        {/* Featured Showcase: Real-Time Abandoned TX Watcher (Pure Native Console, Zero Dummy Images) */}
-        <div className="border border-neutral-800 bg-[#0e0f11] p-5 sm:p-6 rounded-xl space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800 pb-3">
+        {/* Featured Showcase: Real-Time Abandoned TX Watcher (Pure Native Component, No Dummy Images) */}
+        <section className="mb-12 sm:mb-16 rounded-2xl sm:rounded-3xl border border-foreground/15 bg-foreground/[0.02] p-5 sm:p-8 lg:p-10 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-200 font-bold text-[10px]">
-                FEATURED SHIP • OCTOBER 2026
-              </span>
-              <span className="text-neutral-600">|</span>
-              <span className="text-neutral-400 text-[11px]">
-                SIMD-0337 PARENT INVALIDATION WATCHER
+              <span className="w-2 h-2 rounded-full bg-foreground" />
+              <span className="text-xs font-mono font-bold tracking-widest text-foreground uppercase">
+                FEATURED ARCHITECTURAL SHIP • OCTOBER 2026
               </span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-neutral-700 bg-neutral-900 text-neutral-300 font-semibold">
-              LIVE IN PRODUCTION
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] sm:text-xs font-mono px-2.5 py-1 rounded-full border border-foreground/20 text-foreground bg-foreground/5 font-semibold">
+                LIVE IN PRODUCTION
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
             <div className="lg:col-span-6 space-y-4">
-              <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-white uppercase font-mono">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-medium tracking-tight text-foreground">
                 Real-Time Abandoned Transaction Alerts
               </h2>
-              <p className="text-xs text-neutral-400 leading-relaxed font-sans">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-sans">
                 Under Alpenglow, 1 slot can generate multiple candidate banks. When an incoming leader executes a
                 fast handover (SIMD-0337), uncommitted candidate banks are instantly invalidated. Celor fires
                 microsecond alerts the instant a transaction is dropped by an abandoned candidate fork.
               </p>
 
-              <div className="space-y-2 pt-1 font-mono text-[11px] text-neutral-300">
+              <div className="space-y-2.5 pt-2 font-mono text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <span className="text-neutral-400 font-bold">✓</span>
+                  <span className="text-foreground font-bold">✓</span>
                   <span><strong>Zero Silent Reorgs:</strong> Instant feedback instead of waiting on RPC poll timeouts.</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-neutral-400 font-bold">✓</span>
+                  <span className="text-foreground font-bold">✓</span>
                   <span><strong>SIMD-0337 Telemetry:</strong> Shows dropped bank ID, canonical state, and event slot.</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-neutral-400 font-bold">✓</span>
+                  <span className="text-foreground font-bold">✓</span>
                   <span><strong>1-Click Autopsy:</strong> Deep-links directly to full 9-stage consensus trace.</span>
                 </div>
               </div>
 
-              <div className="pt-3 flex flex-wrap items-center gap-3">
-                <Button asChild className="bg-neutral-100 hover:bg-white text-neutral-950 font-mono font-bold text-xs h-10 px-4 rounded-lg">
+              <div className="pt-4 flex flex-wrap items-center gap-3">
+                <Button asChild className="bg-foreground hover:bg-foreground/90 text-background font-sans font-medium text-xs sm:text-sm h-11 px-5 rounded-full">
                   <Link href="/transaction?signature=simd0337-reorg-abandoned-tx-8xLz9Q">
-                    <span>Test Abandoned TX Autopsy</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    <span>Test Live Abandoned TX in Autopsy</span>
+                    <ArrowRight className="w-4 h-4 ml-1.5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="border-neutral-700 text-neutral-300 hover:text-white font-mono text-xs h-10 px-4 rounded-lg bg-neutral-900/60">
+                <Button asChild variant="outline" className="border-foreground/20 font-sans text-xs sm:text-sm h-11 px-5 rounded-full">
                   <Link href="/playground">
                     Explore Playground Sandbox
                   </Link>
@@ -486,103 +474,103 @@ export default function UpdatesPage() {
               </div>
             </div>
 
-            {/* Right: Authentic Native Telemetry & Toast Card Preview (100% Code Console, No Dummy Images) */}
+            {/* Right: Authentic Native Telemetry & Toast Card Preview (100% Code, No Dummy Images) */}
             <div className="lg:col-span-6">
-              <div className="rounded-xl border border-neutral-800 bg-[#090a0b] p-4 sm:p-5 shadow-2xl font-mono text-xs space-y-3.5">
-                {/* Console Header */}
-                <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2.5">
+              <div className="rounded-2xl border border-foreground/15 bg-background p-5 sm:p-6 shadow-xl font-mono text-xs space-y-4">
+                {/* Simulated Header */}
+                <div className="flex items-center justify-between border-b border-foreground/10 pb-3">
                   <div className="flex items-center gap-2">
-                    <Terminal className="w-3.5 h-3.5 text-neutral-400" />
-                    <span className="text-[11px] text-neutral-400 uppercase tracking-widest font-bold">
+                    <span className="w-2.5 h-2.5 rounded-full border border-foreground/40 bg-foreground/20" />
+                    <span className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">
                       SIMD-0337 Consensus Stream
                     </span>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded border border-neutral-800 bg-neutral-900 text-neutral-400 font-mono">
-                    STATUS: ACTIVE
+                  <span className="text-[10px] px-2 py-0.5 rounded border border-foreground/20 text-foreground bg-foreground/5 font-semibold">
+                    REAL-TIME TELEMETRY
                   </span>
                 </div>
 
                 {/* Native Celor Toast Component Preview */}
-                <div className="rounded-lg border border-neutral-700/80 bg-neutral-900/80 p-3.5 space-y-3">
+                <div className="rounded-xl border border-foreground/20 bg-foreground/[0.03] p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-white" />
-                      <span className="text-xs font-bold uppercase tracking-wider text-white">
+                      <AlertTriangle className="w-4 h-4 text-foreground" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-foreground">
                         Transaction Abandoned
                       </span>
                     </div>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded border border-neutral-700 bg-neutral-800 text-neutral-300 font-mono">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded border border-foreground/20 text-foreground bg-foreground/10">
                       UPDATE_PARENT
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-neutral-400 leading-relaxed font-sans">
-                    Transaction dropped from uncommitted candidate bank due to Fast Leader Handover (SIMD-0337).
+                  <p className="text-[11px] text-muted-foreground leading-relaxed font-sans">
+                    Transaction was dropped from candidate bank due to Fast Leader Handover (SIMD-0337).
                     Canonical branch switched before block inclusion.
                   </p>
 
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded border border-neutral-800 bg-neutral-950 text-[11px]">
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg border border-foreground/10 bg-background text-[11px]">
                     <div>
-                      <span className="text-neutral-500 block text-[9px] uppercase">DROPPED BANK</span>
-                      <span className="text-white font-semibold truncate block">bank-481200-a</span>
+                      <span className="text-muted-foreground block text-[10px]">DROPPED BANK</span>
+                      <span className="text-foreground font-semibold truncate block">bank-481200-a</span>
                     </div>
                     <div>
-                      <span className="text-neutral-500 block text-[9px] uppercase">CANONICAL BANK</span>
-                      <span className="text-white font-semibold truncate block">bank-481200-b</span>
+                      <span className="text-muted-foreground block text-[10px]">CANONICAL BANK</span>
+                      <span className="text-foreground font-semibold truncate block">bank-481200-b</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1 text-[11px] text-neutral-400">
+                  <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-neutral-500">TX:</span>
-                      <span className="text-neutral-300 font-mono">simd0337...8xLz9Q</span>
+                      <span className="text-[10px]">TX:</span>
+                      <span className="text-foreground font-mono">simd0337...8xLz9Q</span>
                     </div>
                     <button
                       onClick={() => handleCopy('simd0337-reorg-abandoned-tx-8xLz9Q')}
-                      className="inline-flex items-center gap-1 text-neutral-400 hover:text-white transition-colors"
+                      className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
                     >
-                      {copiedSig ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
-                      <span className="text-[10px] font-mono">{copiedSig ? 'COPIED' : 'COPY'}</span>
+                      {copiedSig ? <Check className="w-3 h-3 text-foreground" /> : <Copy className="w-3 h-3" />}
+                      <span className="text-[10px]">{copiedSig ? 'COPIED' : 'COPY'}</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Microsecond Invalidation Telemetry */}
-                <div className="grid grid-cols-3 gap-2 text-center pt-2 text-[10px] text-neutral-400 border-t border-neutral-800">
+                <div className="grid grid-cols-3 gap-2 text-center pt-1 text-[10px] text-muted-foreground border-t border-foreground/10">
                   <div>
-                    <span className="block text-white font-bold">Slot 329,481,200</span>
-                    <span className="text-neutral-500">Event Slot</span>
+                    <span className="block text-foreground font-bold">Slot 329,481,200</span>
+                    <span>Event Slot</span>
                   </div>
                   <div>
-                    <span className="block text-white font-bold">&lt; 1.0 µs</span>
-                    <span className="text-neutral-500">Abort Latency</span>
+                    <span className="block text-foreground font-bold">&lt; 1.0 µs</span>
+                    <span>Abort Latency</span>
                   </div>
                   <div>
-                    <span className="block text-white font-bold">$0.00 Wasted</span>
-                    <span className="text-neutral-500">Gas Saved</span>
+                    <span className="block text-foreground font-bold">$0.00 Wasted</span>
+                    <span>Gas Saved</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Category Filter Pills - Strict Monochrome */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-neutral-800 pb-4 font-mono text-xs">
-          {(['ALL', 'CELOR CORE', 'PROTOCOL TRANSITION', 'VALIDATOR INFRA', 'SECURITY & AUDITS'] as CategoryFilter[]).map((cat) => (
+        <div className="flex flex-wrap items-center gap-2 mb-8 sm:mb-10 font-mono text-xs">
+          {(['ALL', 'CELOR ENGINE', 'PROTOCOL TRANSITION', 'VALIDATOR MILESTONE', 'SECURITY & BENCHMARKS'] as CategoryFilter[]).map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg border transition-all ${
+              className={`px-3 py-1.5 rounded-full border transition-all ${
                 selectedCategory === cat
-                  ? 'border-neutral-600 bg-neutral-200 text-neutral-950 font-bold'
-                  : 'border-neutral-800 bg-[#0e0f11] text-neutral-400 hover:border-neutral-700 hover:text-neutral-200'
+                  ? 'border-foreground bg-foreground text-background font-semibold shadow-sm'
+                  : 'border-foreground/10 bg-foreground/[0.02] text-muted-foreground hover:border-foreground/20 hover:text-foreground'
               }`}
             >
               {cat}
             </button>
           ))}
-          <span className="ml-auto text-xs text-neutral-500 font-mono hidden md:inline">
+          <span className="ml-auto text-xs text-muted-foreground font-mono hidden md:inline">
             Showing {filteredMilestones.length} verified engineering releases
           </span>
         </div>
@@ -593,89 +581,91 @@ export default function UpdatesPage() {
           if (monthMilestones.length === 0) return null;
 
           return (
-            <div key={month} className="space-y-4">
+            <div key={month} className="mb-12 sm:mb-16">
               {/* Month Header Banner */}
-              <div className="flex items-center gap-2.5 pb-2 border-b border-neutral-800 font-mono">
-                <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 font-bold text-[10px]">
+              <div className="flex items-center gap-3 mb-6 pb-2 border-b border-foreground/10 font-mono">
+                <span className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
                   {month}
                 </span>
-                <span className="text-neutral-500 text-[11px]">
+                <span className="text-[11px] text-muted-foreground">
                   ({monthMilestones.length} {monthMilestones.length === 1 ? 'Milestone' : 'Milestones'})
                 </span>
               </div>
 
               {/* Milestones in this month */}
-              <div className="space-y-4">
+              <div className="relative border-l border-foreground/10 pl-5 sm:pl-10 space-y-6 sm:space-y-8 ml-2 sm:ml-4">
                 {monthMilestones.map((m) => (
-                  <div
-                    key={m.id}
-                    className="border border-neutral-800 bg-[#0e0f11] p-4 sm:p-6 rounded-xl hover:border-neutral-700 transition-colors space-y-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800/80 pb-2.5">
-                      <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                        <span className="px-2 py-0.5 rounded bg-neutral-800/90 text-neutral-300 font-bold text-[10px]">
-                          {m.category}
-                        </span>
-                        <span className="text-neutral-600">•</span>
-                        <span className="text-neutral-400 text-[11px] flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-neutral-500" />
-                          {m.date}
+                  <div key={m.id} className="relative group">
+                    {/* Dot */}
+                    <div className="absolute -left-[27px] sm:-left-[47px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-background bg-foreground group-hover:scale-125 transition-transform" />
+
+                    <div className="p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-foreground/10 bg-foreground/[0.015] hover:border-foreground/20 transition-all">
+                      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-3">
+                        <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                          <span className="px-2 py-0.5 rounded-full bg-foreground/10 text-foreground font-semibold text-[11px] sm:text-xs">
+                            {m.category}
+                          </span>
+                          <span className="text-muted-foreground hidden sm:inline">•</span>
+                          <span className="text-muted-foreground flex items-center gap-1 text-[11px] sm:text-xs">
+                            <Calendar className="w-3 h-3" />
+                            {m.date}
+                          </span>
+                        </div>
+
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-foreground/20 text-foreground bg-foreground/5 font-semibold">
+                          {m.status}
                         </span>
                       </div>
 
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-neutral-800 bg-neutral-900 text-neutral-300 font-semibold">
-                        {m.status}
-                      </span>
-                    </div>
+                      <h3 className="text-lg sm:text-xl font-display font-medium text-foreground mb-2">
+                        {m.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-sans leading-relaxed mb-4">
+                        {m.summary}
+                      </p>
 
-                    <h3 className="text-base sm:text-lg font-bold text-white uppercase font-mono tracking-tight">
-                      {m.title}
-                    </h3>
-                    <p className="text-xs text-neutral-400 font-sans leading-relaxed">
-                      {m.summary}
-                    </p>
-
-                    {/* Key Empirical Metrics if present */}
-                    {m.metrics && m.metrics.length > 0 && (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2.5 rounded border border-neutral-800 bg-[#090a0b] font-mono">
-                        {m.metrics.map((met, metIdx) => (
-                          <div key={metIdx} className="space-y-0.5">
-                            <div className="text-[9px] text-neutral-500 uppercase tracking-wider">{met.label}</div>
-                            <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                              <span>{met.value}</span>
-                              <span className="text-[9px] px-1 py-0.2 rounded font-mono text-neutral-400 bg-neutral-900 border border-neutral-800">
-                                {met.classification}
-                              </span>
+                      {/* Key Empirical Metrics if present */}
+                      {m.metrics && m.metrics.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-4 p-3 rounded-lg border border-foreground/10 bg-background font-mono">
+                          {m.metrics.map((met, metIdx) => (
+                            <div key={metIdx} className="space-y-0.5">
+                              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{met.label}</div>
+                              <div className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+                                <span>{met.value}</span>
+                                <span className="text-[9px] px-1 py-0.2 rounded font-mono text-muted-foreground bg-foreground/5 border border-foreground/10">
+                                  {met.classification}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      )}
 
-                    <ul className="space-y-1.5 font-mono text-[11px] text-neutral-400 border-t border-neutral-800/60 pt-3">
-                      {m.details.map((detail, dIdx) => (
-                        <li key={dIdx} className="flex items-start gap-2">
-                          <span className="text-neutral-300 shrink-0 font-bold">✓</span>
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Optional Action Links */}
-                    {m.links && m.links.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-3 pt-2.5 border-t border-neutral-800/60">
-                        {m.links.map((link, lIdx) => (
-                          <Link
-                            key={lIdx}
-                            href={link.href}
-                            className="inline-flex items-center gap-1 text-[11px] font-mono text-neutral-300 hover:text-white transition-colors"
-                          >
-                            <span>{link.label}</span>
-                            <ArrowRight className="w-3 h-3 text-neutral-500" />
-                          </Link>
+                      <ul className="space-y-1.5 font-mono text-[11px] sm:text-xs text-muted-foreground border-t border-foreground/5 pt-3 sm:pt-4">
+                        {m.details.map((detail, dIdx) => (
+                          <li key={dIdx} className="flex items-start gap-2">
+                            <span className="text-foreground shrink-0 font-bold">✓</span>
+                            <span>{detail}</span>
+                          </li>
                         ))}
-                      </div>
-                    )}
+                      </ul>
+
+                      {/* Optional Action Links */}
+                      {m.links && m.links.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-3 pt-4 mt-3 border-t border-foreground/5">
+                          {m.links.map((link, lIdx) => (
+                            <Link
+                              key={lIdx}
+                              href={link.href}
+                              className="inline-flex items-center gap-1 text-xs font-mono text-foreground hover:underline transition-colors"
+                            >
+                              <span>{link.label}</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -684,21 +674,21 @@ export default function UpdatesPage() {
         })}
 
         {/* Footer Navigation */}
-        <div className="border border-neutral-800 bg-[#0e0f11] p-5 sm:p-6 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-8 rounded-2xl border border-foreground/10 bg-foreground/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-bold text-white uppercase font-mono tracking-tight">Explore Protocol Specifications &amp; Benchmarks</div>
-            <div className="text-xs text-neutral-400 font-sans mt-0.5">
+            <div className="text-sm font-display font-medium text-foreground">Explore Protocol Specifications & Benchmarks</div>
+            <div className="text-xs text-muted-foreground font-sans">
               Review our empirical N ≥ 10,000 benchmark methodology and verifiable SIMD-0326 / SIMD-0337 implementations.
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            <Button asChild variant="default" size="sm" className="font-mono text-xs rounded-lg h-9 bg-neutral-100 text-neutral-950 hover:bg-white font-bold">
+            <Button asChild variant="default" size="sm" className="font-mono text-xs rounded-xl h-10 sm:h-9 bg-foreground text-background hover:bg-foreground/90">
               <Link href="/playground">Launch Playground</Link>
             </Button>
-            <Button asChild variant="outline" size="sm" className="font-mono text-xs rounded-lg border-neutral-700 h-9 text-neutral-300 hover:text-white bg-neutral-900/60">
-              <Link href="/protocol">Read SIMD Specs</Link>
+            <Button asChild variant="outline" size="sm" className="font-mono text-xs rounded-xl border-foreground/20 h-10 sm:h-9">
+              <Link href="/protocol">Read SIMD Specifications</Link>
             </Button>
-            <Button asChild variant="outline" size="sm" className="font-mono text-xs rounded-lg border-neutral-700 h-9 text-neutral-300 hover:text-white bg-neutral-900/60">
+            <Button asChild variant="outline" size="sm" className="font-mono text-xs rounded-xl border-foreground/20 h-10 sm:h-9">
               <Link href="/benchmarks">View Benchmarks</Link>
             </Button>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { AnimatedWave } from '@/components/visuals/animated-wave';
 import { CELOR_TOKEN } from '@/lib/token';
@@ -49,8 +50,13 @@ const footerLinks = {
 };
 
 export function FooterSection() {
+  const pathname = usePathname();
+  const isDarkPage = pathname === '/endpoints' || pathname === '/compare';
+
   return (
-    <footer className="relative border-t border-foreground/10 bg-background overflow-hidden">
+    <footer className={`relative border-t overflow-hidden ${
+      isDarkPage ? 'border-neutral-800 bg-[#070809] text-neutral-300' : 'border-foreground/10 bg-background text-foreground'
+    }`}>
       {/* Animated wave background */}
       <div className="absolute inset-0 h-64 opacity-20 pointer-events-none overflow-hidden">
         <AnimatedWave />
@@ -68,20 +74,20 @@ export function FooterSection() {
                   alt="CELOR"
                   className="w-8 h-8 object-contain shrink-0 group-hover:scale-105 transition-transform"
                 />
-                <span className="text-2xl font-display font-semibold">CELOR</span>
-                <span className="text-xs text-muted-foreground font-mono">SOL</span>
+                <span className={`text-2xl font-display font-semibold ${isDarkPage ? 'text-white' : 'text-foreground'}`}>CELOR</span>
+                <span className={`text-xs font-mono ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'}`}>SOL</span>
               </Link>
 
-              <p className="text-xs font-mono text-foreground font-medium mb-3">
+              <p className={`text-xs font-mono font-medium mb-3 ${isDarkPage ? 'text-neutral-200' : 'text-foreground'}`}>
                 The Next infrastructure layer for Solana.
               </p>
 
-              <p className="text-muted-foreground leading-relaxed mb-6 sm:mb-8 max-w-xs text-xs sm:text-sm font-sans">
+              <p className={`leading-relaxed mb-6 sm:mb-8 max-w-xs text-xs sm:text-sm font-sans ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'}`}>
                 Provider-independent Solana consensus timing, bank graph tracking, and
                 deterministic finality reconciliation infrastructure (SIMD-0326 protocol target: &lt;150ms).
               </p>
 
-              <div className="text-xs font-mono text-muted-foreground">
+              <div className={`text-xs font-mono ${isDarkPage ? 'text-neutral-500' : 'text-muted-foreground'}`}>
                 Initial Budget: $0 (Devnet/Testnet First)
               </div>
             </div>
@@ -89,7 +95,7 @@ export function FooterSection() {
             {/* Link Columns */}
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h3 className="text-xs sm:text-sm font-semibold sm:font-medium mb-4 sm:mb-6 font-sans tracking-wide">{title}</h3>
+                <h3 className={`text-xs sm:text-sm font-semibold sm:font-medium mb-4 sm:mb-6 font-sans tracking-wide ${isDarkPage ? 'text-white' : 'text-foreground'}`}>{title}</h3>
                 <ul className="space-y-3 sm:space-y-4">
                   {links.map((link) => {
                     const isExternal = link.href.startsWith('http');
@@ -100,7 +106,9 @@ export function FooterSection() {
                             href={link.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+                            className={`text-xs sm:text-sm transition-colors inline-flex items-center gap-1 group ${
+                              isDarkPage ? 'text-neutral-400 hover:text-white' : 'text-muted-foreground hover:text-foreground'
+                            }`}
                           >
                             <span>{link.name}</span>
                             <ArrowUpRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -108,7 +116,9 @@ export function FooterSection() {
                         ) : (
                           <Link
                             href={link.href}
-                            className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+                            className={`text-xs sm:text-sm transition-colors inline-flex items-center gap-1 group ${
+                              isDarkPage ? 'text-neutral-400 hover:text-white' : 'text-muted-foreground hover:text-foreground'
+                            }`}
                           >
                             <span>{link.name}</span>
                           </Link>
@@ -123,7 +133,9 @@ export function FooterSection() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-6 sm:py-8 border-t border-foreground/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4 font-mono text-[11px] sm:text-xs text-muted-foreground">
+        <div className={`py-6 sm:py-8 border-t flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4 font-mono text-[11px] sm:text-xs ${
+          isDarkPage ? 'border-neutral-800 text-neutral-400' : 'border-foreground/10 text-muted-foreground'
+        }`}>
           <p>© 2026 CELOR Infrastructure Project. Open-Source under MIT/Apache 2.0.</p>
 
           <div className="flex items-center gap-4">
@@ -137,3 +149,4 @@ export function FooterSection() {
     </footer>
   );
 }
+
