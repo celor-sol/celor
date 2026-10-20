@@ -2,55 +2,55 @@
   "benchmarks": {
     "execution_decision_engine": {
       "latency_us": {
-        "max": 10.667,
+        "max": 98.5,
         "min": 0.333,
         "p50": 0.5,
-        "p90": 0.541,
-        "p95": 0.542,
-        "p99": 0.584
+        "p90": 0.584,
+        "p95": 0.709,
+        "p99": 0.917
       },
       "metric_classification": "[MEASURED]",
       "sample_count": 20000,
-      "throughput_ops_sec": 958223.4231104038
+      "throughput_ops_sec": 775133.7105650725
     },
     "genuine_bls12_381_verification": {
       "latency_us": {
-        "max": 2433.083,
-        "min": 1765.125,
-        "p50": 1775.709,
-        "p90": 1810.958,
-        "p95": 1834.458,
-        "p99": 1902.875
+        "max": 6051.0,
+        "min": 1768.042,
+        "p50": 1827.5,
+        "p90": 2561.125,
+        "p95": 2972.667,
+        "p99": 3700.459
       },
       "metric_classification": "[MEASURED]",
       "sample_count": 1000,
-      "throughput_ops_sec": 559.5143787157906
+      "throughput_ops_sec": 498.6767405738027
     },
     "ingestion_and_normalization": {
       "latency_us": {
-        "max": 628.292,
+        "max": 640.958,
         "min": 0.458,
-        "p50": 0.583,
+        "p50": 0.584,
         "p90": 1.25,
-        "p95": 1.375,
-        "p99": 1.708
+        "p95": 1.416,
+        "p99": 1.875
       },
       "metric_classification": "[MEASURED]",
       "sample_count": 20000,
-      "throughput_ops_sec": 1020451.5324554355
+      "throughput_ops_sec": 1003526.9959800715
     },
     "state_update_and_canonical_resolution": {
       "latency_us": {
-        "max": 2709.458,
-        "min": 4.792,
-        "p50": 5.167,
-        "p90": 6.166,
-        "p95": 6.833,
-        "p99": 7.959
+        "max": 2667.917,
+        "min": 4.833,
+        "p50": 5.25,
+        "p90": 6.667,
+        "p95": 7.208,
+        "p99": 10.916
       },
       "metric_classification": "[MEASURED]",
       "sample_count": 10000,
-      "throughput_ops_sec": 157405.5361762232
+      "throughput_ops_sec": 151236.4525221514
     }
   },
   "methodology": "Monotonic hardware timer (Instant::now), zero-allocation loop, statistical percentiles across N samples",
