@@ -251,7 +251,7 @@ export default function RevenuePage() {
 
   // Calculator State
   const [userBagInput, setUserBagInput] = useState<string>('5000000');
-  const [selectedRevenueVolume, setSelectedRevenueVolume] = useState<number>(100);
+  const [selectedRevenueVolume, setSelectedRevenueVolume] = useState<number>(1000);
 
   // Live Wallet Inspector State
   const [inspectWalletInput, setInspectWalletInput] = useState<string>('');
@@ -338,10 +338,10 @@ export default function RevenuePage() {
       shareOfSupply: shareOfSupply.toFixed(4),
       isEligible,
       tokensNeeded,
-      monthlyUsd: estimatedMonthlyRewardUsd.toFixed(2),
+      monthlyUsd: formatUsd(estimatedMonthlyRewardUsd),
       monthlySol: estimatedMonthlyRewardSol.toFixed(4),
-      annualUsd: estimatedAnnualRewardUsd.toFixed(2),
-      annualSol: estimatedAnnualRewardSol.toFixed(2),
+      annualUsd: formatUsd(estimatedAnnualRewardUsd),
+      annualSol: formatSol(estimatedAnnualRewardSol),
       buybackPoolUsd: formatUsd(buybackPoolUsd),
       hackathonPoolUsd: formatUsd(hackathonPoolUsd),
       hackathon1stUsd: formatUsd(hackathon1stUsd),
@@ -895,7 +895,7 @@ export default function RevenuePage() {
             <div className="p-4 rounded-xl border border-neutral-800 bg-black space-y-2">
               <div className="text-[10px] text-neutral-400 uppercase font-semibold">Projected Monthly Protocol Revenue</div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
-                {[100, 500, 1000, 2500].map((vol) => (
+                {[1000, 10000, 100000, 500000].map((vol) => (
                   <button
                     key={vol}
                     onClick={() => setSelectedRevenueVolume(vol)}
@@ -911,9 +911,9 @@ export default function RevenuePage() {
                 ))}
               </div>
               <div className="text-[10px] text-neutral-400 pt-1 space-y-0.5">
-                <div>50% to eligible holders: <strong className="text-white">${(selectedRevenueVolume * 0.50).toFixed(2)} USD</strong></div>
-                <div>20% buyback &amp; burn: <strong className="text-neutral-300">${(selectedRevenueVolume * 0.20).toFixed(2)} USD</strong></div>
-                <div>30% hackathon treasury: <strong className="text-neutral-300">${(selectedRevenueVolume * 0.30).toFixed(2)} USD</strong></div>
+                <div>50% to eligible holders: <strong className="text-white">${(selectedRevenueVolume * 0.50).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong></div>
+                <div>20% buyback &amp; burn: <strong className="text-neutral-300">${(selectedRevenueVolume * 0.20).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong></div>
+                <div>30% hackathon treasury: <strong className="text-neutral-300">${(selectedRevenueVolume * 0.30).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</strong></div>
               </div>
             </div>
           </div>
