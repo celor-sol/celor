@@ -18,6 +18,9 @@ const PLANS: Record<string, { id: string; name: string; solPrice: number; usdPri
   'enterprise': { id: 'enterprise', name: 'Enterprise Validator & MM', solPrice: 10.0, usdPrice: 1840, rateLimitRps: 50000 },
 };
 
+// In-memory cache for replay protection against double-claim attacks
+const CLAIMED_SIGNATURES = new Set<string>();
+
 export async function onRequestPost(context: any) {
   const { request } = context;
 
@@ -130,6 +133,106 @@ export async function onRequestPost(context: any) {
     );
   }
 
+  // 1. Replay Attack Prevention
+  if (CLAIMED_SIGNATURES.has(signature)) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: `Transaction signature ${signature} has already been claimed and redeemed for an API key. Replay attempts are rejected.`,
+        signature,
+        explorer_url: `https://solscan.io/tx/${signature}`,
+      }),
+      {
+        status: 409,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      }
+    );
+  }
+
+  // 2. Extract and verify account keys (including versioned loadedAddresses)
+  const rawAccountKeys = onChainTx.transaction?.message?.accountKeys || [];
+  const accountKeys: string[] = rawAccountKeys.map((k: any) =>
+    typeof k === 'string' ? k : k?.pubkey || k?.toString?.() || ''
+  );
+
+  if (onChainTx.meta?.loadedAddresses) {
+    if (Array.isArray(onChainTx.meta.loadedAddresses.writable)) {
+      accountKeys.push(
+        ...onChainTx.meta.loadedAddresses.writable.map((k: any) => (typeof k === 'string' ? k : k?.pubkey || ''))
+      );
+    }
+    if (Array.isArray(onChainTx.meta.loadedAddresses.readonly)) {
+      accountKeys.push(
+        ...onChainTx.meta.loadedAddresses.readonly.map((k: any) => (typeof k === 'string' ? k : k?.pubkey || ''))
+      );
+    }
+  }
+
+  const treasuryIndex = accountKeys.findIndex((k) => k === TREASURY_WALLET);
+  if (treasuryIndex === -1) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: `Transaction does not involve Celor Treasury (${TREASURY_WALLET} / ${TREASURY_DOMAIN}). Funds were not transferred to this protocol.`,
+        signature,
+        treasury_wallet: TREASURY_WALLET,
+        treasury_domain: TREASURY_DOMAIN,
+        explorer_url: `https://solscan.io/tx/${signature}`,
+      }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      }
+    );
+  }
+
+  // 3. Verify net lamport change to Treasury (must be an inbound deposit)
+  const preBal = Number(onChainTx.meta?.preBalances?.[treasuryIndex] ?? 0);
+  const postBal = Number(onChainTx.meta?.postBalances?.[treasuryIndex] ?? 0);
+  const deltaLamports = postBal - preBal;
+  const deltaSol = deltaLamports / 1e9;
+
+  if (deltaLamports <= 0) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: `Transaction is not an inbound deposit to Celor Treasury. Treasury balance change was ${deltaSol.toFixed(6)} SOL (funds were sent from the wallet, not deposited).`,
+        signature,
+        treasury_wallet: TREASURY_WALLET,
+        delta_sol: deltaSol,
+        explorer_url: `https://solscan.io/tx/${signature}`,
+      }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      }
+    );
+  }
+
+  // 4. Verify minimum required payment amount for the chosen plan
+  // Allow 5% tolerance for network/rounding variances
+  const requiredLamports = Math.floor(selectedPlan.solPrice * 0.95 * 1e9);
+  if (deltaLamports < requiredLamports) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: `Insufficient payment amount. Plan "${selectedPlan.name}" requires at least ${(selectedPlan.solPrice * 0.95).toFixed(4)} SOL, but this transaction only deposited ${deltaSol.toFixed(6)} SOL to treasury.`,
+        signature,
+        required_sol: selectedPlan.solPrice,
+        received_sol: deltaSol,
+        explorer_url: `https://solscan.io/tx/${signature}`,
+      }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      }
+    );
+  }
+
+  // Register signature to prevent replay
+  CLAIMED_SIGNATURES.add(signature);
+  const payerPubkey = accountKeys[0] || clientPubkey || 'Verified Signer';
+
   // Transaction confirmed on-chain! Generate API credentials
   const randomBytes = new Uint8Array(16);
   crypto.getRandomValues(randomBytes);
@@ -156,7 +259,7 @@ export async function onRequestPost(context: any) {
       api_key: apiKey,
       api_secret: apiSecret,
       client_label: clientLabel,
-      client_pubkey: clientPubkey || 'Verified Signer',
+      client_pubkey: clientPubkey || payerPubkey,
       plan: selectedPlan,
       transaction: {
         signature,
@@ -164,6 +267,9 @@ export async function onRequestPost(context: any) {
         block_time: new Date(blockTime * 1000).toISOString(),
         treasury_recipient: TREASURY_WALLET,
         treasury_domain: TREASURY_DOMAIN,
+        payer_wallet: payerPubkey,
+        net_sol_deposited: deltaSol,
+        net_lamports_deposited: deltaLamports,
         explorer_url: `https://solscan.io/tx/${signature}`,
       },
       revenue_allocation: {
