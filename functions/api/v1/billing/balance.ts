@@ -70,6 +70,8 @@ export async function onRequestGet(context: any) {
   }
 
   const shareOfSupply = (tokenBalance / TOTAL_SUPPLY) * 100;
+  const isEligible = tokenBalance >= 5000000;
+  const tokensNeeded = isEligible ? 0 : Math.max(0, 5000000 - tokenBalance);
 
   return new Response(
     JSON.stringify({
@@ -78,9 +80,15 @@ export async function onRequestGet(context: any) {
       token_balance: tokenBalance,
       supply_percent: Number(shareOfSupply.toFixed(6)),
       total_supply: TOTAL_SUPPLY,
+      eligibility: {
+        is_eligible_for_50_percent_revshare: isEligible,
+        required_minimum_tokens: 5000000,
+        required_minimum_percent: 0.5,
+        tokens_needed_to_qualify: tokensNeeded,
+        status: isEligible ? 'QUALIFIED_HOLDER (>= 0.5%)' : 'ACCUMULATING (< 0.5% / 5M TOKENS)',
+      },
       solscan_url: `https://solscan.io/account/${wallet}`,
-      meets_100_usd_threshold: false, // In cold-start bootstrap phase
-      status: tokenBalance > 0 ? 'VERIFIED_HOLDER' : 'ZERO_BALANCE',
+      status: tokenBalance > 0 ? (isEligible ? 'ELIGIBLE_HOLDER' : 'HOLDER_ACCUMULATING') : 'ZERO_BALANCE',
     }, null, 2),
     {
       headers: {

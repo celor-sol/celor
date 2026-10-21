@@ -9,7 +9,8 @@ const RPC_ENDPOINTS = [
   'https://api.mainnet-beta.solana.com',
 ];
 
-const TREASURY_WALLET = 'CELoRtrEAsury4vJ9JU1bJJE96FWSXTvHsmmFADCg4gp';
+const TREASURY_WALLET = '5NJxURGL87YSaB27tk1avM4yT2JrKGPUdDRMvXeSia2R';
+const TREASURY_DOMAIN = 'CelorFunds.sol';
 
 const PLANS: Record<string, { id: string; name: string; solPrice: number; usdPrice: number; rateLimitRps: number }> = {
   'starter': { id: 'starter', name: 'Developer Starter', solPrice: 0.5, usdPrice: 92, rateLimitRps: 1000 },
@@ -136,11 +137,15 @@ export async function onRequestPost(context: any) {
   const apiKey = `celor_live_ak_${keyHex}`;
   const apiSecret = `celor_sec_${keyHex.split('').reverse().join('')}`;
 
-  // 70% / 30% Programmatic Revenue Allocation
-  const holderShareSol = Number((selectedPlan.solPrice * 0.70).toFixed(4));
-  const treasuryShareSol = Number((selectedPlan.solPrice * 0.30).toFixed(4));
-  const holderShareUsd = Number((selectedPlan.usdPrice * 0.70).toFixed(2));
-  const treasuryShareUsd = Number((selectedPlan.usdPrice * 0.30).toFixed(2));
+  // 50% Holders / 20% Buyback & Burn / 30% Hackathon Core Treasury
+  const holderShareSol = Number((selectedPlan.solPrice * 0.50).toFixed(4));
+  const holderShareUsd = Number((selectedPlan.usdPrice * 0.50).toFixed(2));
+
+  const buybackBurnSol = Number((selectedPlan.solPrice * 0.20).toFixed(4));
+  const buybackBurnUsd = Number((selectedPlan.usdPrice * 0.20).toFixed(2));
+
+  const hackathonTreasurySol = Number((selectedPlan.solPrice * 0.30).toFixed(4));
+  const hackathonTreasuryUsd = Number((selectedPlan.usdPrice * 0.30).toFixed(2));
 
   const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -158,20 +163,28 @@ export async function onRequestPost(context: any) {
         verified_slot: verifiedSlot,
         block_time: new Date(blockTime * 1000).toISOString(),
         treasury_recipient: TREASURY_WALLET,
+        treasury_domain: TREASURY_DOMAIN,
         explorer_url: `https://solscan.io/tx/${signature}`,
       },
       revenue_allocation: {
         total_paid_sol: selectedPlan.solPrice,
         total_paid_usd: selectedPlan.usdPrice,
-        holder_pool_70_percent: {
+        holder_pool_50_percent: {
           sol: holderShareSol,
           usd: holderShareUsd,
+          eligibility_threshold: '>= 5,000,000 tokens (0.5% supply)',
           auto_payout_threshold_usd: 100,
-          distribution_status: 'QUEUED_FOR_HOLDERS',
+          distribution_status: 'QUEUED_FOR_ELIGIBLE_HOLDERS',
         },
-        treasury_operations_30_percent: {
-          sol: treasuryShareSol,
-          usd: treasuryShareUsd,
+        buyback_and_burn_20_percent: {
+          sol: buybackBurnSol,
+          usd: buybackBurnUsd,
+          flywheel_mechanism: 'Automated open-market buyback of $CELOR and permanent burn',
+        },
+        hackathon_treasury_30_percent: {
+          sol: hackathonTreasurySol,
+          usd: hackathonTreasuryUsd,
+          allocation_purpose: 'Solana hackathons, developer bounties, and bare-metal nodes',
           recipient: TREASURY_WALLET,
         },
       },

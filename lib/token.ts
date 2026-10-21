@@ -4,7 +4,9 @@ export const CELOR_TOKEN = {
   ca: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   shortCa: 'FR2tuJ...6pump',
   displayCa: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
-  treasuryWallet: 'CELoRtrEAsury4vJ9JU1bJJE96FWSXTvHsmmFADCg4gp',
+  treasuryWallet: '5NJxURGL87YSaB27tk1avM4yT2JrKGPUdDRMvXeSia2R',
+  treasuryDomain: 'CelorFunds.sol',
+  treasurySns: 'CELORFunds.sns',
   pumpFunUrl: 'https://pump.fun/coin/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   dexScreenerUrl: 'https://dexscreener.com/solana/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   solscanUrl: 'https://solscan.io/token/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
@@ -13,8 +15,11 @@ export const CELOR_TOKEN = {
   xUrl: 'https://x.com/celorinfra',
   xHandle: '@celorinfra',
   revShare: {
-    holderPercent: 70,
-    treasuryPercent: 30,
+    holderPercent: 50, // 50% distributed to eligible holders (>= 5M tokens / 0.5% supply)
+    buybackBurnPercent: 20, // 20% Buyback & Burn flywheel
+    treasuryHackathonPercent: 30, // 30% saved in treasury for hackathons & node ops
+    minHolderTokens: 5000000, // 5M tokens minimum requirement
+    minHolderSupplyPercent: 0.5, // 0.5% minimum supply share
     autoPayoutThresholdUsd: 100, // Rewards auto-distribute once accrued wallet reward reaches >= $100
   },
   apiPlans: [

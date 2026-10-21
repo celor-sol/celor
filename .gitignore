@@ -7,3 +7,6 @@ out/
 scratch/
 crates/chrono-bench/artifacts/benchmarks/test-exp-*/
 crates/chrono-bench/artifacts/benchmarks/exp-*/
+.env*
+*.env
+.secret*
