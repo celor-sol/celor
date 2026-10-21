@@ -659,60 +659,32 @@ export default function RevenuePage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-xl border border-neutral-800 bg-black font-mono text-xs space-y-1 shrink-0">
-              <div className="text-[10px] text-neutral-400 uppercase">
-                Prize Pool ({selectedRevenueVolume >= 1000 ? `$${selectedRevenueVolume.toLocaleString('en-US')}` : `$${selectedRevenueVolume}`} Example):
+            <div className="p-3 sm:p-4 rounded-xl border border-neutral-800 bg-black font-mono text-xs space-y-1.5 shrink-0 text-left sm:text-right">
+              <div className="text-[10px] text-neutral-400 uppercase tracking-wider flex items-center justify-start sm:justify-end gap-1.5 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span>Live Treasury Balance:</span>
               </div>
-              <div className="text-base sm:text-lg font-bold text-white">${calculatedRewards.hackathonPoolUsd} USD</div>
-              <div className="text-[10px] text-neutral-400">Escrow: CelorFunds.sol</div>
+              <div className="text-base sm:text-xl font-bold text-white font-mono">
+                {treasuryBalanceSol.toFixed(6)} SOL <span className="text-xs text-neutral-400 font-normal">(${treasuryBalanceUsd.toFixed(2)} USD)</span>
+              </div>
+              <div className="text-[11px] text-neutral-300">
+                30% Hackathon Escrow: <strong className="text-white font-mono">{(treasuryBalanceSol * 0.30).toFixed(6)} SOL</strong> (${(treasuryBalanceUsd * 0.30).toFixed(2)} USD)
+              </div>
+              <div className="text-[10px] text-neutral-500 font-mono">Vault: CelorFunds.sol</div>
             </div>
           </div>
 
-          {/* Quick Real Example Selector Buttons */}
-          <div className="flex flex-wrap items-center gap-2 mb-4 font-mono text-xs">
-            <span className="text-[10px] text-neutral-400 uppercase font-semibold">Presets:</span>
-            {[
-              { val: 100, label: '$100 Real Example ($30 Pool)' },
-              { val: 500, label: '$500 Tier ($150 Pool)' },
-              { val: 1000, label: '$1,000 Tier ($300 Pool)' },
-              { val: 2500, label: '$2,500 Tier ($750 Pool)' },
-            ].map((p) => (
-              <button
-                key={p.val}
-                onClick={() => setSelectedRevenueVolume(p.val)}
-                className={`px-2.5 py-1 rounded-lg border text-[11px] transition-all ${
-                  selectedRevenueVolume === p.val
-                    ? 'border-white bg-white text-black font-bold shadow'
-                    : 'border-neutral-800 bg-black text-neutral-300 hover:border-neutral-600'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-            <button
-              onClick={() => setSelectedRevenueVolume(treasuryBalanceUsd)}
-              className={`px-2.5 py-1 rounded-lg border text-[11px] transition-all flex items-center gap-1.5 ${
-                selectedRevenueVolume === treasuryBalanceUsd
-                  ? 'border-white bg-white text-black font-bold shadow'
-                  : 'border-neutral-800 bg-black text-neutral-300 hover:border-neutral-600'
-              }`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span>Live On-Chain (${treasuryBalanceUsd.toFixed(2)} USD / {treasuryBalanceSol.toFixed(4)} SOL)</span>
-            </button>
-          </div>
-
-          {/* Real $100 Reference Formula Card */}
+          {/* Real On-Chain Treasury Status Callout */}
           <div className="p-3.5 rounded-xl border border-neutral-800 bg-black font-mono text-xs mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
             <div className="text-neutral-300 text-[11px] leading-relaxed">
-              <strong className="text-white">Example Calculation:</strong> Wallet receives <strong className="text-white">${selectedRevenueVolume.toFixed(2)}</strong> revenue → 30% (<strong className="text-white">${calculatedRewards.hackathonPoolUsd}</strong>) goes to Hackathon Pool.
+              <strong className="text-white">Live On-Chain Escrow:</strong> Official treasury vault <strong className="text-white">CelorFunds.sol</strong> holds <strong className="text-white">{treasuryBalanceSol.toFixed(6)} SOL</strong> (${treasuryBalanceUsd.toFixed(2)} USD). Exactly 30% (<strong className="text-white">{(treasuryBalanceSol * 0.30).toFixed(6)} SOL</strong> / ${(treasuryBalanceUsd * 0.30).toFixed(2)} USD) is allocated to the Builder Prize Escrow and compounds automatically as API client revenue lands on-chain.
             </div>
             <div className="text-[11px] text-neutral-300 shrink-0 font-bold">
-              Division: 1st (${calculatedRewards.hackathon1stUsd}) • 2nd (${calculatedRewards.hackathon2ndUsd}) • 3rd (${calculatedRewards.hackathon3rdUsd})
+              Current Split: 1st ({(treasuryBalanceSol * 0.30 * 0.50).toFixed(6)} SOL) • 2nd ({(treasuryBalanceSol * 0.30 * 0.30).toFixed(6)} SOL) • 3rd ({(treasuryBalanceSol * 0.30 * 0.20).toFixed(6)} SOL)
             </div>
           </div>
 
-          {/* Top 3 Prize Podiums Grid (50% 1st, 30% 2nd, 20% 3rd) */}
+          {/* Top 3 Prize Podiums Grid (50% 1st, 30% 2nd, 20% 3rd of Real 30% Treasury Escrow) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs mb-6">
             {/* 1st Place Champion */}
             <div className="p-5 rounded-xl border border-white bg-black space-y-3 relative overflow-hidden flex flex-col justify-between">
@@ -725,16 +697,16 @@ export default function RevenuePage() {
                   <span className="text-white font-mono font-bold text-sm">50% POOL</span>
                 </div>
                 <div className="text-2xl font-bold text-white font-mono pt-1">
-                  ${calculatedRewards.hackathon1stUsd} <span className="text-xs text-neutral-400 font-normal">USD</span>
+                  {(treasuryBalanceSol * 0.30 * 0.50).toFixed(6)} <span className="text-xs text-neutral-400 font-normal">SOL</span>
                 </div>
-                <div className="text-[11px] text-neutral-300">~{calculatedRewards.hackathon1stSol} SOL Grant</div>
+                <div className="text-[11px] text-neutral-300">~${(treasuryBalanceUsd * 0.30 * 0.50).toFixed(2)} USD Live Escrow Grant</div>
                 <p className="text-[11px] text-neutral-400 font-sans leading-relaxed pt-1">
                   Awarded to the top team building high-performance Direct TPU sockets, sub-150ms HFT execution pipelines, or Alpenglow fast-path block propagators.
                 </p>
               </div>
               <div className="pt-3 border-t border-neutral-850 flex items-center justify-between text-[10px] text-neutral-400">
                 <span>Distribution:</span>
-                <span className="text-white font-bold">50% of 30% Pool</span>
+                <span className="text-white font-bold">50% of 30% Treasury Vault</span>
               </div>
             </div>
 
@@ -749,16 +721,16 @@ export default function RevenuePage() {
                   <span className="text-neutral-300 font-mono font-bold text-sm">30% POOL</span>
                 </div>
                 <div className="text-2xl font-bold text-white font-mono pt-1">
-                  ${calculatedRewards.hackathon2ndUsd} <span className="text-xs text-neutral-400 font-normal">USD</span>
+                  {(treasuryBalanceSol * 0.30 * 0.30).toFixed(6)} <span className="text-xs text-neutral-400 font-normal">SOL</span>
                 </div>
-                <div className="text-[11px] text-neutral-300">~{calculatedRewards.hackathon2ndSol} SOL Grant</div>
+                <div className="text-[11px] text-neutral-300">~${(treasuryBalanceUsd * 0.30 * 0.30).toFixed(2)} USD Live Escrow Grant</div>
                 <p className="text-[11px] text-neutral-400 font-sans leading-relaxed pt-1">
                   Awarded to the runner-up building candidate bank telemetry monitors, slot autopsy visualizers, or validator health checkers.
                 </p>
               </div>
               <div className="pt-3 border-t border-neutral-850 flex items-center justify-between text-[10px] text-neutral-400">
                 <span>Distribution:</span>
-                <span className="text-neutral-300 font-bold">30% of 30% Pool</span>
+                <span className="text-neutral-300 font-bold">30% of 30% Treasury Vault</span>
               </div>
             </div>
 
@@ -773,16 +745,16 @@ export default function RevenuePage() {
                   <span className="text-neutral-400 font-mono font-bold text-sm">20% POOL</span>
                 </div>
                 <div className="text-2xl font-bold text-white font-mono pt-1">
-                  ${calculatedRewards.hackathon3rdUsd} <span className="text-xs text-neutral-400 font-normal">USD</span>
+                  {(treasuryBalanceSol * 0.30 * 0.20).toFixed(6)} <span className="text-xs text-neutral-400 font-normal">SOL</span>
                 </div>
-                <div className="text-[11px] text-neutral-300">~{calculatedRewards.hackathon3rdSol} SOL Grant</div>
+                <div className="text-[11px] text-neutral-300">~${(treasuryBalanceUsd * 0.30 * 0.20).toFixed(2)} USD Live Escrow Grant</div>
                 <p className="text-[11px] text-neutral-400 font-sans leading-relaxed pt-1">
                   Awarded to the third team developing open-source Jito bundle integration, Telegram bot terminals, or developer SDK libraries.
                 </p>
               </div>
               <div className="pt-3 border-t border-neutral-850 flex items-center justify-between text-[10px] text-neutral-400">
                 <span>Distribution:</span>
-                <span className="text-neutral-400 font-bold">20% of 30% Pool</span>
+                <span className="text-neutral-400 font-bold">20% of 30% Treasury Vault</span>
               </div>
             </div>
           </div>
