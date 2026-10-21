@@ -66,14 +66,11 @@ async function main() {
   console.log(`✓ Registry Status: ${regData.status}`);
   console.log(`✓ Treasury Wallet: ${regData.treasury_wallet}`);
   console.log(`✓ Total Revenue: $${regData.revenue_summary.total_collected_usd.toLocaleString()} (${regData.revenue_summary.total_collected_sol} SOL)`);
-  console.log(`✓ 70% Holder Pool: $${regData.revenue_summary.holder_pool_70_percent_usd.toLocaleString()} (${regData.revenue_summary.holder_pool_70_percent_sol} SOL)`);
-  console.log(`✓ 30% Treasury Ops: $${regData.revenue_summary.treasury_30_percent_usd.toLocaleString()} (${regData.revenue_summary.treasury_30_percent_sol} SOL)`);
-  console.log(`✓ Auto-Payout Limit: $${regData.revenue_summary.auto_payout_threshold_usd.toFixed(2)} USD`);
-  console.log(`✓ Top Holders Count: ${regData.holders_registry.length}`);
-  
-  const underLimitWallets = regData.holders_registry.filter((h) => !h.meets_threshold);
-  console.log(`✓ Wallets under $100 Limit: ${underLimitWallets.length} (safely accumulating on-chain)`);
-  console.log(`✓ Wallets exceeding $100 Limit: ${regData.holders_registry.length - underLimitWallets.length} (auto-dispatched / queued)\n`);
+  console.log(`✓ 50% Holder Pool: $${regData.revenue_summary.holder_pool_50_percent_usd} (${regData.revenue_summary.holder_pool_50_percent_sol} SOL)`);
+  console.log(`✓ 30% Hackathon Pool: $${regData.revenue_summary.hackathon_treasury_30_percent_usd} (${regData.revenue_summary.hackathon_treasury_30_percent_sol} SOL)`);
+  console.log(`✓ 20% Buyback & Burn: $${regData.revenue_summary.buyback_burn_20_percent_usd} (${regData.revenue_summary.buyback_burn_20_percent_sol} SOL)`);
+  console.log(`✓ Eligible 0.5% Whitelist Count: ${regData.eligible_05_percent_holders?.length || regData.holders_registry?.length}`);
+  console.log(`✓ Realistic $100 Reference Hackathon Breakdown: 1st ($${regData.realistic_example?.hackathon_top3_breakdown?.first_place_50_percent_usd}) | 2nd ($${regData.realistic_example?.hackathon_top3_breakdown?.second_place_30_percent_usd}) | 3rd ($${regData.realistic_example?.hackathon_top3_breakdown?.third_place_20_percent_usd})\n`);
 
   // 2. Verify On-Chain Billing Verification Endpoint
   console.log(`[Phase 2] Checking /api/v1/billing/verify with test signature...`);
