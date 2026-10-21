@@ -31,6 +31,7 @@ const footerLinks = {
   ],
   Architecture: [
     { name: 'Consensus Comparison', href: '/network' },
+    { name: 'Revenue & 70% Share', href: '/revenue' },
     { name: 'Benchmark Protocol', href: '/benchmarks' },
     { name: 'Candidate Bank Graph', href: '/telemetry' },
     { name: 'Transaction Autopsy', href: '/transaction' },
@@ -51,7 +52,7 @@ const footerLinks = {
 
 export function FooterSection() {
   const pathname = usePathname();
-  const isDarkPage = pathname === '/endpoints' || pathname === '/compare';
+  const isDarkPage = pathname === '/endpoints' || pathname === '/compare' || pathname === '/upgrade' || pathname === '/revenue';
 
   return (
     <footer className={`relative border-t overflow-hidden ${

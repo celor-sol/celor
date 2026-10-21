@@ -4,6 +4,7 @@ export const CELOR_TOKEN = {
   ca: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   shortCa: 'FR2tuJ...6pump',
   displayCa: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
+  treasuryWallet: 'CELoRtrEAsury4vJ9JU1bJJE96FWSXTvHsmmFADCg4gp',
   pumpFunUrl: 'https://pump.fun/coin/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   dexScreenerUrl: 'https://dexscreener.com/solana/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   solscanUrl: 'https://solscan.io/token/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
@@ -11,6 +12,60 @@ export const CELOR_TOKEN = {
   photonUrl: 'https://photon-sol.tinyastro.io/en/lp/FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
   xUrl: 'https://x.com/celorinfra',
   xHandle: '@celorinfra',
+  revShare: {
+    holderPercent: 70,
+    treasuryPercent: 30,
+    autoPayoutThresholdUsd: 100, // Rewards auto-distribute once accrued wallet reward reaches >= $100
+  },
+  apiPlans: [
+    {
+      id: 'starter',
+      name: 'Developer Starter',
+      solPrice: 0.5,
+      usdPrice: 92,
+      period: 'Monthly',
+      popular: false,
+      features: [
+        '1,000 requests / sec throughput',
+        'Direct Alpenglow slot & bank telemetry',
+        'REST + WebSocket live event streams',
+        'Standard community support',
+      ],
+      rateLimitRps: 1000,
+    },
+    {
+      id: 'pro-sniper',
+      name: 'Pro HFT & Sniper',
+      solPrice: 2.5,
+      usdPrice: 460,
+      period: 'Monthly',
+      popular: true,
+      features: [
+        'Unlimited requests / sec throughput',
+        '0.50 µs sub-microsecond decision engine',
+        '$0-Tip Jito bundle drop-in compatibility',
+        'Sub-150ms Direct TPU QUIC leader dispatch',
+        'Candidate bank reorg & ghost fork auto-pruning',
+      ],
+      rateLimitRps: 10000,
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise Validator & MM',
+      solPrice: 10.0,
+      usdPrice: 1840,
+      period: 'Monthly',
+      popular: false,
+      features: [
+        'Private dedicated Yellowstone IPC Geyser pipeline',
+        'Custom multi-region leader prewarm socket',
+        'SLA 99.99% guaranteed uptime',
+        'Direct core engineering support (Discord/Telegram)',
+      ],
+      rateLimitRps: 50000,
+    },
+  ],
 } as const;
+
 
 
