@@ -41,10 +41,10 @@ interface HolderItem {
 const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   {
     rank: 1,
-    wallet: '9f8E2xPqLkM7A9QcRt1YvZnW3bDf6hJsKg2mNp5vTr4w',
+    wallet: 'HjYTnYBMJQ9sTB1PAbxbq8WfoZScnsN68QoHDGxdb9f2',
     label: 'Verified Holder #1',
-    balance_tokens: 12200000,
-    supply_percent: 1.304,
+    balance_tokens: 13719778,
+    supply_percent: 1.466,
     eligible_for_revshare: true,
     tier: 'PASSED (≥ 0.5%)',
     payout_status: 'QUALIFIED',
@@ -52,10 +52,10 @@ const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   },
   {
     rank: 2,
-    wallet: '4vJ9JU1bJJE96FWSXTvHsmmFADCg4gpZQff4P3bkLKi',
+    wallet: '6eSD6rVsnTkcBjem3n1TfoNHFNGPXmEn7kqyXZXDdUm2',
     label: 'Verified Holder #2',
-    balance_tokens: 9800000,
-    supply_percent: 1.047,
+    balance_tokens: 7659234,
+    supply_percent: 0.819,
     eligible_for_revshare: true,
     tier: 'PASSED (≥ 0.5%)',
     payout_status: 'QUALIFIED',
@@ -63,10 +63,10 @@ const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   },
   {
     rank: 3,
-    wallet: '7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsMmCTTUct',
+    wallet: '8saqcsiGFseiHfLvujGYKj8riG1C69ekChDNQMYehDbY',
     label: 'Verified Holder #3',
-    balance_tokens: 8450000,
-    supply_percent: 0.903,
+    balance_tokens: 6362991,
+    supply_percent: 0.680,
     eligible_for_revshare: true,
     tier: 'PASSED (≥ 0.5%)',
     payout_status: 'QUALIFIED',
@@ -74,10 +74,10 @@ const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   },
   {
     rank: 4,
-    wallet: 'J5BJHkRuGpWwfkm1Bxau6QFge4dTausFzdgvj3vzipuv',
+    wallet: 'CnoVVu5jNFWqGqkU7Tsr3JS8JCQ5ozehoRJL1kZfWkaR',
     label: 'Verified Holder #4',
-    balance_tokens: 7100000,
-    supply_percent: 0.759,
+    balance_tokens: 6159992,
+    supply_percent: 0.658,
     eligible_for_revshare: true,
     tier: 'PASSED (≥ 0.5%)',
     payout_status: 'QUALIFIED',
@@ -85,10 +85,10 @@ const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   },
   {
     rank: 5,
-    wallet: '6bBw4LYVzXQoNs1TH4yVavtpCu5cdwYGvmuXVcZmNeKy',
+    wallet: '4SFocVw6tdkgkcp1pi6fg8h7yJNwszkSGLhZQikEFc6B',
     label: 'Verified Holder #5',
-    balance_tokens: 6300000,
-    supply_percent: 0.673,
+    balance_tokens: 5781351,
+    supply_percent: 0.618,
     eligible_for_revshare: true,
     tier: 'PASSED (≥ 0.5%)',
     payout_status: 'QUALIFIED',
@@ -96,36 +96,36 @@ const DEFAULT_VERIFIED_05_HOLDERS: HolderItem[] = [
   },
   {
     rank: 6,
-    wallet: 'BPpsgSJwBF1Q9ch5w6ghzBJjF3ghkEFREarPDMvqqwBE',
-    label: 'Verified Holder #6',
-    balance_tokens: 5600000,
-    supply_percent: 0.598,
-    eligible_for_revshare: true,
-    tier: 'PASSED (≥ 0.5%)',
-    payout_status: 'QUALIFIED',
-    meets_100_usd_limit: true,
+    wallet: '7ejh9w7u4Psj5Y4x2uUbqtathtR2t5wVSk5oPZwYyWQH',
+    label: 'Accumulating Holder #6',
+    balance_tokens: 4442003,
+    supply_percent: 0.475,
+    eligible_for_revshare: false,
+    tier: 'ACCUMULATING (< 0.5%)',
+    payout_status: 'NEEDS_558K_TOKENS',
+    meets_100_usd_limit: false,
   },
   {
     rank: 7,
-    wallet: 'CyxpavCBjZmSsyHcu83kVRZcLi8x2vfPigodN5mat45T',
-    label: 'Verified Holder #7',
-    balance_tokens: 5150000,
-    supply_percent: 0.550,
-    eligible_for_revshare: true,
-    tier: 'PASSED (≥ 0.5%)',
-    payout_status: 'QUALIFIED',
-    meets_100_usd_limit: true,
+    wallet: '6L5ykxzvMNBS3gFbanxnWuLXkyiMzWxdMzCdM471stuu',
+    label: 'Accumulating Holder #7',
+    balance_tokens: 4272621,
+    supply_percent: 0.457,
+    eligible_for_revshare: false,
+    tier: 'ACCUMULATING (< 0.5%)',
+    payout_status: 'NEEDS_727K_TOKENS',
+    meets_100_usd_limit: false,
   },
   {
     rank: 8,
-    wallet: '8qRwK2LmNvPt1YxZ3bDf6hJsKg2mNp5vTr4w9f8E2xPq',
-    label: 'Verified Holder #8',
-    balance_tokens: 5020000,
-    supply_percent: 0.536,
-    eligible_for_revshare: true,
-    tier: 'PASSED (≥ 0.5%)',
-    payout_status: 'QUALIFIED',
-    meets_100_usd_limit: true,
+    wallet: 'ChLQAteDNKFz8pQ3qjgnvMC7mpoT5HyamEW6ZGKwkYjw',
+    label: 'Accumulating Holder #8',
+    balance_tokens: 3292405,
+    supply_percent: 0.352,
+    eligible_for_revshare: false,
+    tier: 'ACCUMULATING (< 0.5%)',
+    payout_status: 'NEEDS_1.7M_TOKENS',
+    meets_100_usd_limit: false,
   },
 ];
 
@@ -184,6 +184,7 @@ interface RegistryData {
 
 interface WalletInspectResult {
   wallet: string;
+  token_mint?: string;
   token_balance: number;
   supply_percent: number;
   total_supply: number;
@@ -357,7 +358,7 @@ export default function RevenuePage() {
     return CELOR_TOKEN.apiPlans.find((p) => p.id === selectedPlanId) || CELOR_TOKEN.apiPlans[1];
   }, [selectedPlanId]);
 
-  // Handle Live On-Chain Wallet Balance Inspection
+  // Handle Live On-Chain Wallet Balance Inspection with direct RPC fallback
   const handleInspectWallet = async () => {
     const w = inspectWalletInput.trim();
     if (!w) {
@@ -372,6 +373,62 @@ export default function RevenuePage() {
     try {
       const resp = await fetch(`/api/v1/billing/balance?wallet=${encodeURIComponent(w)}`);
       const data = await resp.json();
+      if (resp.ok && data.token_mint && data.token_balance > 0) {
+        setInspectResult(data);
+        return;
+      }
+
+      // Direct client-side Solana Mainnet RPC fallback (runs from user IP, bypasses edge worker limits)
+      try {
+        const clientRpcResp = await fetch('https://api.mainnet-beta.solana.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getTokenAccountsByOwner',
+            params: [
+              w,
+              { mint: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump' },
+              { encoding: 'jsonParsed' }
+            ]
+          })
+        });
+
+        if (clientRpcResp.ok) {
+          const clientData = await clientRpcResp.json();
+          if (clientData.result && Array.isArray(clientData.result.value)) {
+            let totalTokens = 0;
+            for (const acc of clientData.result.value) {
+              const str = acc.account?.data?.parsed?.info?.tokenAmount?.uiAmountString;
+              totalTokens += parseFloat(str) || 0;
+            }
+            const totalSupply = 935684250.013547;
+            const pct = (totalTokens / totalSupply) * 100;
+            const isEligible = totalTokens >= 5000000;
+            setInspectResult({
+              wallet: w,
+              token_mint: 'FR2tuJxp81QWZB1yWzkHa7EWR97ThAbQGw5dfgb6pump',
+              token_balance: totalTokens,
+              supply_percent: Number(pct.toFixed(6)),
+              total_supply: totalSupply,
+              eligibility: {
+                is_eligible_for_50_percent_revshare: isEligible,
+                required_minimum_tokens: 5000000,
+                required_minimum_percent: 0.5,
+                tokens_needed_to_qualify: isEligible ? 0 : Math.max(0, 5000000 - totalTokens),
+                status: isEligible ? 'QUALIFIED_HOLDER (>= 0.5%)' : 'ACCUMULATING (< 0.5% / 5M TOKENS)'
+              },
+              solscan_url: `https://solscan.io/account/${w}`,
+              status: totalTokens > 0 ? (isEligible ? 'ELIGIBLE_HOLDER' : 'HOLDER_ACCUMULATING') : 'ZERO_BALANCE'
+            });
+            return;
+          }
+        }
+      } catch {
+        // continue to backend result
+      }
+
       if (resp.ok && data.token_mint) {
         setInspectResult(data);
       } else {
@@ -939,7 +996,7 @@ export default function RevenuePage() {
                   <span className="text-neutral-400 text-[11px]">(PumpSwap AMM Liquidity Pool)</span>
                 </div>
                 <div className="text-[10px] text-neutral-400">
-                  Reserves: <strong>110,183,506 $CELOR</strong> (~11.78% supply) • Protocol Automated Liquidity Reserve (Excluded from Revshare Dividends)
+                  Reserves: <strong>{(registryData?.amm_pool?.token_reserves ?? 109474598).toLocaleString('en-US')} $CELOR</strong> (~{(registryData?.amm_pool?.supply_percent ?? 11.70).toFixed(2)}% supply) • Protocol Automated Liquidity Reserve (Excluded from Revshare Dividends)
                 </div>
               </div>
               <a
@@ -997,6 +1054,57 @@ export default function RevenuePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Accumulating Wallets Approaching 0.5% Whitelist */}
+            <div className="mt-3 p-3 rounded-xl border border-neutral-850 bg-[#0d0e10] font-mono text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 pb-2 border-b border-neutral-800">
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] bg-neutral-900 text-neutral-400 font-bold border border-neutral-700">
+                    ACCUMULATING HOLDERS
+                  </span>
+                  <span className="text-white text-[11px] font-sans font-semibold">
+                    Next Wallets Approaching 0.5% (5,000,000 $CELOR) Whitelist
+                  </span>
+                </div>
+                <span className="text-[10px] text-neutral-400">Live Solana Token-2022 Balances</span>
+              </div>
+              <div className="mt-2 space-y-1.5">
+                {((registryData?.eligible_05_percent_holders || registryData?.holders_registry || DEFAULT_VERIFIED_05_HOLDERS)
+                  .filter((h) => h.supply_percent < 0.5 && h.wallet !== '2xCsAUR8ACBzWNey41q5ZyGVzimLh87PAx9Xwioh4AFU')
+                ).map((h) => {
+                  const neededTokens = Math.max(0, 5000000 - h.balance_tokens);
+                  return (
+                    <div
+                      key={h.wallet}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 rounded-lg bg-black border border-neutral-850 text-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-neutral-400 font-bold text-xs">#{h.rank}</span>
+                        <div>
+                          <span className="text-white font-mono font-semibold">{h.wallet.slice(0, 6)}...{h.wallet.slice(-4)}</span>
+                          <span className="ml-2 text-neutral-400 text-[10px]">{h.label}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 self-end sm:self-auto">
+                        <span className="text-neutral-200 font-mono text-xs">{h.balance_tokens.toLocaleString('en-US')} $CELOR ({h.supply_percent.toFixed(3)}%)</span>
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-neutral-900 border border-neutral-750 text-neutral-300">
+                          Needs {neededTokens.toLocaleString('en-US')} more
+                        </span>
+                        <a
+                          href={`https://solscan.io/account/${h.wallet}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-0.5 text-[10px] text-neutral-400 hover:text-white"
+                        >
+                          <span>Verify</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
