@@ -17,16 +17,21 @@ interface NavigationProps {
 
 const navLinks = [
   { name: 'Live', href: '/' },
+  { name: '7702 Shield', href: '/shield', badge: 'NONCE-SHREDDER' },
+  { name: '0x81 Stealth & RPC', href: '/rpc', badge: 'GHOST-SWARM' },
+  { name: 'QuantumGlow', href: '/quantumglow', badge: 'ALPENGLOW + PQ' },
+  { name: 'Stats', href: '/stats', badge: 'LIVE STATS' },
   { name: 'Radar', href: '/radar', badge: '800MS' },
   { name: 'Fees', href: '/fees' },
   { name: 'Proof', href: '/proof', badge: '100% REAL' },
   { name: 'Block Space', href: '/blockspace', badge: '4X CAPACITY' },
-  { name: 'Epoch 1064', href: '/speed#epoch1064', badge: 'NEW' },
+  { name: 'Epoch 1064', href: '/speed#epoch1064', badge: 'MAINNET' },
   { name: '200ms Shockwave', href: '/speed', badge: 'LIVE' },
   { name: 'Playground', href: '/playground' },
   { name: 'Contract', href: '/contract' },
   { name: 'Telemetry', href: '/telemetry' },
   { name: 'Compare', href: '/compare', badge: 'VS MAESTRO' },
+  { name: 'Speed Audit', href: '/speed-audit', badge: 'LIVE RACE' },
   { name: 'Sniper', href: '/sniper' },
   { name: 'Benchmarks', href: '/benchmarks' },
   { name: 'Network', href: '/network' },
@@ -34,7 +39,7 @@ const navLinks = [
   { name: 'Protocol', href: '/protocol' },
   { name: 'Updates', href: '/updates' },
   { name: 'Endpoints', href: '/endpoints', badge: 'API' },
-  { name: 'Upgrade', href: '/upgrade', badge: 'EPOCH 1064' },
+  { name: 'Upgrade', href: '/upgrade', badge: 'MAINNET LIVE' },
   { name: 'Revenue', href: '/revenue', badge: '70% REV' },
 ];
 
@@ -47,27 +52,11 @@ const CLUSTER_ITEMS: {
   href: string;
 }[] = [
   {
-    id: 'devnet',
-    label: 'Devnet',
-    shortLabel: 'Devnet',
-    badge: 'ALPENGLOW ACTIVE',
-    badgeColor: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
-    href: '/clusters/devnet',
-  },
-  {
-    id: 'testnet',
-    label: 'Testnet',
-    shortLabel: 'Testnet',
-    badge: 'ALPENGLOW ACTIVE',
-    badgeColor: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
-    href: '/clusters/testnet',
-  },
-  {
     id: 'mainnet-beta',
-    label: 'Mainnet-Beta',
+    label: 'Mainnet',
     shortLabel: 'Mainnet',
-    badge: 'ALPENGLOW OCT 21 (~14:50 UTC)',
-    badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    badge: 'ALPENGLOW + QUANTUMGLOW',
+    badgeColor: 'text-foreground bg-foreground/5 border-foreground/20',
     href: '/clusters/mainnet',
   },
   {
@@ -75,7 +64,7 @@ const CLUSTER_ITEMS: {
     label: 'Local Validator',
     shortLabel: 'Local',
     badge: 'GEYSER LEVEL 4',
-    badgeColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+    badgeColor: 'text-muted-foreground bg-foreground/5 border-foreground/15',
     href: '/clusters/local-validator',
   },
   {
@@ -120,10 +109,9 @@ export function Navigation({
 
   const activeClusterObj =
     CLUSTER_ITEMS.find((c) => c.id === currentCluster) ||
-    CLUSTER_ITEMS.find((c) => currentCluster.includes('devnet')) ||
     CLUSTER_ITEMS[0];
 
-  const isDarkPage = pathname === '/endpoints' || pathname === '/compare';
+  const isDarkPage = pathname?.startsWith('/endpoints') || pathname?.startsWith('/compare') || pathname?.startsWith('/stats');
 
   return (
     <header
@@ -196,9 +184,9 @@ export function Navigation({
                       <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
                         isDarkPage
                           ? 'bg-neutral-800 text-neutral-200 border border-neutral-700'
-                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse'
+                          : 'bg-foreground/[0.06] text-foreground border border-foreground/20'
                       }`}>
-                        {!isDarkPage && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                        {!isDarkPage && <span className="w-1.5 h-1.5 rounded-full bg-foreground" />}
                         {link.badge}
                       </span>
                     )}
@@ -229,11 +217,7 @@ export function Navigation({
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                    activeClusterObj.id === 'devnet' || activeClusterObj.id === 'testnet'
-                      ? 'bg-emerald-500'
-                      : activeClusterObj.id === 'mainnet-beta'
-                      ? 'bg-blue-400'
-                      : 'bg-purple-400'
+                    isDarkPage ? 'bg-white' : 'bg-foreground'
                   }`}
                 />
                 <span className={`font-medium ${isDarkPage ? 'text-white' : 'text-foreground'}`}>{activeClusterObj.label}</span>
@@ -288,18 +272,14 @@ export function Navigation({
                           <div className="flex items-center gap-2">
                             <span
                               className={`w-2 h-2 rounded-full ${
-                                c.id === 'devnet' || c.id === 'testnet'
-                                  ? 'bg-emerald-500'
-                                  : c.id === 'mainnet-beta'
-                                  ? 'bg-blue-400'
-                                  : 'bg-purple-400'
+                                isDarkPage ? 'bg-white' : 'bg-foreground'
                               }`}
                             />
                             <span>{c.label}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             <span className={`text-[9px] px-1.5 py-0.5 rounded border font-semibold ${c.badgeColor}`}>
-                              {c.id === 'devnet' || c.id === 'testnet' ? 'ALPENGLOW' : c.id === 'mainnet-beta' ? 'TOWER_BFT' : 'LAB'}
+                              {c.id === 'mainnet-beta' ? 'ALPENGLOW + QUANTUMGLOW' : 'LAB'}
                             </span>
                             {isSelected && <Check className={`w-3.5 h-3.5 shrink-0 ${isDarkPage ? 'text-white' : 'text-foreground'}`} />}
                           </div>
@@ -313,11 +293,13 @@ export function Navigation({
 
             {/* Live Ingestion Indicator */}
             <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-mono whitespace-nowrap ${
-              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/10'
+              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/15'
             }`}>
               <span
                 className={`w-2 h-2 rounded-full shrink-0 ${
-                  connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                  connected
+                    ? isDarkPage ? 'bg-white animate-pulse' : 'bg-foreground animate-pulse'
+                    : 'bg-muted-foreground'
                 }`}
               />
               <span className={`text-[11px] ${isDarkPage ? 'text-neutral-400' : 'text-muted-foreground'}`}>
@@ -375,9 +357,9 @@ export function Navigation({
           {/* Mobile Right Controls: Cluster Indicator + Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
             <span className={`flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border ${
-              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/10 bg-foreground/[0.03]'
+              isDarkPage ? 'border-neutral-800 bg-[#0e0f11]' : 'border-foreground/15 bg-foreground/[0.03]'
             }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${connected ? (isDarkPage ? 'bg-white animate-pulse' : 'bg-foreground animate-pulse') : 'bg-muted-foreground'}`} />
               <span className={`font-medium ${isDarkPage ? 'text-white' : 'text-foreground'}`}>{activeClusterObj.shortLabel}</span>
             </span>
             <button
@@ -465,7 +447,7 @@ export function Navigation({
                       <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
                         isDarkPage
                           ? 'bg-neutral-800 text-neutral-200 border border-neutral-700'
-                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                          : 'bg-foreground/[0.06] text-foreground border border-foreground/20'
                       }`}>
                         {link.badge}
                       </span>

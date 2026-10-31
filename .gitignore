@@ -10,3 +10,21 @@ crates/chrono-bench/artifacts/benchmarks/exp-*/
 .env*
 *.env
 .secret*
+.celor-sniper/
+.chrono-sniper/
+*wallet_vault.json
+*celor_ledger.json
+*.key
+
+# Proprietary CELOR Prime Code (Never Open-Source HUD or Live Sniper Bot)
+public/celor-hud.js
+public/celor-hud-extension.zip
+public/celor_v66*
+app/hud/
+functions/api/hud.ts
+functions/api/hud-install.ts
+functions/api/hud-script.ts
+scripts/celor_live_bot.js
+scripts/celor_live_bot.cjs
+scripts/render_celor_hud*
+scripts/audit_celor_hud*
