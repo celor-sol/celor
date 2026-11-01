@@ -19,12 +19,22 @@ crates/chrono-bench/artifacts/benchmarks/exp-*/
 # Proprietary CELOR Prime Code (Never Open-Source HUD or Live Sniper Bot)
 public/celor-hud.js
 public/celor-hud-extension.zip
+public/celor-fastlane-interceptor.user.js
+public/celor-tab-bridge.cjs
+public/hud-bridge.html
+public/celor_hud_60s_motion.mp4
 public/celor_v66*
 app/hud/
+app/rpc/
+app/stealth/
 functions/api/hud.ts
 functions/api/hud-install.ts
 functions/api/hud-script.ts
+functions/api/swarm.ts
 scripts/celor_live_bot.js
 scripts/celor_live_bot.cjs
+scripts/celor-tab-bridge.cjs
 scripts/render_celor_hud*
 scripts/audit_celor_hud*
+crates/chrono-sniper/
+GEMINI.md

@@ -11,7 +11,19 @@
     "dispatch:status": "node scripts/auto_divide_dispatcher.mjs status",
     "dispatch:simulate": "node scripts/auto_divide_dispatcher.mjs simulate 0.5",
     "dispatch:live": "node scripts/auto_divide_dispatcher.mjs dispatch --live",
-    "dispatch:daemon": "node scripts/auto_divide_dispatcher.mjs daemon"
+    "dispatch:daemon": "node scripts/auto_divide_dispatcher.mjs daemon",
+    "bot:list": "node scripts/bot_wallet_discovery.mjs list",
+    "bot:test": "node scripts/bot_wallet_discovery.mjs test",
+    "bot:discover": "node scripts/bot_wallet_discovery.mjs",
+    "race:test": "node scripts/race_scanner_cli.mjs test",
+    "race:benchmark": "node scripts/race_scanner_cli.mjs benchmark-replay",
+    "race:audit": "node scripts/race_scanner_cli.mjs audit-mint",
+    "shield:scan": "node scripts/celor_7702_shield_cli.mjs",
+    "shield:binance34": "node scripts/celor_7702_shield_cli.mjs 0xEe7aE85f2Fe2239E27D9c1E23fFFe168D63b4055 15",
+    "shield:exploiter": "node scripts/celor_7702_shield_cli.mjs 0x3E2bf1ac6bf0934BBba6456C341c2EcbCED632d5 15",
+    "shield:solana": "node scripts/celor_7702_shield_cli.mjs 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+    "security:audit": "node scripts/stress_security_audit_v3.cjs",
+    "wallet:audit": "node scripts/test_wallet_all_11_fixes.cjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.4",

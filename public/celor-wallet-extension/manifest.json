@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "CELOR Trench Wallet (Alpenglow + QuantumGlow Ax-67)",
+  "short_name": "CELOR Wallet",
+  "version": "3.0.0",
+  "description": "First native Alpenglow + QuantumGlow (67-Chain WOTS+) Trench Wallet Extension. 0-Bribe Turbo-Hijack, 22-ATA Rent Vacuum, 220ms TP/SL/Moonbag, and 0µs Panic Eject.",
+  "action": {
+    "default_title": "CELOR Trench Wallet",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "../favicon-16x16.png",
+    "32": "../favicon-32x32.png",
+    "192": "../icon-192.png",
+    "512": "../icon-512.png"
+  },
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["http://127.0.0.1/*", "https://celor.cloud/*"]
+}

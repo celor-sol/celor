@@ -2,6 +2,8 @@
 
 **Status:** Mainnet Live (`https://celor.cloud/shield/`) · Open-Source (MIT License)
 
+![CELOR v6.7 7702 Shield](../public/celor_v67_shield_banner_5x2.png)
+
 ---
 
 ## 1. Threat Model: The October 29, 2026 EIP-7702 Exploit Vector (`0xef0100`)
@@ -41,6 +43,10 @@ By reversing the attacker's descending-nonce trick and packing $K$ tuples in **s
 | [`functions/api/shield.ts`](../functions/api/shield.ts) | Open-Source Edge RPC Scanner (`eth_getCode`, `0xef0100`, `0x66b46a7a` Second-Hop MSCA Auditor & Solana `ProgramData` Inspector) |
 | [`scripts/celor_7702_shield_cli.mjs`](../scripts/celor_7702_shield_cli.mjs) | Standalone Zero-Dependency Node.js CLI (`npm run shield:scan`) |
 | [`public/celor-7702-firewall.js`](../public/celor-7702-firewall.js) | Standalone `MAIN`-World `0x05` & EIP-6963 Browser Signer Firewall |
+| [`lib/wallet-backend/drainer_firewall.js`](../lib/wallet-backend/drainer_firewall.js) | Real-Time Solana & EVM Instruction-Level Drainer Firewall (`SetAuthority`, `Assign`, `Approve`, `0x05` RLP) |
+| [`lib/wallet-backend/vault_crypto.js`](../lib/wallet-backend/vault_crypto.js) | QuantumGlow Post-Quantum `Ax-XMSS` / `WOTS+` Hash-Locked Vault Engine |
+| [`scripts/stress_security_audit_v3.cjs`](../scripts/stress_security_audit_v3.cjs) | Automated Red-Team Security & Stress Audit Suite (`npm run security:audit`) |
+| [`scripts/test_wallet_all_11_fixes.cjs`](../scripts/test_wallet_all_11_fixes.cjs) | 11-Vector Cryptographic Vault & Firewall Verification Suite (`npm run wallet:audit`) |
 
 ### Quick-Start CLI Usage
 
