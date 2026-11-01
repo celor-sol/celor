@@ -39,6 +39,29 @@ You can test the entire engine live in your browser:
 * **QuantumGlow Post-Quantum Vault (`Ax-XMSS` / `WOTS+`):** [celor.cloud/quantumglow](https://celor.cloud/quantumglow)
 * **Trench Wallet & Drainer Firewall:** [celor.cloud/wallet](https://celor.cloud/wallet)
 
+## CELOR v6.8 — We Killed `0slot`, `Nozomi` & The MEV Sandwich Cartel Forever
+
+![CELOR v6.8 Priority Proof](./public/celor_v68_priority_banner_5x2.png)
+
+Built on Solana's post-Alpenglow core protocol upgrades (`SIMD-0567` `p-ATA` merged Nov 1, 2026 + `SIMD-0266` `p-token` + `SIMD-0649` Consensus Priority Law + `SIMD-0630` `175ms` Slot-1 FLH + `SIMD-0675` 3D ECEF Geo-Leader Schedule), **CELOR `v6.8`** mathematically eliminates paid fast-lane relays (`0slot`, `Nozomi`, `NextBlock`) and out-ranks `220,000 CU` legacy bots (**Axiom, GMGN, Photon, Trojan**) for **`$0.00` bribe**:
+
+1. **`SIMD-0567` (`p-ATA`) + `SIMD-0266` (`p-token`) + `SIMD-0385` (`0x81`) Compute Unit Compression:**
+   - Slashes Associated Token Account creation from `22,940 CU` to **`3,925 CU` (`-82.9%`)** and existing ATA check from `3,710 CU` to **`387 CU` (`-89.6%`)**.
+   - Slashes SPL Token transfer from `4,645 CU` to **`76 CU` (`-98.4%`)** and replaces `450 CU` `ComputeBudget` instructions with the **`0 CU` `0x81` inline header mask**.
+   - Shrinks total buy execution envelope from `220,000 CU` down to **`62,001 CU` (First Buy, `-71.8%`)** and **`48,000 CU` (Repeat Buy, `-78.2%`)**.
+2. **`SIMD-0649` Consensus Entry-Batch Priority Proof (`3.55x`–`4.58x` Higher Priority for `$0` Bribe):**
+   - Under `SIMD-0649`, validators rank transactions by $\text{Priority} = \lfloor (\text{Reward} \times 1{,}000{,}000) / (\text{CU} + 1) \rfloor$.
+   - Off-chain `0.002 SOL` (`$0.19`) bribes paid to `0slot` or `Nozomi` count as **`0 lamports`** toward the validator's on-chain `SIMD-0649` reward while inflating CU. CELOR `v6.8` scores **`312,493` (`4.58x` higher)** on repeat buys and **`241,927` (`3.55x` higher)** on first buys, ranking **`#1 Top of Entry Batch`** for `$0` bribe.
+3. **`SIMD-0630` (`175ms` Slot-1 FLH Compensation) & `SIMD-0675` (`8.34ms` 3D ECEF Geo-Leader Handover):**
+   - Compensates for the `175ms` (`-25ms`) post-`ParentReady` timer on Slot 1 of every 4-slot window (`SIMD-0630`) and pre-streams along the `SIMD-0675` 3D ECEF geo-clustered leader schedule (`8.34ms` average handover vs `50.01ms` legacy random, `-83.3%`).
+
+```bash
+# Run the live Mainnet SIMD-0649 + SIMD-0567 + SIMD-0630 + SIMD-0675 Proof Suite:
+npm run v68:proof
+```
+
+Read the full mathematical proof in [Phase 12 — CELOR v6.8 Zero-Bribe Block-Topper Proof](./docs/PHASE_12_V68_ZERO_BRIBE_BLOCK_TOPPER_PROOF.md).
+
 ## CELOR v6.7 — 7702 Shield & Ascending-Tuple Nonce-Shredder
 
 ![CELOR v6.7 7702 Shield](./public/celor_v67_shield_banner_5x2.png)

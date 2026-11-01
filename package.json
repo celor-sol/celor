@@ -22,6 +22,7 @@
     "shield:binance34": "node scripts/celor_7702_shield_cli.mjs 0xEe7aE85f2Fe2239E27D9c1E23fFFe168D63b4055 15",
     "shield:exploiter": "node scripts/celor_7702_shield_cli.mjs 0x3E2bf1ac6bf0934BBba6456C341c2EcbCED632d5 15",
     "shield:solana": "node scripts/celor_7702_shield_cli.mjs 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+    "v68:proof": "node scripts/celor_v68_priority_proof.mjs",
     "security:audit": "node scripts/stress_security_audit_v3.cjs",
     "wallet:audit": "node scripts/test_wallet_all_11_fixes.cjs"
   },
